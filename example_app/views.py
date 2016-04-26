@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 # basic HTTP response
 # http://localhost:8000/example_app/
 def index(request):
-	return HttpResponse('This is the http response')
+	return HttpResponse('Hello World')
 
 # accepts a GET parameter named PARAM and prints its value
 # http://localhost:8000/example_app/handle_get_param?PARAM=3
