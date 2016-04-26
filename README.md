@@ -14,7 +14,7 @@ Run the web app locally using
 ```
 python manage.py runserver
 ```
-and open (http://localhost:8000/example_app)[http://localhost:8000/example_app]
+and open [http://localhost:8000/example_app](http://localhost:8000/example_app)
 
 
 ## The Django app
