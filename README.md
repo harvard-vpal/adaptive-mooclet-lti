@@ -1,4 +1,4 @@
-# django-basic-aws-template
+# adaptive-engine
 
 ## Getting started
 
