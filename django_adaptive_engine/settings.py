@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'adaptive_engine_app.apps.AdaptiveEngineAppConfig'
 ]
 
 MIDDLEWARE_CLASSES = [
