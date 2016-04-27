@@ -1,28 +1,40 @@
 # sample views for adaptive_engine_app
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
+
+from .models import Component, Version
 
 # basic HTTP response
 # http://localhost:8000/adaptive_engine_app/
-def index(request):
+def index (request):
 	return HttpResponse('Hello World')
 
-# accepts a GET parameter named PARAM and prints its value
-# http://localhost:8000/adaptive_engine_app/handle_get_param?PARAM=3
-def handle_get_param(request):
-	if 'PARAM' not in request.GET:
-		return HttpResponse('PARAM not found in GET parameters')
-	param_value = request.GET['PARAM']
-	return HttpResponse('The value of PARAM is {}'.format(param_value))
+def computeVersionOfComponent (student, versions):
+	return { "version": versions[0].text }
 
-# view that returns json
-# http://localhost:8000/adaptive_engine_app/return_json
-def return_json(request):
-	output = {'quiz_version':1}
-	return JsonResponse(output)
+def get_version_of_component (request):
+	if 'component_id' not in request.GET:
+		return HttpResponse('component_id not found in GET parameters')
+	if 'student' not in request.GET:
+		return HttpResponse('student not found in GET parameters')
+	component_id = request.GET['component_id']
+	student = request.GET['student']
 
-# http://localhost:8000/adaptive_engine_app/do_redirect
-def do_redirect(request):
-	return redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+	component = get_object_or_404(Component, pk=component_id)
+	versions = []
+	for version in Version.objects.filter(component_id=component_id).iterator():
+		versions.append(version)
+	return JsonResponse(computeVersionOfComponent(student, versions))
 
+def submit_result_of_version (request):
+	if 'version_id' not in request.GET:
+		return HttpResponse('version_id not found in GET parameters')
+	if 'student' not in request.GET:
+		return HttpResponse('student not found in GET parameters')
+	if 'result' not in request.GET:
+		return HttpResponse('result not found in GET parameters')
+	version_id = request.GET['version_id']
+	student = request.GET['student']
+	result = request.GET['result']
+	return HttpResponse('The value of component_name is {}'.format(param_value))
