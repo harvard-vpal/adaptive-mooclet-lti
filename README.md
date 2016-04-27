@@ -4,7 +4,7 @@
 
 ### Downloading the Repository and installing requirements
 ```
-git clone https://github.com/harvard-vpal/django-basic-aws-template.git
+git clone https://github.com/harvard-vpal/adaptive-engine.git
 cd django-basic-aws-template
 pip install -r requirements.txt
 ```
@@ -14,11 +14,11 @@ Run the web app locally using
 ```
 python manage.py runserver
 ```
-and open [http://localhost:8000/example_app](http://localhost:8000/example_app)
+and open [http://localhost:8000/adaptive_engine_app](http://localhost:8000/adaptive_engine_app)
 
 
 ## The Django app
-Check out example_app/views.py and example_app/urls.py
+Check out adaptive_engine_app/views.py and adaptive_engine_app/urls.py
 
 
 ## Deploying on AWS Elastic Beanstalk
