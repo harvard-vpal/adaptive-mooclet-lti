@@ -3,5 +3,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class ExampleAppConfig(AppConfig):
-    name = 'example_app'
+class AdaptiveEngineAppConfig(AppConfig):
+    name = 'adaptive_engine_app'

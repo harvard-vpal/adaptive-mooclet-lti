@@ -3,7 +3,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_basic_aws_template.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_adaptive_engine.settings")
 
     from django.core.management import execute_from_command_line
 

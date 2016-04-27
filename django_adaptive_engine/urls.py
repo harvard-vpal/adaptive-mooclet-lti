@@ -19,6 +19,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
-    # redirects everything starting with "example_app/" to url patterns defined in example_app/urls.py
-    url(r'^example_app/', include('example_app.urls')),
+    # redirects everything starting with "adaptive_engine_app/" to url patterns defined in adaptive_engine_app/urls.py
+    url(r'^adaptive_engine_app/', include('adaptive_engine_app.urls')),
 ]
