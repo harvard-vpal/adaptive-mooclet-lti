@@ -37,6 +37,10 @@ def submit_result_of_version (request):
 	student = request.GET['student']
 	value = float(request.GET['value'])
 
-	result = Result(student=student, version_id=version_id, value=value)
-	result.save()
-	return HttpResponse('Ok')
+	# Make sure there's not already an entry in the database for this (student,version) combination
+	if Result.objects.filter(student=student, version_id=version_id).count() == 0:
+		result = Result(student=student, version_id=version_id, value=value)
+		result.save()
+		return HttpResponse('Ok')
+	else:
+		return HttpResponse('Error: attempt to submit duplicate entry!')
