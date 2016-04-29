@@ -18,12 +18,12 @@ def get_version_of_component (request):
 	allVersionResults = []
 	for version in Version.objects.filter(component_id=component_id).iterator():
 		versionResults = []
-		for result in Result.objects.filter(version_id=version.version_id).iterator():
+		for result in Result.objects.filter(id=version.id).iterator():
 			versionResults.append(result.value)
-		allVerionResults.append(versionResults)
+		allVersionResults.append(versionResults)
 		allVersions.append(version)
-	selectedVersion = computeVersionOfComponent_Thompson(student, allVersions, allVersionResults)
-	return JsonResponse({ "text": selectedVersion.text, "version_id": selectedVersion.version_id })
+	selectedVersion, exp_value = computeVersionOfComponent_Thompson(student, allVersions, allVersionResults)
+	return JsonResponse({ "text": selectedVersion.text, "version_id": selectedVersion.id, "exp_value": exp_value })
 
 def submit_result_of_version (request):
 	if 'version_id' not in request.GET:
