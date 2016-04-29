@@ -13,4 +13,4 @@ class Version (models.Model):
 class Result (models.Model):
 	student = models.CharField(max_length=64)
 	version = models.ForeignKey(Version, on_delete=models.CASCADE)
-	result = models.FloatField()
+	value = models.FloatField()
