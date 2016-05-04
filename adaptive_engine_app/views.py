@@ -16,7 +16,7 @@ def get_version_of_component (request):
 	component = get_object_or_404(Component, name=component_name)
 	allVersions = []
 	allVersionResults = []
-	for version in Version.objects.filter(id=component.id).iterator():
+	for version in Version.objects.filter(component_id=component.id).iterator():
 		versionResults = []
 		for result in Result.objects.filter(id=version.id).iterator():
 			versionResults.append(result.value)
