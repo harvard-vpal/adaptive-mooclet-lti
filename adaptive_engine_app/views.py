@@ -39,4 +39,4 @@ def submit_result_of_version (request):
 
 	result = Result(student=student, version_id=version_id, value=value)
 	result.save()
-	return HttpResponse('Ok')
+	return JsonResponse({ "received": "yes" })
