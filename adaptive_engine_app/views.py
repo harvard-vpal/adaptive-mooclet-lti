@@ -6,17 +6,17 @@ from django.http import HttpResponse, JsonResponse
 from .models import Component, Version, Result
 
 def get_version_of_component (request):
-	if 'component_id' not in request.GET:
-		return HttpResponse('component_id not found in GET parameters')
+	if 'name' not in request.GET:
+		return HttpResponse('name not found in GET parameters')
 	if 'student' not in request.GET:
 		return HttpResponse('student not found in GET parameters')
-	component_id = request.GET['component_id']
+	component_name = request.GET['name']
 	student = request.GET['student']
 
-	component = get_object_or_404(Component, pk=component_id)
+	component = get_object_or_404(Component, name=component_name)
 	allVersions = []
 	allVersionResults = []
-	for version in Version.objects.filter(component_id=component_id).iterator():
+	for version in Version.objects.filter(component_id=component.component_id).iterator():
 		versionResults = []
 		for result in Result.objects.filter(id=version.id).iterator():
 			versionResults.append(result.value)
