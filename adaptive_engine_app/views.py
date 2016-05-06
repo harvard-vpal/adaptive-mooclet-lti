@@ -35,7 +35,7 @@ def submit_result_of_version (request):
 	
 	version_id = request.GET['version_id']
 	student = request.GET['student']
-	value = (float(request.GET['value']) - 1.0) / 7.0
+	value = (float(request.GET['value']) - 1.0) / 6.0
 
 	result = Result(student=student, version_id=version_id, value=value)
 	result.save()
