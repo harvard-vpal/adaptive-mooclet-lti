@@ -5,3 +5,4 @@ from .models import Component, Version
 
 admin.site.register(Component)
 admin.site.register(Version)
+admin.site.register(Result)
