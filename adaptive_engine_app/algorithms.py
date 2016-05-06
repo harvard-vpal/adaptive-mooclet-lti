@@ -6,10 +6,13 @@ def computeVersionOfComponent_Thompson (student, allVersions, allVersionResults)
 	probabilities = np.zeros(len(allVersionResults))
 	means = np.zeros(len(allVersionResults))
 	for i in range(len(allVersionResults)):
+		print allVersionResults
 		sumValues = np.sum(allVersionResults[i])
 		a = 1 + sumValues
 		b = 1 + len(allVersionResults[i]) - sumValues
+		print a,b
 		means[i] = float(a) / (a + b)
 		probabilities[i] = np.random.beta(a, b)
+	print means
 	idx = np.argmax(probabilities)
 	return allVersions[idx], means[idx]
