@@ -1,0 +1,14 @@
+Django>=1.7
+requests
+#django-cached-authentication-middleware>=0.2.0
+
+# install LTI libraries from icommons github repos
+ims-lti-py
+#git+git://github.com/Harvard-University-iCommons/django-auth-lti.#git@v1.2.5#egg=django-auth-lti==1.2.5
+
+
+
+# alternate config that installs LTI libraries from DCE github repos
+git+git://github.com/harvard-dce/django-auth-lti.git@dce-lti-py
+#git+git://github.com/harvard-dce/dce_lti_py.git@v0.7.4
+dce-lti-py

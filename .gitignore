@@ -1,0 +1,28 @@
+.elasticbeanstalk
+secure.py
+*.py[cod]
+*.log
+*.sqlite3
+http_static/
+static/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# local sqlite database
+*.sqlite3
+
+
+######### deploy to eb ############
+
+# secure settings file
+secure.py
+*.config
+
+
