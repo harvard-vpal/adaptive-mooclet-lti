@@ -1,0 +1,13 @@
+Django
+------
+Note: I "pre-loaded" the Django server with about 500 different simulated "ratings" given by
+students of the 2 different explanations.
+
+100 submit_result_of_version requests in 6.83 seconds ==> 14.6 requests/sec
+100 get_version_of_component requests in 7.327 seconds ==> 13.6 requests/sec
+
+Google Apps Script + Google Sheets
+----------------------------------
+1 get_version_of_component request in 2-5 seconds (varies highly) == > 0.2-0.5 requests/sec
+	 - note that this test had to be done manually since Google thwarts
+	   attempts to contact their URLs in a script.
