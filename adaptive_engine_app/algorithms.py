@@ -1,7 +1,7 @@
 import numpy as np
 
 # Thompson sampling
-def computeExplanationOfAnswer_Thompson (student, allExplanations, allExplanationResults):
+def computeExplanation_Thompson (student, allExplanations, allExplanationResults):
 	# Sample from posterior distribution P(\theta | D) for each explanation
 	probabilities = np.zeros(len(allExplanationResults))
 	means = np.zeros(len(allExplanationResults))

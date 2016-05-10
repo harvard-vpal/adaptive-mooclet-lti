@@ -1,26 +1,42 @@
 # sample views for adaptive_engine_app
 
-from .algorithms import computeExplanationOfAnswer_Thompson 
-from .models import Answer, Explanation, Result
+from .algorithms import computeExplanation_Thompson 
+from .models import Question, Explanation, Result
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 
-def get_explanation_for_answer (request):
-	if 'answer_id' not in request.GET:
-		return HttpResponse('answer_id not found in GET parameters')
+def add_quiz_to_course (request):
+	pass
+
+def add_question_to_quiz (request):
+	pass
+
+def add_answer_to_question (request):
+	pass
+
+def add_explanation (request):
+	if 'question_id' not in request.GET:
+		return HttpResponse('question_id not found in GET parameters')
+	if 'student_id' not in request.GET:
+		return HttpResponse('student_id not found in GET parameters')
+	pass
+
+def get_explanation (request):
+	if 'question_id' not in request.GET:
+		return HttpResponse('question_id not found in GET parameters')
 	if 'student_id' not in request.GET:
 		return HttpResponse('student_id not found in GET parameters')
 
-	answer = get_object_or_404(Answer, answer_id=request.GET['answer_id'])
+	question = get_object_or_404(Question, question_id=request.GET['question_id'])
 	allExplanations = []
 	allResultsForExplanations = []
-	for explanation in Explanation.objects.filter(answer_id=answer.id).iterator():
+	for explanation in Explanation.objects.filter(question_id=question.id).iterator():
 		someResults = []
 		for result in Result.objects.filter(explanation_id=explanation.id).iterator():
 			someResults.append(result.value)
 		allResultsForExplanations.append(someResults)
 		allExplanations.append(explanation)
-	selectedExplanation, exp_value = computeExplanationOfAnswer_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
+	selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
 	return JsonResponse({ "text": selectedExplanation.text, "explanation_id": selectedExplanation.id, "exp_value": exp_value })
 
 def submit_result_of_explanation (request):
