@@ -3,8 +3,19 @@
 from .algorithms import computeExplanation_Thompson 
 from .models import Question, Explanation, Result
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 
+# INPUT: question_id
+# OUTPUT: Question object
+def get_question (request):
+	if 'question_id' not in request.GET:
+		return HttpResponse('question_id not found in GET parameters')
+	question = get_object_or_404(Question, question_id=request.GET['question_id'])
+	return JsonResponse(question)
+
+# INPUT: text, answer1, answer2, answer3, and answer4
+# OUTPUT: Confirmation message
 def add_question (request):
 	if 'text' not in request.GET:
 		return HttpResponse('text not found in GET parameters')
@@ -23,6 +34,36 @@ def add_question (request):
 	question.save()
 	return JsonResponse({ "received": "yes" })
 
+# INPUT: Question object ("id", "text", "answer1", "answer2", "answer3", and "answer4")
+# OUTPUT: Confirmation message
+def change_question (request):
+	if 'question' not in request.GET:
+		return HttpResponse('question_id not found in GET parameters')
+	for deserialized_object in serializers.deserialize("json", request.GET['question']):
+		deserialized_object.save()
+	return JsonResponse({ "received": "yes" })
+
+# INPUT: question_id
+# OUTPUT: Array of Explanation objects
+def get_explanations_for_question (request):
+	if 'question_id' not in request.GET:
+		return HttpResponse('question_id not found in GET parameters')
+	allExplanations = []
+	for explanation in Explanation.objects.filter(question_id=request.GET['question_id']).iterator():
+		allExplanations.append(explanation)
+	return JsonResponse(allExplanations)
+
+# INPUT: Explanation object
+# OUTPUT: Confirmation message
+def change_explanation (request):
+	if 'explanation' not in request.GET:
+		return HttpResponse('question_id not found in GET parameters')
+	for deserialized_object in serializers.deserialize("json", request.GET['explanation']):
+		deserialized_object.save()
+	return JsonResponse({ "received": "yes" })
+
+# INPUT: question_id, answer_id (1-4), and text
+# OUTPUT: Confirmation message
 def add_explanation (request):
 	if 'question_id' not in request.GET:
 		return HttpResponse('question_id not found in GET parameters')
@@ -34,24 +75,27 @@ def add_explanation (request):
 	explanation.save()
 	return JsonResponse({ "received": "yes" })
 
-def get_explanation (request):
+# INPUT: question_id, student_id
+# OUTPUT: JSON dictionary: { "explanation": theExplanation, "exp_value": expectedValueOfExplanation }
+def get_explanation_for_student (request):
 	if 'question_id' not in request.GET:
 		return HttpResponse('question_id not found in GET parameters')
 	if 'student_id' not in request.GET:
 		return HttpResponse('student_id not found in GET parameters')
 
-	question = get_object_or_404(Question, question_id=request.GET['question_id'])
 	allExplanations = []
 	allResultsForExplanations = []
-	for explanation in Explanation.objects.filter(question_id=question.id).iterator():
+	for explanation in Explanation.objects.filter(question_id=request.GET['question_id']).iterator():
 		someResults = []
 		for result in Result.objects.filter(explanation_id=explanation.id).iterator():
 			someResults.append(result.value)
 		allResultsForExplanations.append(someResults)
 		allExplanations.append(explanation)
 	selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
-	return JsonResponse({ "text": selectedExplanation.text, "explanation_id": selectedExplanation.id, "exp_value": exp_value })
+	return JsonResponse({ "explanation": selectedExplanation, "exp_value": exp_value })
 
+# INPUT: explanation_id, student_id, value (1-7)
+# OUTPUT: Confirmation message
 def submit_result_of_explanation (request):
 	if 'explanation_id' not in request.GET:
 		return HttpResponse('explanation_id not found in GET parameters')
