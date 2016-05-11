@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 
+# Retrieves a Question object with the specified question_id.
 # INPUT: question_id
 # OUTPUT: Question object
 def get_question (request):
@@ -14,6 +15,7 @@ def get_question (request):
 	question = get_object_or_404(Question, question_id=request.GET['question_id'])
 	return JsonResponse(question)
 
+# Adds a new Question object with the specified question text and answers.
 # INPUT: text, answer1, answer2, answer3, and answer4
 # OUTPUT: Confirmation message
 def add_question (request):
@@ -34,6 +36,7 @@ def add_question (request):
 	question.save()
 	return JsonResponse({ "received": "yes" })
 
+# Changes an existing Question object.
 # INPUT: Question object ("id", "text", "answer1", "answer2", "answer3", and "answer4")
 # OUTPUT: Confirmation message
 def change_question (request):
@@ -43,6 +46,7 @@ def change_question (request):
 		deserialized_object.save()
 	return JsonResponse({ "received": "yes" })
 
+# Retrieves all explanations for a particular question.
 # INPUT: question_id
 # OUTPUT: Array of Explanation objects
 def get_explanations_for_question (request):
@@ -53,7 +57,8 @@ def get_explanations_for_question (request):
 		allExplanations.append(explanation)
 	return JsonResponse(allExplanations)
 
-# INPUT: Explanation object
+# Changes an existing Explanation object.
+# INPUT: Explanation object ("id", "question_id", "answer_id", "text")
 # OUTPUT: Confirmation message
 def change_explanation (request):
 	if 'explanation' not in request.GET:
@@ -62,6 +67,7 @@ def change_explanation (request):
 		deserialized_object.save()
 	return JsonResponse({ "received": "yes" })
 
+# Adds an explanation for a particular answer (1-4) of a particular question.
 # INPUT: question_id, answer_id (1-4), and text
 # OUTPUT: Confirmation message
 def add_explanation (request):
@@ -75,6 +81,8 @@ def add_explanation (request):
 	explanation.save()
 	return JsonResponse({ "received": "yes" })
 
+# Computes and returns the Explanation that a particular student should receive for
+# a particular question.
 # INPUT: question_id, student_id
 # OUTPUT: JSON dictionary: { "explanation": theExplanation, "exp_value": expectedValueOfExplanation }
 def get_explanation_for_student (request):
@@ -94,6 +102,8 @@ def get_explanation_for_student (request):
 	selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
 	return JsonResponse({ "explanation": selectedExplanation, "exp_value": exp_value })
 
+# Submits a scalar score (1-7) associated with a particular student who received a
+# particular explanation.
 # INPUT: explanation_id, student_id, value (1-7)
 # OUTPUT: Confirmation message
 def submit_result_of_explanation (request):
