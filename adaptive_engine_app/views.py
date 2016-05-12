@@ -1,5 +1,6 @@
 # sample views for adaptive_engine_app
 
+import json
 from .algorithms import computeExplanation_Thompson 
 from .models import Question, Explanation, Result
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,13 +13,13 @@ from django.http import HttpResponse, JsonResponse
 def get_question (request):
 	if 'question_id' not in request.GET:
 		return HttpResponse('question_id not found in GET parameters')
-	question = get_object_or_404(Question, question_id=request.GET['question_id'])
-	return JsonResponse(question)
+	question = get_object_or_404(Question, id=request.GET['question_id'])
+	jsonDict = json.loads(serializers.serialize("json", [ question ]))[0]
+	return JsonResponse(jsonDict)
 
-# Adds a new Question object with the specified question text and answers.
-# INPUT: text, answer1, answer2, answer3, and answer4
-# OUTPUT: Confirmation message
-def add_question (request):
+# Check if all required parameters are contained in the request object
+# for the add_question function.
+def verify_params_for_add_question (request):
 	if 'text' not in request.GET:
 		return HttpResponse('text not found in GET parameters')
 	if 'answer1' not in request.GET:
@@ -29,6 +30,16 @@ def add_question (request):
 		return HttpResponse('answer3 not found in GET parameters')
 	if 'answer4' not in request.GET:
 		return HttpResponse('answer4 not found in GET parameters')
+	return None
+
+# Adds a new Question object with the specified question text and answers.
+# INPUT: text, answer1, answer2, answer3, and answer4
+# OUTPUT: Confirmation message
+def add_question (request):
+	errorResponse = verify_params_for_add_question(request)
+	if errorResponse != None:
+		return errorResponse
+	
 	question = Question(text=request.GET['text'], answer1=request.GET['answer1'], \
 	                                              answer2=request.GET['answer2'], \
 	                                              answer3=request.GET['answer3'], \
@@ -40,10 +51,18 @@ def add_question (request):
 # INPUT: Question object ("id", "text", "answer1", "answer2", "answer3", and "answer4")
 # OUTPUT: Confirmation message
 def change_question (request):
-	if 'question' not in request.GET:
+	errorResponse = verify_params_for_add_question(request)
+	if errorResponse != None:
+		return errorResponse
+	if 'id' not in request.GET:
 		return HttpResponse('question_id not found in GET parameters')
-	for deserialized_object in serializers.deserialize("json", request.GET['question']):
-		deserialized_object.save()
+
+	question = Question(id=request.GET['id'], text=request.GET['text'], \
+	                    answer1=request.GET['answer1'], \
+			    answer2=request.GET['answer2'], \
+	                    answer3=request.GET['answer3'], \
+	                    answer4=request.GET['answer4'])
+	question.save()
 	return JsonResponse({ "received": "yes" })
 
 # Retrieves all explanations for a particular question.
