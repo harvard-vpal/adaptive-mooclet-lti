@@ -96,10 +96,15 @@ WSGI_APPLICATION = 'qualtrics_lti_bridge.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': SECURE_SETTINGS.get('rds_name'),
+        'USER': SECURE_SETTINGS.get('rds_user'),
+        'PASSWORD': SECURE_SETTINGS.get('rds_pass'),
+        'HOST': SECURE_SETTINGS.get('rds_host'),
+        'PORT': SECURE_SETTINGS.get('rds_port'),
     }
 }
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -162,4 +167,6 @@ LTI_REQUEST_VALIDATOR = 'qlb.validator.LTIRequestValidator'
 #         'django.template.loaders.app_directories.Loader',
 #     ],
 # },]
+
+
 

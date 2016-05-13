@@ -7,6 +7,7 @@ from ims_lti_py.tool_config import ToolConfig
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import SelectQualtricsForm
 import logging
+from urllib import urlencode
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
@@ -33,7 +34,12 @@ def tool_config(request):
     This produces a Canvas specific XML config that can be used to
     add this tool to the Canvas LMS
     """
-    host = 'https://' + request.get_host()
+    if request.is_secure():
+        host = 'https://' + request.get_host()
+    else:
+        host = 'http://' + request.get_host()
+
+
 
     lti_tool_config = ToolConfig(
         title=TOOL_NAME,
@@ -139,11 +145,19 @@ def display_qualtrics(request,qualtrics_id):
     base_qualtrics_url = 'https://harvard.az1.qualtrics.com/SE/?SID='
     qualtrics_url = '{}{}'.format(base_qualtrics_url,qualtrics_id)
 
+
+    params = {
+        'SID':qualtrics_id,
+        'qlb_return_url': request.get_host()
+        # TODO define other params to pass to qualtrics survey
+    }
+    qualtrics_full_url = '{qualtrics_url}?SID={qualtrics_id}&'
+
     if 'Instructor' in LTI['roles']:
 
         # TODO instructor view for the qualtrics quiz
-
-        return HttpResponse('Instructor view for qualtrics quiz {}'.format(qualtrics_url))
+        return render(request, 'qlb/instructor_view.html', {'qualtrics_url':qualtrics_url})
+        # return HttpResponse('Instructor view for qualtrics quiz {}'.format(qualtrics_url))
     
     else:
         # student view
@@ -177,16 +191,40 @@ def qualtrics_result(request):
 
     # send the outcome data
     OutcomeRequest({
+        # required for outcome reporting
         'lis_outcome_service_url':request['lis_outcome_service_url'],
         'consumer_key': request.LTI.get('oauth_consumer_key'),
         'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[request.LTI.get('oauth_consumer_key')],
-
+        # outcomes data
         'score':score,
         # 'result_data':{'text':'This is some outcomes text'}
         }
     ).post_outcome_request()
+
+
+
+def manage_quizzes(request):
+    '''
+    Display available quizzes, with some management functions
+    '''
+    pass
+
+
+def create_quiz(request):
+    '''
+    Redirects to a qualtrics survey for creating a quiz
+    '''
+    # create quiz object
+    pass
     
+def create_quiz_from_submission(request):
+    '''
+    Triggered on a submission to the create quiz survey
+    Makes an API call to the quiz
+    '''
 
-
-
+# from django.contrib.sessions.models import Session
+def testview(request):
+    pass
+    # return HttpResponse(request.session.session_key)
 
