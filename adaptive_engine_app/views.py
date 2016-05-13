@@ -34,7 +34,7 @@ def verify_params_for_add_question (request):
 
 # Adds a new Question object with the specified question text and answers.
 # INPUT: text, answer1, answer2, answer3, and answer4
-# OUTPUT: Confirmation message
+# OUTPUT: id of new Question object
 def add_question (request):
 	errorResponse = verify_params_for_add_question(request)
 	if errorResponse != None:
@@ -45,17 +45,17 @@ def add_question (request):
 	                                              answer3=request.GET['answer3'], \
 	                                              answer4=request.GET['answer4'])
 	question.save()
-	return JsonResponse({ "received": "yes" })
+	return JsonResponse({ "id": question.id })
 
 # Changes an existing Question object.
 # INPUT: Question object ("id", "text", "answer1", "answer2", "answer3", and "answer4")
-# OUTPUT: Confirmation message
+# OUTPUT: id of Question object
 def change_question (request):
 	errorResponse = verify_params_for_add_question(request)
 	if errorResponse != None:
 		return errorResponse
 	if 'id' not in request.GET:
-		return HttpResponse('question_id not found in GET parameters')
+		return HttpResponse('id not found in GET parameters')
 
 	question = Question(id=request.GET['id'], text=request.GET['text'], \
 	                    answer1=request.GET['answer1'], \
@@ -63,7 +63,7 @@ def change_question (request):
 	                    answer3=request.GET['answer3'], \
 	                    answer4=request.GET['answer4'])
 	question.save()
-	return JsonResponse({ "received": "yes" })
+	return JsonResponse({ "id": question.id })
 
 # Retrieves all explanations for a particular question.
 # INPUT: question_id
@@ -78,27 +78,42 @@ def get_explanations_for_question (request):
 
 # Changes an existing Explanation object.
 # INPUT: Explanation object ("id", "question_id", "answer_id", "text")
-# OUTPUT: Confirmation message
+# OUTPUT: id of Explanation object
 def change_explanation (request):
-	if 'explanation' not in request.GET:
-		return HttpResponse('question_id not found in GET parameters')
-	for deserialized_object in serializers.deserialize("json", request.GET['explanation']):
-		deserialized_object.save()
-	return JsonResponse({ "received": "yes" })
+	errorResponse = verify_params_for_add_explanation(request)
+	if errorResponse != None:
+		return errorResponse
+	if 'id' not in request.GET:
+		return HttpResponse('id not found in GET parameters')
 
-# Adds an explanation for a particular answer (1-4) of a particular question.
-# INPUT: question_id, answer_id (1-4), and text
-# OUTPUT: Confirmation message
-def add_explanation (request):
+	explanation = Explanation(id=request.GET["id"], question_id=request.GET["question_id"],
+	                          answer_id=request.GET["answer_id"], text=request.GET["text"])
+	explanation.save()
+	return JsonResponse({ "id": explanation.id })
+
+# Check if all required parameters are contained in the request object
+# for the add_explanation function.
+def verify_params_for_add_explanation (request):
 	if 'question_id' not in request.GET:
 		return HttpResponse('question_id not found in GET parameters')
 	if 'answer_id' not in request.GET:
 		return HttpResponse('answer_id not found in GET parameters')
 	if 'text' not in request.GET:
 		return HttpResponse('text not found in GET parameters')
-	explanation = Explanation(question_id=request.GET['question_id'], answer_id=int(request.GET['answer_id']), text=request.GET['text'])
+	return None
+
+# Adds an explanation for a particular answer (1-4) of a particular question.
+# INPUT: question_id, answer_id (1-4), and text
+# OUTPUT: id of new Explanation object
+def add_explanation (request):
+	errorResponse = verify_params_for_add_explanation(request)
+	if errorResponse != None:
+		return errorResponse
+
+	explanation = Explanation(id=request.GET["id"], question_id=request.GET["question_id"],
+	                          answer_id=request.GET["answer_id"], text=request.GET["text"])
 	explanation.save()
-	return JsonResponse({ "received": "yes" })
+	return JsonResponse({ "id": explanation.id })
 
 # Computes and returns the Explanation that a particular student should receive for
 # a particular question.
@@ -124,7 +139,7 @@ def get_explanation_for_student (request):
 # Submits a scalar score (1-7) associated with a particular student who received a
 # particular explanation.
 # INPUT: explanation_id, student_id, value (1-7)
-# OUTPUT: Confirmation message
+# OUTPUT: id of new Result object
 def submit_result_of_explanation (request):
 	if 'explanation_id' not in request.GET:
 		return HttpResponse('explanation_id not found in GET parameters')
@@ -136,4 +151,4 @@ def submit_result_of_explanation (request):
 	theValue = (float(request.GET['value']) - 1.0) / 6.0
 	result = Result(student_id=request.GET['student_id'], explanation_id=request.GET['explanation_id'], value=theValue)
 	result.save()
-	return JsonResponse({ "received": "yes" })
+	return JsonResponse({ "id": result.id })
