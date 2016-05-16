@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^change_question$', 'adaptive_engine_app.views.change_question', name='change_question'),
     url(r'^change_explanation$', 'adaptive_engine_app.views.change_explanation', name='change_explanation'),
     url(r'^get_explanations_for_question$', 'adaptive_engine_app.views.get_explanations_for_question', name='get_explanations_for_question'),
-    url(r'^add_question$', 'adaptive_engine_app.views.add_question', name='add_question')
+    url(r'^add_question$', 'adaptive_engine_app.views.add_question', name='add_question'),
+    url(r'^remove_question$', 'adaptive_engine_app.views.remove_question', name='remove_question')
 )

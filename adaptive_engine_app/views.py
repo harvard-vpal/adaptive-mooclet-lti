@@ -11,9 +11,9 @@ from django.http import HttpResponse, JsonResponse
 # INPUT: question_id
 # OUTPUT: Question object
 def get_question (request):
-	if 'question_id' not in request.GET:
+	if 'id' not in request.GET:
 		return HttpResponse('question_id not found in GET parameters')
-	question = get_object_or_404(Question, id=request.GET['question_id'])
+	question = get_object_or_404(Question, id=request.GET['id'])
 	jsonDict = json.loads(serializers.serialize("json", [ question ]))[0]
 	return JsonResponse(jsonDict)
 
@@ -47,6 +47,16 @@ def add_question (request):
 	question.save()
 	return JsonResponse({ "id": question.id })
 
+# Removes an existing Question object.
+# INPUT: id of Question object
+# OUTPUT: id of removed Question object
+def remove_question (request):
+	if 'id' not in request.GET:
+		return HttpResponse('id not found in GET parameters')
+	question = get_object_or_404(Question, id=request.GET['id'])
+	question.delete()
+	return JsonResponse({ "id": request.GET['id'] })
+
 # Changes an existing Question object.
 # INPUT: Question object ("id", "text", "answer1", "answer2", "answer3", and "answer4")
 # OUTPUT: id of Question object
@@ -74,7 +84,7 @@ def get_explanations_for_question (request):
 	allExplanations = []
 	for explanation in Explanation.objects.filter(question_id=request.GET['question_id']).iterator():
 		allExplanations.append(explanation)
-	return JsonResponse(allExplanations)
+	return JsonResponse(json.loads(serializers.serialize("json", allExplanations)), safe=False)
 
 # Changes an existing Explanation object.
 # INPUT: Explanation object ("id", "question_id", "answer_id", "text")
@@ -110,7 +120,7 @@ def add_explanation (request):
 	if errorResponse != None:
 		return errorResponse
 
-	explanation = Explanation(id=request.GET["id"], question_id=request.GET["question_id"],
+	explanation = Explanation(question_id=request.GET["question_id"],
 	                          answer_id=request.GET["answer_id"], text=request.GET["text"])
 	explanation.save()
 	return JsonResponse({ "id": explanation.id })
@@ -134,7 +144,7 @@ def get_explanation_for_student (request):
 		allResultsForExplanations.append(someResults)
 		allExplanations.append(explanation)
 	selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
-	return JsonResponse({ "explanation": selectedExplanation, "exp_value": exp_value })
+	return JsonResponse({ "explanation": serializers.serialize("json", [ selectedExplanation ]), "exp_value": exp_value })
 
 # Submits a scalar score (1-7) associated with a particular student who received a
 # particular explanation.

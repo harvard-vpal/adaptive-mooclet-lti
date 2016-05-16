@@ -10,7 +10,7 @@ class ExplanationAdmin (admin.ModelAdmin):
 	list_display = ('answer_text', 'text')
 
 class ResultAdmin (admin.ModelAdmin):
-	list_display = ('explanation_text', 'student', 'value')
+	list_display = ('explanation_text', 'student_id', 'value')
 
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Explanation, ExplanationAdmin)
