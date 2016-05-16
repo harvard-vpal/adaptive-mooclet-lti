@@ -13,3 +13,8 @@ __pycache__/
 
 # secure settings file
 secure.py
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

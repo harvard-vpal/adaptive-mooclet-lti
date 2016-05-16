@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+from .secure import SECURE_SETTINGS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g_@%h7oc8_$hufrhyq7&1m7icv*)2l_d7e$mvr6y&wa8^otx22'
+SECRET_KEY = SECURE_SETTINGS.get('django_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,8 +78,12 @@ WSGI_APPLICATION = 'django_adaptive_engine.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': SECURE_SETTINGS.get('rds_name'),
+        'USER': SECURE_SETTINGS.get('rds_user'),
+        'PASSWORD': SECURE_SETTINGS.get('rds_pass'),
+        'HOST': SECURE_SETTINGS.get('rds_host'),
+        'PORT': SECURE_SETTINGS.get('rds_port'),
     }
 }
 
