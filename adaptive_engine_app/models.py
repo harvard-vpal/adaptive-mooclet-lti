@@ -29,7 +29,7 @@ class Explanation (models.Model):
 	answer_text = property(_get_answer_text)
 
 class Result (models.Model):
-	student = models.CharField(max_length=128)
+	student_id = models.CharField(max_length=128)
 	explanation = models.ForeignKey(Explanation, on_delete=models.CASCADE)
 	value = models.FloatField()
 	def _get_explanation_text (self):

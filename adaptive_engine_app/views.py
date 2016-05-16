@@ -132,12 +132,14 @@ def add_explanation (request):
 def get_explanation_for_student (request):
 	if 'question_id' not in request.GET:
 		return HttpResponse('question_id not found in GET parameters')
+	if 'answer_id' not in request.GET:
+		return HttpResponse('answer_id not found in GET parameters')
 	if 'student_id' not in request.GET:
 		return HttpResponse('student_id not found in GET parameters')
 
 	allExplanations = []
 	allResultsForExplanations = []
-	for explanation in Explanation.objects.filter(question_id=request.GET['question_id']).iterator():
+	for explanation in Explanation.objects.filter(question_id=request.GET['question_id'], answer_id=request.GET['answer_id']).iterator():
 		someResults = []
 		for result in Result.objects.filter(explanation_id=explanation.id).iterator():
 			someResults.append(result.value)
