@@ -1,7 +1,10 @@
-Django>=1.7
+Django>=1.9
 requests
-#django-cached-authentication-middleware>=0.2.0
 psycopg2
+numpy>=1.10
+
+
+#django-cached-authentication-middleware>=0.2.0
 
 # install LTI libraries from icommons github repos
 ims-lti-py
