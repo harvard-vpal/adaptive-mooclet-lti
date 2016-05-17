@@ -145,6 +145,7 @@ def create_quiz(request):
         return render(request, 'qlb/create_quiz.html', context)
 
     elif request.method == 'POST':
+        # logic for handling create quiz form data
         quiz_form = QuizForm(request.POST)
         quiz = quiz_form.save(commit=False)
         quiz.course = 123

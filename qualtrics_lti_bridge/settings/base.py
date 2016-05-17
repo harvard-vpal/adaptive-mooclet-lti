@@ -51,13 +51,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'qlb',
+    'adaptive_engine_app',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -69,13 +70,13 @@ MIDDLEWARE_CLASSES = (
     'django_auth_lti.middleware.LTIAuthMiddleware',
     ## from new version of icommons django-auth-lti
     # 'django_auth_lti.middleware_patched.MultiLTILaunchAuthMiddleware',
-    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 AUTHENTICATION_BACKENDS = (
     'django_auth_lti.backends.LTIAuthBackend',
-    # 'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 LOGIN_URL = reverse_lazy('lti_auth_error')
