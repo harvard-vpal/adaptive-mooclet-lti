@@ -1,0 +1,19 @@
+<html>
+<head>
+
+<title>Select or create new quiz</title>
+<!-- TODO add some stylesheets -->
+</head>
+<body>
+	<div>
+
+		<h1> Select or create new quiz </h1>
+		<p> Select preexisting quiz </p>
+		<form method="post" action="{% url 'qlb:select_or_create_quiz' %}?form_submit=1">
+			{{select_quiz_form}}
+			<input type="submit">
+		</form>
+		<p> <a href="{% url 'qlb:create_quiz' %}">Create new quiz</a> </p>
+	</div>
+</body>
+</html>
