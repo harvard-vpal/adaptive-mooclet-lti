@@ -1,0 +1,20 @@
+<html>
+<head>
+
+<title>Quiz question</title>
+<!-- TODO add some stylesheets -->
+</head>
+<body>
+	<div>
+		<h1> Quiz Question </h1>
+		
+		<p> {{question.text}} <p>
+		<form method="post" action={% url 'qlb:end_of_quiz' %}>
+			{{choose_answer_form}}
+			<input type="submit" value="Submit" />
+		</form>
+
+
+	</div>
+</body>
+</html>

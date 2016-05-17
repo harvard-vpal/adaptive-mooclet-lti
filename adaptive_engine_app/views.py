@@ -127,7 +127,7 @@ def get_explanations_for_question (request):
 
 # Computes and returns the Explanation that a particular student should receive for
 # a particular question.
-# INPUT: question_id, student_id
+# INPUT: answer_id, student_id
 # OUTPUT: JSON dictionary: { "explanation": theExplanation, "exp_value": expectedValueOfExplanation }
 def get_explanation_for_student (request):
     # if 'question_id' not in request.GET:
@@ -137,8 +137,14 @@ def get_explanation_for_student (request):
     if 'student_id' not in request.GET:
         return HttpResponse('student_id not found in GET parameters')
 
-    allExplanations = Explanations.objects.filter(answer__question__id=request.GET['question_id'])
-    allResultsForExplanations = Result.objects.filter(explanation__answer__question__id=request.GET['question_id']).values_list('value',flat=True)
+    allExplanations = []
+    allResultsForExplanations = []
+    for explanation in Explanation.objects.filter(answer__id=request.GET['answer_id']).iterator():
+        someResults = []
+        for result in Result.objects.filter(explanation_id=explanation.id).iterator():
+            someResults.append(result.value)
+        allResultsForExplanations.append(someResults)
+        allExplanations.append(explanation)
     selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
     return JsonResponse({ "explanation": serializers.serialize("json", [ selectedExplanation ]), "exp_value": exp_value })
 

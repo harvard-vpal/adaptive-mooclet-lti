@@ -42,7 +42,7 @@ class Explanation(models.Model):
     #   return self.answer.text
 
     def __unicode__(self):
-        return self.text
+        return "{}: {}".format(self.id,self.text)
 
 
 class Result(models.Model):
@@ -54,4 +54,4 @@ class Result(models.Model):
     #   return self.explanation.text
 
     def __unicode__(self):
-        return "{}, explanation {}".format(value, self.explanation.id)
+        return "{}, explanation {}".format(self.value, self.explanation.id)

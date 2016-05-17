@@ -5,10 +5,10 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from ims_lti_py.tool_config import ToolConfig
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import SelectQualtricsForm, CreateQuizForm
 import logging
 from urllib import urlencode
 from django.forms import formset_factory
+import requests
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
@@ -17,7 +17,10 @@ from dce_lti_py import OutcomeRequest
 from django.views.generic.edit import CreateView
 from .models import Quiz, Question, Answer, Explanation
 from django.forms import inlineformset_factory, ModelForm
-from .forms import * #QuizForm, QuestionForm, AnswerForm, ExplanationForm
+from .forms import *
+
+from adaptive_engine_app.algorithms import computeExplanation_Thompson 
+
 
 logger = logging.getLogger(__name__)
 
@@ -288,6 +291,98 @@ def launch_quiz(request,quiz_id):
 #     maybe put modification options directly on here
 #     '''
 
+def get_explanation_for_student (request):
+    # if 'question_id' not in request.GET:
+    #     return HttpResponse('question_id not found in GET parameters')
+    if 'answer_id' not in request.GET:
+        return HttpResponse('answer_id not found in GET parameters')
+    if 'student_id' not in request.GET:
+        return HttpResponse('student_id not found in GET parameters')
+
+    allExplanations = []
+    allResultsForExplanations = []
+    for explanation in Explanation.objects.filter(answer__id=request.GET['answer_id']).iterator():
+        someResults = []
+        for result in Result.objects.filter(explanation_id=explanation.id).iterator():
+            someResults.append(result.value)
+        allResultsForExplanations.append(someResults)
+        allExplanations.append(explanation)
+    selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
+    return JsonResponse({ "explanation": serializers.serialize("json", [ selectedExplanation ]), "exp_value": exp_value })
+
+
+
+def display_quiz_question(request, quiz_id):
+    if not request.method=='POST':
+        question = Question.objects.filter(quiz=quiz_id).first()
+        answers = question.answer_set.all().order_by('order')
+
+        # simulate web service request to get: questions, answers
+        # question_data = requests.get(reverse('adaptive_engine:get_question'),params={'id':question.id})
+        # question_text = question_data['text']
+
+        # alternative:
+
+        choose_answer_form = ChooseAnswerForm()
+        choose_answer_form.fields['answer'].queryset = answers
+
+        context = {
+            'question':question,
+            # 'answers': question.answer_set.all().order_by('order'),
+            'choose_answer_form': choose_answer_form,
+        }
+
+        return render(request, 'qlb/display_quiz_question.html', context)
+
+
+    else:
+        choose_answer_form = ChooseAnswerForm(request.POST)
+        if choose_answer_form.is_valid():
+            answer = choose_answer_form.cleaned_data['answer']
+            # save chosen answer to db
+
+            # get explanation
+            # make API call to adaptive engine
+            
+            url = 'https://'+request.get_host()+reverse('qlb:get_explanation_for_student')
+            explanation_id = requests.get(
+                url,
+                params={
+                    'student_id':student_id,
+                    'answer_id':answer_id
+                }
+            ).json()['explanation']['fields']['text']
+
+
+            student_id = 'placeholder'
+
+            # explanation = Explanation.get(pk=explanation_id)
+
+            # redirect to explanation view
+            HttpResponseRedirect(reverse('qlb:display_quiz_explanation',kwargs={'explanation_id':explanation_id}))
+
+def display_quiz_explanation(request, explanation_id):
+    explanation = Explanation.objects.get(pk=explanation_id)
+
+    if not request.method=='POST':
+        rate_explanation_form = RateExplanationForm()
+
+        context = {
+            'explanation':explanation,
+            'rate_explanation_form':rate_explanation_form
+        }
+
+        return render(request, 'qlb:display_quiz_explanation', context)
+
+    else:
+        # process student rating for explanation
+        rate_explanation_form = RateExplanationForm(request.POST)
+        if rate_explanation_form.is_valid():
+            rating = rate_explanation_form.cleaned_data['rating']
+
+            # save to db
+            rating = Result(student=request.user, explanation=explanation, value=rating)
+
 
 
 def modify_quiz(request, quiz_id):
@@ -297,6 +392,7 @@ def modify_quiz(request, quiz_id):
     '''
 
     # similar to add_or_create quiz except there should be a modify currently used quiz option
+    
     pass
 
 

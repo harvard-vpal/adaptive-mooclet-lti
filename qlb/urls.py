@@ -22,6 +22,8 @@ urlpatterns = patterns('',
     url(r'^end_of_quiz/(?P<quiz_id>[0-9]+)$', 'qlb.views.end_of_quiz', name='end_of_quiz'),
     
 
+    url(r'^display_quiz_question/(?P<quiz_id>[0-9]+)$', 'qlb.views.display_quiz_question', name='display_quiz_question'),
+	url(r'^display_quiz_explanation/(?P<answer_id>[0-9]+)$', 'qlb.views.display_quiz_explanation', name='display_quiz_explanation'),
 
 
 

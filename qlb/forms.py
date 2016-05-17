@@ -38,3 +38,14 @@ class ExplanationForm(forms.ModelForm):
 class SelectQuizForm(forms.Form):
 	quiz = forms.ModelChoiceField(queryset=Quiz.objects.all())
 
+
+class ChooseAnswerForm(forms.Form):
+	answer = forms.ModelChoiceField(queryset=Answer.objects.all(),widget=forms.RadioSelect,empty_label=None)
+	# define queryset after initializing in view
+
+
+class RateExplanationForm():
+	rating = forms.ChoiceField(
+		choices=tuple((i,str(i)) for i in range(1,8))
+	)
+
