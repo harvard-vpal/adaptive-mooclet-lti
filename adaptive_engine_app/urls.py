@@ -15,8 +15,4 @@ urlpatterns = patterns('',
 
     url(r'^submit_result_of_explanation$', 'adaptive_engine_app.views.submit_result_of_explanation', name='submit_result_of_explanation'),
 
-    url(r'^display_quiz_question$', 'adaptive_engine_app.views.display_quiz_question', name='display_quiz_question'),
-	url(r'^display_quiz_explanation$', 'adaptive_engine_app.views.display_quiz_explanation', name='display_quiz_explanation'),
-
-
 )

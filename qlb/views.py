@@ -291,27 +291,6 @@ def launch_quiz(request,quiz_id):
 #     maybe put modification options directly on here
 #     '''
 
-def get_explanation_for_student (request):
-    # if 'question_id' not in request.GET:
-    #     return HttpResponse('question_id not found in GET parameters')
-    if 'answer_id' not in request.GET:
-        return HttpResponse('answer_id not found in GET parameters')
-    if 'student_id' not in request.GET:
-        return HttpResponse('student_id not found in GET parameters')
-
-    allExplanations = []
-    allResultsForExplanations = []
-    for explanation in Explanation.objects.filter(answer__id=request.GET['answer_id']).iterator():
-        someResults = []
-        for result in Result.objects.filter(explanation_id=explanation.id).iterator():
-            someResults.append(result.value)
-        allResultsForExplanations.append(someResults)
-        allExplanations.append(explanation)
-    selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
-    return JsonResponse({ "explanation": serializers.serialize("json", [ selectedExplanation ]), "exp_value": exp_value })
-
-
-
 def display_quiz_question(request, quiz_id):
     if not request.method=='POST':
         question = Question.objects.filter(quiz=quiz_id).first()
@@ -344,7 +323,7 @@ def display_quiz_question(request, quiz_id):
             # get explanation
             # make API call to adaptive engine
             
-            url = 'https://'+request.get_host()+reverse('qlb:get_explanation_for_student')
+            url = 'https://'+request.get_host()+reverse('adaptive_engine:get_explanation_for_student')
             explanation_id = requests.get(
                 url,
                 params={
@@ -355,7 +334,7 @@ def display_quiz_question(request, quiz_id):
 
 
             student_id = 'placeholder'
-
+            
             # explanation = Explanation.get(pk=explanation_id)
 
             # redirect to explanation view
