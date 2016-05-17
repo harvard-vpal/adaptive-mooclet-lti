@@ -3,7 +3,7 @@
 ## Introduction
 
 ### Description
-Django/Python implementation of Qualtrics LTI Bridge (Joseph Jay Williams and Sam Maldonaldo). Based on [bootstrap_lti_django](https://github.com/penzance/bootstrap_lti_django) LTI Django template.
+Django/Python implementation of Qualtrics LTI Bridge (Joseph Jay Williams and Sam Maldonaldo) and Adaptive Quiz Engine (Jacob Whitehill). Django LTI functionality from [bootstrap_lti_django](https://github.com/penzance/bootstrap_lti_django) LTI Django template.
 
 ### Requirements
 External libraries used include
