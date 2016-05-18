@@ -1,20 +1,19 @@
 <html>
 <head>
-
 <title>Quiz question</title>
-<!-- TODO add some stylesheets -->
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\[','\\]']]}});</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </head>
 <body>
 	<div>
-		<h1> Quiz Question </h1>
-		
-		<p> {{question.text}} <p>
-		<form method="post" action={% url 'qlb:end_of_quiz' %}>
-			{{choose_answer_form}}
+		<h1> Explanation </h1>
+		<p>Your answer: {{explanation.answer.text}}</p>
+		<p>Explanation: {{explanation.text}}</p>
+		<h2>Rate this explanation</h2>
+		<form method="post" >
+			{{rate_explanation_form}}
 			<input type="submit" value="Submit" />
 		</form>
-
-
 	</div>
 </body>
 </html>

@@ -15,7 +15,7 @@ from dce_lti_py import OutcomeRequest
 #from ims_lti_py import OutcomeRequest
 
 from django.views.generic.edit import CreateView
-from .models import Quiz, Question, Answer, Explanation
+from .models import Quiz, Question, Answer, Explanation, Result
 from django.forms import inlineformset_factory, ModelForm
 from .forms import *
 
@@ -28,7 +28,6 @@ TOOL_NAME = 'Qualtrics LTI Bridge'
 
 
 #### QLB views ####
-
 
 def index(request):
     '''
@@ -95,6 +94,8 @@ def select_or_create_quiz(request):
     Accessed via select resource mode when editing assignment
     Select a quiz that has already been made, or create a new one
     '''
+
+    
     if 'form_submit' not in request.GET:
         more_lti_params = {
             'ext_content_return_types': request.POST.get('ext_content_return_types', None),
@@ -235,28 +236,36 @@ def launch_quiz(request,quiz_id):
     Instructor: Redirect to the analytics view for the particular quiz
     '''
 
+    # put more LTI params in the LTI launch session variable - needed when authenticating sent results back to canvas
+    more_lti_params = {
+        'lis_outcome_service_url': request.POST.get('lis_outcome_service_url', None),
+        'lis_result_sourcedid': request.POST.get('lis_result_sourcedid', None),
+        'oauth_consumer_key': request.POST.get('oauth_consumer_key', None),
+    }
+    request.session['LTI_LAUNCH'].update(more_lti_params)
+
     # TODO store canvas user id and lti user id so that we can have a mapping
 
     quiz = Quiz.objects.get(pk=quiz_id)
-
 
     # could move to settings or infer this somehow
     # base_qualtrics_url = 'https://harvard.az1.qualtrics.com/SE/?SID='
 
     # Using a static sample qualtrics quiz for now
     # TODO: create this by auto-generating a qualtrics survey with API after instructor quiz creation
-    qualtrics_url = 'https://harvard.az1.qualtrics.com/SE/?SID=SV_e3t9eS1YWxFelYp'
+    # quiz_url = 'https://harvard.az1.qualtrics.com/SE/?SID=SV_e3t9eS1YWxFelYp'
+    quiz_url = reverse('qlb:display_quiz_question',kwargs={'quiz_id':quiz.id})
+
+
     # qualtrics_url = '{}{}'.format(base_qualtrics_url,qualtrics_id)
 
     # get non-sensitive user_id
-
-    
 
     # If instructor, redirect to instructor "manage quiz" view
     if 'Instructor' in request.session['LTI_LAUNCH']['roles']:
 
         # pass in qualtrics url so iframe in template can display qualtrics quiz preview
-        context = {'qualtrics_url':qualtrics_url}
+        context = {'quiz_url':quiz_url}
         
         return render(request, 'qlb/manage_quiz.html',context)
 
@@ -281,7 +290,10 @@ def launch_quiz(request,quiz_id):
 
 
         # TODO instructor view for the qualtrics quiz
-        return HttpResponseRedirect(qualtrics_url)
+        # return HttpResponseRedirect(qualtrics_url)
+
+
+        return HttpResponseRedirect(quiz_url)
         # return HttpResponse('Instructor view for qualtrics quiz {}'.format(qualtrics_url))
 
 
@@ -292,55 +304,70 @@ def launch_quiz(request,quiz_id):
 #     '''
 
 def display_quiz_question(request, quiz_id):
+    '''
+    self-hosted quiz: display initial question and prompt for answer choice
+    '''
+    # using communication protocol to make semantic decision?
     if not request.method=='POST':
         question = Question.objects.filter(quiz=quiz_id).first()
         answers = question.answer_set.all().order_by('order')
 
-        # simulate web service request to get: questions, answers
+        # could simulate web service request to get: questions, answers
         # question_data = requests.get(reverse('adaptive_engine:get_question'),params={'id':question.id})
         # question_text = question_data['text']
 
-        # alternative:
-
+        # alternative: get objects directly
         choose_answer_form = ChooseAnswerForm()
         choose_answer_form.fields['answer'].queryset = answers
 
         context = {
             'question':question,
-            # 'answers': question.answer_set.all().order_by('order'),
             'choose_answer_form': choose_answer_form,
         }
 
         return render(request, 'qlb/display_quiz_question.html', context)
 
-
     else:
         choose_answer_form = ChooseAnswerForm(request.POST)
         if choose_answer_form.is_valid():
             answer = choose_answer_form.cleaned_data['answer']
-            # save chosen answer to db
 
             # get explanation
             # make API call to adaptive engine
-            
-            url = 'https://'+request.get_host()+reverse('adaptive_engine:get_explanation_for_student')
-            explanation_id = requests.get(
-                url,
-                params={
-                    'student_id':student_id,
-                    'answer_id':answer_id
-                }
-            ).json()['explanation']['fields']['text']
+            # url = 'https://'+request.get_host()+reverse('adaptive_engine:get_explanation_for_student')
+            # explanation_id = requests.get(
+            #     url,
+            #     params={
+            #         'student_id':request.user.id,
+            #         'answer_id':answer.id
+            #     }
+            # ).json()['explanation']
 
-
+            # placeholder student id
             student_id = 'placeholder'
+
+            # alternative: call function directly
+            allExplanations = []
+            allResultsForExplanations = []
+            for explanation in Explanation.objects.filter(answer=answer).iterator():
+                someResults = []
+                for result in Result.objects.filter(explanation=explanation).iterator():
+                    someResults.append(result.value)
+                allResultsForExplanations.append(someResults)
+                allExplanations.append(explanation)
+            selectedExplanation, exp_value = computeExplanation_Thompson(student_id, allExplanations, allResultsForExplanations)
+
             
+
             # explanation = Explanation.get(pk=explanation_id)
 
             # redirect to explanation view
-            HttpResponseRedirect(reverse('qlb:display_quiz_explanation',kwargs={'explanation_id':explanation_id}))
+            return HttpResponseRedirect(reverse('qlb:display_quiz_explanation',kwargs={'explanation_id':selectedExplanation.id}))
 
 def display_quiz_explanation(request, explanation_id):
+    '''
+    self-hosted quiz: show explanation and let student rate the explanation
+    '''
     explanation = Explanation.objects.get(pk=explanation_id)
 
     if not request.method=='POST':
@@ -351,9 +378,10 @@ def display_quiz_explanation(request, explanation_id):
             'rate_explanation_form':rate_explanation_form
         }
 
-        return render(request, 'qlb:display_quiz_explanation', context)
+        return render(request, 'qlb/display_quiz_explanation.html', context)
 
     else:
+        print "posted to display_quiz_explanation"
         # process student rating for explanation
         rate_explanation_form = RateExplanationForm(request.POST)
         if rate_explanation_form.is_valid():
@@ -361,7 +389,7 @@ def display_quiz_explanation(request, explanation_id):
 
             # save to db
             rating = Result(student=request.user, explanation=explanation, value=rating)
-
+        return HttpResponseRedirect(reverse('qlb:end_of_quiz'))
 
 
 def modify_quiz(request, quiz_id):
@@ -377,31 +405,34 @@ def modify_quiz(request, quiz_id):
 
 def end_of_quiz(request):
     '''
-    Qualtrics should send data here after survey completion
+    Quiz should send data here after completion
     Then the relevant outcome data is returned to the LMS
     '''
-    # TODO maybe it would be a good idea to have some kind of inbound authentication here
+    print 'redirected to end_of_quiz'
 
-    # TODO get qualtrics data
-    # user_id = request.GET['user_id']
-    # resource_id = request.GET['resource_id']
-    # score = request.GET['grade']
-
-    # TODO store some results in a database?
-
-    # TODO delete this default value if qualtrics is passing back a grade
+    # TODO replace this default value if we have an actual grade
     score = 1
 
-    # send the outcome data
-    OutcomeRequest({
-        # required for outcome reporting
-        'lis_outcome_service_url':request['lis_outcome_service_url'],
-        'consumer_key': request.LTI.get('oauth_consumer_key'),
-        'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[request.LTI.get('oauth_consumer_key')],
-        # outcomes data
-        'score':score,
-        # 'result_data':{'text':'This is some outcomes text'}
-        }
-    ).post_outcome_request()
+    # consumer_key = request.session['LTI_LAUNCH'].get('oauth_consumer_key')
+    # consumer_secret = settings.LTI_OAUTH_CREDENTIALS[request.session['LTI_LAUNCH'].get('oauth_consumer_key')]
 
+    # send the outcome data
+    OutcomeResponse = OutcomeRequest(
+        {
+            # required for outcome reporting
+            'lis_outcome_service_url':request.session['LTI_LAUNCH'].get('lis_outcome_service_url'),
+            'lis_result_sourcedid':request.session['LTI_LAUNCH'].get('lis_result_sourcedid'),
+            'consumer_key': request.session['LTI_LAUNCH'].get('oauth_consumer_key'),
+            'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[request.session['LTI_LAUNCH'].get('oauth_consumer_key')],
+        }
+    ).post_replace_result(
+        score,
+        # result_data={
+        #     # 'url':'placeholder'
+        #     # 'text':None,
+        # }
+    )
+    return HttpResponse(OutcomeResponse.code_major)
+    # return render(request, 'qlb/end_of_quiz.html')
+    return HttpResponseRedirect(request.session['LTI_LAUNCH'].get('launch_presentation_return_url'))
 
