@@ -4,7 +4,7 @@ from .models import Quiz, Question, Answer, Explanation
 # class SelectQualtricsForm(forms.Form):
 # 	qualtrics_url = forms.CharField(label='Qualtrics URL', max_length=100)
 
-class QualtricsQuizForm(forms.ModelForm):
+class QualtricsUrlQuizForm(forms.ModelForm):
 	class Meta:
 		model = Quiz
 		fields = ['name','url']
@@ -14,6 +14,7 @@ class QuizForm(forms.ModelForm):
 	Create new Quiz
 	Used in "create_quiz" view
 	'''
+	use_qualtrics = forms.BooleanField()
 	class Meta:
 		model = Quiz
 		fields = ['name']

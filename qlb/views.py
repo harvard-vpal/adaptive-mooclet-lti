@@ -9,6 +9,7 @@ import logging
 from urllib import urlencode
 from django.forms import formset_factory
 import requests
+import utils
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
@@ -94,7 +95,6 @@ def select_or_create_quiz(request):
     Accessed via select resource mode when editing assignment
     Select a quiz that has already been made, or create a new one
     '''
-
     
     if 'form_submit' not in request.GET:
         more_lti_params = {
@@ -117,14 +117,15 @@ def select_or_create_quiz(request):
             # embed quiz
             return HttpResponseRedirect(reverse('qlb:embed_quiz',kwargs={'quiz_id':quiz.pk}))
 
+
 def create_qualtrics_quiz_from_url(request):
     if request.method == 'GET':
         context = {
-            'qualtrics_quiz_form':QualtricsQuizForm(),
+            'qualtrics_quiz_form':QualtricsUrlQuizForm(),
         }
         return render(request, 'qlb/create_qualtrics_quiz_from_url.html', context) 
     else:
-        qualtrics_quiz_form = QualtricsQuizForm(request.POST)
+        qualtrics_quiz_form = QualtricsUrlQuizForm(request.POST)
         quiz = qualtrics_quiz_form.save(commit=False)
         # placeholder
         quiz.course = 7566 
@@ -133,6 +134,14 @@ def create_qualtrics_quiz_from_url(request):
 
         # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
         return HttpResponseRedirect(reverse('qlb:embed_quiz',kwargs={'quiz_id':quiz.pk}))
+
+def qsf_for_quiz(request, quiz_id):
+    '''
+    view that generates the qsf corresponding to the quiz_id provided as input
+    '''
+    quiz = Quiz.objects.get(pk=quiz_id)
+    quiz_qsf = modify_qsf_template(quiz)
+    return HttpResponse(quiz_qsf)
 
 def create_quiz(request):
     '''
@@ -149,7 +158,6 @@ def create_quiz(request):
         answer_formsets,
         [ExplanationFormset() for i in range(4)]
     )
-
     if request.method == 'GET':
         context = {
             # 'quiz_form':CreateQuizForm(),
@@ -165,6 +173,10 @@ def create_quiz(request):
     elif request.method == 'POST':
         # logic for handling create quiz form data
         quiz_form = QuizForm(request.POST)
+        if not quiz_form.is_valid():
+            # change this to a rendered warning
+            return Exception('quiz not valid')
+
         quiz = quiz_form.save(commit=False)
         quiz.course = 123
         quiz.user = request.user
@@ -183,8 +195,21 @@ def create_quiz(request):
             explanations = ExplanationFormset(request.POST, instance=answers[i])
             explanations.save()
 
+        if quiz_form.cleaned_data['use_qualtrics']:
+            qsf_url = 'https://'+request.get_host()+reverse('qlb:qsf_for_quiz')
+            survey_name = 'Survey from modified qsf'
+            qualtrics_url = upload_qsf_to_qualtrics(qsf_url, survey_name)
+            if qualtrics_url:
+                quiz.url = qualtrics_url
+                HttpResponseRedirect(reverse('qlb:embed_quiz',kwargs={'quiz_id':quiz.pk}))
+            else:
+                raise Exception('quiz creation failed and did not return a qualtrics id')
+
         # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
         return HttpResponseRedirect(reverse('qlb:embed_quiz',kwargs={'quiz_id':quiz.pk}))
+
+
+
 
 
 def create_quiz_from_submission(request):
@@ -330,7 +355,9 @@ def display_quiz_question(request, quiz_id):
     '''
     # using communication protocol to make semantic decision?
     if not request.method=='POST':
-        question = Question.objects.filter(quiz=quiz_id).first()
+        quiz = Quiz.objects.get(pk=quiz_id)
+        # just get first question in quiz for now
+        question = quiz.question_set.first()
         answers = question.answer_set.all().order_by('order')
 
         # could simulate web service request to get: questions, answers
