@@ -14,9 +14,11 @@
 			{{question_form.as_p}}
 			<h3>Answers</h3>
 			{{ answer_formsets.management_form }}
+
 			{% for answer_formset, explanation_formset in answer_formgroups %}
+				<h4> Answer choice </h4>
 				<p>{{ answer_formset }}</p>
-				<h4>Choice Explanations</h4>
+				<h4> Explanations </h4>
 				{{ explanation_formset.as_p }}
 			{% endfor %}
 			<input type="submit" value="Submit" />

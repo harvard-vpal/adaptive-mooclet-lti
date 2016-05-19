@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
-    url = models.CharField(max_length=200)
+    url = models.CharField(max_length=2000, default='')
     course = models.PositiveIntegerField()
 
     def __unicode__(self):
@@ -27,8 +27,8 @@ class Question(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question)
     text = models.CharField('answer choice text', max_length=500)
-    order = models.PositiveIntegerField('choice order')
     correct = models.BooleanField('is correct')
+    order = models.PositiveIntegerField('choice order')
 
     def __unicode__(self):
         return self.text

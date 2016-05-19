@@ -151,6 +151,10 @@ LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get('lti_oauth_credentials', None)
 from oauthlib.oauth1 import RequestValidator
 LTI_REQUEST_VALIDATOR = 'qlb.validator.LTIRequestValidator'
 
+# Qualtrics API token
+QUALTRICS_API_TOKEN = SECURE_SETTINGS.get('qualtrics_api_token')
+QUALTRICS_BASE_URL = SECURE_SETTINGS.get('qualtrics_base_url','https://yourdatacenterid.qualtrics.com')
+
 # TEMPLATES = [{
 #     'DEBUG': True,
 #     'OPTIONS':{

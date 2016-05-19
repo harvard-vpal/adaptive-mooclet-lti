@@ -104,8 +104,6 @@ def select_or_create_quiz(request):
         }
         request.session['LTI_LAUNCH'].update(more_lti_params)
 
-        # qualtrics survey for creating quizzes
-        # url_createQuizSurvey = 'https://harvard.az1.qualtrics.com/SE/?SID=SV_8GSbHCQpHUcuNnf'
         select_quiz_form = SelectQuizForm()
         context = {'select_quiz_form':select_quiz_form}
         return render(request, 'qlb/select_or_create_quiz.html',context)
@@ -119,6 +117,22 @@ def select_or_create_quiz(request):
             # embed quiz
             return HttpResponseRedirect(reverse('qlb:embed_quiz',kwargs={'quiz_id':quiz.pk}))
 
+def create_qualtrics_quiz_from_url(request):
+    if request.method == 'GET':
+        context = {
+            'qualtrics_quiz_form':QualtricsQuizForm(),
+        }
+        return render(request, 'qlb/create_qualtrics_quiz_from_url.html', context) 
+    else:
+        qualtrics_quiz_form = QualtricsQuizForm(request.POST)
+        quiz = qualtrics_quiz_form.save(commit=False)
+        # placeholder
+        quiz.course = 7566 
+        quiz.user = request.user
+        quiz.save()
+
+        # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
+        return HttpResponseRedirect(reverse('qlb:embed_quiz',kwargs={'quiz_id':quiz.pk}))
 
 def create_quiz(request):
     '''
@@ -154,7 +168,7 @@ def create_quiz(request):
         quiz = quiz_form.save(commit=False)
         quiz.course = 123
         quiz.user = request.user
-        quiz.url = 'abc123'
+        quiz.url = ''
         quiz.save()
 
         question_form = QuestionForm(request.POST)
@@ -169,6 +183,7 @@ def create_quiz(request):
             explanations = ExplanationFormset(request.POST, instance=answers[i])
             explanations.save()
 
+        # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
         return HttpResponseRedirect(reverse('qlb:embed_quiz',kwargs={'quiz_id':quiz.pk}))
 
 
@@ -254,7 +269,13 @@ def launch_quiz(request,quiz_id):
     # Using a static sample qualtrics quiz for now
     # TODO: create this by auto-generating a qualtrics survey with API after instructor quiz creation
     # quiz_url = 'https://harvard.az1.qualtrics.com/SE/?SID=SV_e3t9eS1YWxFelYp'
-    quiz_url = reverse('qlb:display_quiz_question',kwargs={'quiz_id':quiz.id})
+
+
+    # Check if the quiz has a qualtrics url. If not, then we can host the quiz ourself
+    if quiz.url:
+        quiz_url = quiz.url
+    else:
+        quiz_url = reverse('qlb:display_quiz_question',kwargs={'quiz_id':quiz.id})
 
 
     # qualtrics_url = '{}{}'.format(base_qualtrics_url,qualtrics_id)
@@ -417,7 +438,7 @@ def end_of_quiz(request):
     # consumer_secret = settings.LTI_OAUTH_CREDENTIALS[request.session['LTI_LAUNCH'].get('oauth_consumer_key')]
 
     # send the outcome data
-    OutcomeResponse = OutcomeRequest(
+    outcome = OutcomeRequest(
         {
             # required for outcome reporting
             'lis_outcome_service_url':request.session['LTI_LAUNCH'].get('lis_outcome_service_url'),
@@ -425,14 +446,16 @@ def end_of_quiz(request):
             'consumer_key': request.session['LTI_LAUNCH'].get('oauth_consumer_key'),
             'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[request.session['LTI_LAUNCH'].get('oauth_consumer_key')],
         }
-    ).post_replace_result(
+    )
+    print outcome.generate_request_xml()
+    outcome_response = outcome.post_replace_result(
         score,
         # result_data={
         #     # 'url':'placeholder'
         #     # 'text':None,
         # }
     )
-    return HttpResponse(OutcomeResponse.code_major)
+    return HttpResponse(outcome_response.code_major)
     # return render(request, 'qlb/end_of_quiz.html')
     return HttpResponseRedirect(request.session['LTI_LAUNCH'].get('launch_presentation_return_url'))
 
