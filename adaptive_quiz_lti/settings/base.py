@@ -1,5 +1,5 @@
 """
-Django settings for qualtrics_lti_bridge project.
+Django settings for adaptive_quiz_lti project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.9/topics/settings/
@@ -57,8 +57,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'qlb',
-    'adaptive_engine_app',
+    'lti',
+    'engine',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -81,9 +81,9 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_URL = reverse_lazy('lti_auth_error')
 
-ROOT_URLCONF = 'qualtrics_lti_bridge.urls'
+ROOT_URLCONF = 'adaptive_quiz_lti.urls'
 
-WSGI_APPLICATION = 'qualtrics_lti_bridge.wsgi.application'
+WSGI_APPLICATION = 'adaptive_quiz_lti.wsgi.application'
 
 
 # Database
@@ -149,7 +149,7 @@ LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get('lti_oauth_credentials', None)
 
 ## for dce version of django-auth-lti
 from oauthlib.oauth1 import RequestValidator
-LTI_REQUEST_VALIDATOR = 'qlb.validator.LTIRequestValidator'
+LTI_REQUEST_VALIDATOR = 'lti.validator.LTIRequestValidator'
 
 # Qualtrics API token
 QUALTRICS_API_TOKEN = SECURE_SETTINGS.get('qualtrics_api_token')

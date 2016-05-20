@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -38,9 +39,6 @@ class Explanation(models.Model):
     answer = models.ForeignKey(Answer)
     text = models.CharField('explanation text', max_length=500)
 
-    # def get_answer_text(self):
-    #   return self.answer.text
-
     def __unicode__(self):
         return "{}: {}".format(self.id,self.text)
 
@@ -50,8 +48,6 @@ class Result(models.Model):
     explanation = models.ForeignKey(Explanation)
     value = models.FloatField()
 
-    # def get_explanation_text(self):
-    #   return self.explanation.text
-
     def __unicode__(self):
         return "{}, explanation {}".format(self.value, self.explanation.id)
+

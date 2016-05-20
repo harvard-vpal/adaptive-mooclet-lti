@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qualtrics_lti_bridge.settings.base")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "adaptive_quiz_lti.settings.base")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
