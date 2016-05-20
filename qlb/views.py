@@ -90,22 +90,24 @@ def quiz_list(request):
 
 
 @login_required()
+# This is what is shown when instructor clicks on "Andrew's QLB for Quizzes".
 def select_or_create_quiz(request):
     '''
     Accessed via select resource mode when editing assignment
     Select a quiz that has already been made, or create a new one
     '''
     
-    if 'form_submit' not in request.GET:
+    if 'form_submit' not in request.GET: # if you've opened for first time
         more_lti_params = {
             'ext_content_return_types': request.POST.get('ext_content_return_types', None),
             'ext_content_intended_use': request.POST.get('ext_content_intended_use', None),
-            'ext_content_return_url': request.POST.get('ext_content_return_url', None),
+            'ext_content_return_url': request.POST.get('ext_content_return_url', None), # JJW: This returns the URL of the external LTI object that is
+            #specific to the specific token embedded here. Lets your create distinct quizzes.
         }
         request.session['LTI_LAUNCH'].update(more_lti_params)
 
-        select_quiz_form = SelectQuizForm()
-        context = {'select_quiz_form':select_quiz_form}
+        select_quiz_form = SelectQuizForm() # Instantiating the form. Passing it to the page.
+        context = {'select_quiz_form':select_quiz_form}  # Context dictionary that has anything in the page you want to have access to. Call them by name.
         return render(request, 'qlb/select_or_create_quiz.html',context)
         # return HttpResponseRedirect(url_createQuizSurvey)
 
