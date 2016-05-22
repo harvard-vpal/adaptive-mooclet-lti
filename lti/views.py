@@ -167,7 +167,7 @@ def return_outcome(request):
             'lis_outcome_service_url':request.session['LTI_LAUNCH'].get('lis_outcome_service_url'),
             'lis_result_sourcedid':request.session['LTI_LAUNCH'].get('lis_result_sourcedid'),
             'consumer_key': request.session['LTI_LAUNCH'].get('oauth_consumer_key'),
-            'consumer_secret': 'secret',#settings.LTI_OAUTH_CREDENTIALS[request.session['LTI_LAUNCH'].get('oauth_consumer_key')],
+            'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[request.session['LTI_LAUNCH'].get('oauth_consumer_key')],
             'message_identifier': 'myMessage'
         }
     )
