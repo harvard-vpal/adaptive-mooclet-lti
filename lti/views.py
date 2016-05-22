@@ -9,8 +9,8 @@ import logging
 from engine.models import Quiz
 
 # using dce_lti_py instad of ims_lti_py for grade passback
-# from dce_lti_py import OutcomeRequest
-from ims_lti_py import OutcomeRequest
+from dce_lti_py import OutcomeRequest
+# from ims_lti_py import OutcomeRequest
 
 logger = logging.getLogger(__name__)
 
@@ -183,19 +183,19 @@ def return_outcome(request):
         # }
     )
 
-    print 'OUTCOME REQUEST VARIABLES'
-    print 'consumer key: {}'.format(outcome.consumer_key)
-    print 'consumer secret: {}'.format(outcome.consumer_secret)
-    print 'result sourcedid: {}'.format(outcome.lis_result_sourcedid)
+    # print 'OUTCOME REQUEST VARIABLES'
+    # print 'consumer key: {}'.format(outcome.consumer_key)
+    # print 'consumer secret: {}'.format(outcome.consumer_secret)
+    # print 'result sourcedid: {}'.format(outcome.lis_result_sourcedid)
 
-    print 'outcome response successful? {}'.format(outcome_response.is_success())
-    print 'outcome response status code: {}'.format(outcome_response.response_code)
+    # print 'outcome response successful? {}'.format(outcome_response.is_success())
+    # print 'outcome response status code: {}'.format(outcome_response.response_code)
     
-    print 'outcome response content: {}'.format(outcome_response.post_response)
+    # print 'outcome response content: {}'.format(outcome_response.post_response)
 
-    print 'outcome response code major: {}'.format(outcome_response.code_major)
-    print 'outcome response description: {}'.format(outcome_response.description)
-    print 'outcome response message ref {}'.format(outcome_response.message_ref_identifier)
+    # print 'outcome response code major: {}'.format(outcome_response.code_major)
+    # print 'outcome response description: {}'.format(outcome_response.description)
+    # print 'outcome response message ref {}'.format(outcome_response.message_ref_identifier)
 
     # print 'outcome response headers: {}'.format(outcome_response.post_response.headers)
 
