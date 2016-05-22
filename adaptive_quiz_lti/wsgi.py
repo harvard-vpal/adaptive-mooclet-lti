@@ -1,5 +1,5 @@
 """
-WSGI config for bootstrap_lti project.
+WSGI config for adaptive_quiz_lti project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

@@ -1,12 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from engine.models import *
+from .forms import ChooseAnswerForm, RateExplanationForm
+from engine.utils import get_explanation_for_student
+
 
 # Create your views here.
+
 def display_quiz_question(request, quiz_id):
     '''
     self-hosted quiz: display initial question and prompt for answer choice
     '''
-    # using communication protocol to make semantic decision?
-    if not request.method=='POST':
+    if request.method=='GET':
         quiz = Quiz.objects.get(pk=quiz_id)
         # just get first question in quiz for now
         question = quiz.question_set.first()
@@ -25,44 +29,18 @@ def display_quiz_question(request, quiz_id):
             'choose_answer_form': choose_answer_form,
         }
 
-        return render(request, 'qlb/display_quiz_question.html', context)
+        return render(request, 'quiz/display_quiz_question.html', context)
 
-    else:
+    elif request.method=='POST':
         choose_answer_form = ChooseAnswerForm(request.POST)
         if choose_answer_form.is_valid():
             answer = choose_answer_form.cleaned_data['answer']
 
-            # get explanation
-            # make API call to adaptive engine
-            # url = 'https://'+request.get_host()+reverse('adaptive_engine:get_explanation_for_student')
-            # explanation_id = requests.get(
-            #     url,
-            #     params={
-            #         'student_id':request.user.id,
-            #         'answer_id':answer.id
-            #     }
-            # ).json()['explanation']
+            selected_explanation = get_explanation_for_student(answer, request.user, 'random')
 
-            # placeholder student id
-            student_id = 'placeholder'
+            # redirect to explanation/rating view, for the selected explanation
+            return redirect('quiz:display_quiz_explanation',explanation_id=selected_explanation.id)
 
-            # alternative: call function directly
-            allExplanations = []
-            allResultsForExplanations = []
-            for explanation in Explanation.objects.filter(answer=answer).iterator():
-                someResults = []
-                for result in Result.objects.filter(explanation=explanation).iterator():
-                    someResults.append(result.value)
-                allResultsForExplanations.append(someResults)
-                allExplanations.append(explanation)
-            selectedExplanation, exp_value = computeExplanation_Thompson(student_id, allExplanations, allResultsForExplanations)
-
-            
-
-            # explanation = Explanation.get(pk=explanation_id)
-
-            # redirect to explanation view
-            return HttpResponseRedirect(reverse('qlb:display_quiz_explanation',kwargs={'explanation_id':selectedExplanation.id}))
 
 def display_quiz_explanation(request, explanation_id):
     '''
@@ -70,7 +48,7 @@ def display_quiz_explanation(request, explanation_id):
     '''
     explanation = Explanation.objects.get(pk=explanation_id)
 
-    if not request.method=='POST':
+    if request.method =='GET':
         rate_explanation_form = RateExplanationForm()
 
         context = {
@@ -78,15 +56,21 @@ def display_quiz_explanation(request, explanation_id):
             'rate_explanation_form':rate_explanation_form
         }
 
-        return render(request, 'qlb/display_quiz_explanation.html', context)
+        return render(request, 'quiz/display_quiz_explanation.html', context)
 
-    else:
+    elif request.method == 'POST':
         print "posted to display_quiz_explanation"
         # process student rating for explanation
         rate_explanation_form = RateExplanationForm(request.POST)
+
         if rate_explanation_form.is_valid():
             rating = rate_explanation_form.cleaned_data['rating']
 
             # save to db
-            rating = Result(student=request.user, explanation=explanation, value=rating)
-        return HttpResponseRedirect(reverse('qlb:end_of_quiz'))
+            rating = Result(user=request.user, explanation=explanation, value=rating)
+
+            rating.save()
+            
+            return redirect('lti:return_outcome')
+
+

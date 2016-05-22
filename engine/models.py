@@ -8,7 +8,8 @@ class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
     url = models.CharField(max_length=2000, default='')
-    course = models.PositiveIntegerField()
+    context = models.CharField(max_length=100,default='')
+    course = models.PositiveIntegerField(null=True)
 
     def __unicode__(self):
         return self.name
@@ -44,7 +45,7 @@ class Explanation(models.Model):
 
 
 class Result(models.Model):
-    student = models.ForeignKey(User)
+    user = models.ForeignKey(User)
     explanation = models.ForeignKey(Explanation)
     value = models.FloatField()
 

@@ -1,166 +1,156 @@
-# sample views for adaptive_engine_app
+from django.shortcuts import render, redirect
+from django.core.urlresolvers import reverse
+from django.forms import formset_factory,inlineformset_factory, ModelForm
 
-import json
-from .algorithms import computeExplanation_Thompson 
-from qlb.models import Question, Explanation, Result
-from django.shortcuts import render, redirect, get_object_or_404
-from django.core import serializers
-from django.http import HttpResponse, JsonResponse
+from .models import *
+from .forms import *
+from .utils import *
 
-# Retrieves a Question object with the specified question_id.
-# INPUT: question_id
-# OUTPUT: Question object
-def get_question (request):
-    if 'id' not in request.GET:
-        return HttpResponse('question_id not found in GET parameters')
-    question = get_object_or_404(Question, id=request.GET['id'])
-    jsonDict = json.loads(serializers.serialize("json", [ question ]))[0]
-    return JsonResponse(jsonDict['fields'])
+from engine.algorithms import computeExplanation_Thompson 
 
-# Check if all required parameters are contained in the request object
-# for the add_question function.
-# def verify_params_for_add_question (request):
-#     if 'text' not in request.GET:
-#         return HttpResponse('text not found in GET parameters')
-#     if 'answer1' not in request.GET:
-#         return HttpResponse('answer1 not found in GET parameters')
-#     if 'answer2' not in request.GET:
-#         return HttpResponse('answer2 not found in GET parameters')
-#     if 'answer3' not in request.GET:
-#         return HttpResponse('answer3 not found in GET parameters')
-#     if 'answer4' not in request.GET:
-#         return HttpResponse('answer4 not found in GET parameters')
-#     return None
 
-# Adds a new Question object with the specified question text and answers.
-# INPUT: text, answer1, answer2, answer3, and answer4
-# OUTPUT: id of new Question object
-# def add_question (request):
-#     errorResponse = verify_params_for_add_question(request)
-#     if errorResponse != None:
-#         return errorResponse
+# from django.views.generic.edit import CreateView
+
+
+#### QUIZ MANAGEMENT ####
+
+def manage_quiz(request, quiz_id):
+    '''
+    Teacher view for a quiz
+    '''
+    quiz = Quiz.objects.get(pk=quiz_id)
+
+
+    # Check if the quiz has a qualtrics url. If not, then we can host the quiz ourself
+    if quiz.url:
+        # qualtrics url
+        quiz_url = quiz.url
+    else:
+        # django url
+        quiz_url = reverse('quiz:display_quiz_question',kwargs={'quiz_id':quiz.id})
+
+
+    # pass in qualtrics url so iframe in template can display qualtrics quiz preview
+    context = {'quiz_url':quiz_url}
     
-#     question = Question(text=request.GET['text'], answer1=request.GET['answer1'], \
-#                                                   answer2=request.GET['answer2'], \
-#                                                   answer3=request.GET['answer3'], \
-#                                                   answer4=request.GET['answer4'])
-#     question.save()
-#     return JsonResponse({ "id": question.id })
+    return render(request, 'engine/manage_quiz.html',context)
 
-# Removes an existing Question object.
-# INPUT: id of Question object
-# OUTPUT: id of removed Question object
-# def remove_question (request):
-#     if 'id' not in request.GET:
-#         return HttpResponse('id not found in GET parameters')
-#     question = get_object_or_404(Question, id=request.GET['id'])
-#     question.delete()
-#     return JsonResponse({ "id": request.GET['id'] })
 
-# Changes an existing Question object.
-# INPUT: Question object ("id", "text", "answer1", "answer2", "answer3", and "answer4")
-# OUTPUT: id of Question object
-# def change_question (request):
-#     errorResponse = verify_params_for_add_question(request)
-#     if errorResponse != None:
-#         return errorResponse
-#     if 'id' not in request.GET:
-#         return HttpResponse('id not found in GET parameters')
+def select_or_create_quiz(request):
+    '''
+    Accessed via select resource mode when editing assignment
+    Select a quiz that has already been made, or create a new one
+    see https://www.edu-apps.org/extensions/content.html
+    '''
+    if request.method == 'GET':
+        select_quiz_form = SelectQuizForm()
+        context = {'select_quiz_form':select_quiz_form}
+        return render(request, 'engine/select_or_create_quiz.html', context)
 
-#     question = Question(id=request.GET['id'], text=request.GET['text'], \
-#                         answer1=request.GET['answer1'], \
-#                         answer2=request.GET['answer2'], \
-#                         answer3=request.GET['answer3'], \
-#                         answer4=request.GET['answer4'])
-#     question.save()
-#     return JsonResponse({ "id": question.id })
+    elif request.method == 'POST':
+        select_quiz_form = SelectQuizForm(request.POST)
+        if select_quiz_form.is_valid():
+            quiz = select_quiz_form.cleaned_data['quiz']
 
-# Retrieves all explanations for a particular question.
-# INPUT: question_id
-# OUTPUT: Array of Explanation objects
-def get_explanations_for_question (request):
-    if 'question_id' not in request.GET:
-        return HttpResponse('question_id not found in GET parameters')
-    allExplanations = []
-    for explanation in Explanation.objects.filter(question_id=request.GET['question_id']).iterator():
-        allExplanations.append(explanation)
-    return JsonResponse(json.loads(serializers.serialize("json", allExplanations)), safe=False)
+            # embed quiz
+            return redirect('lti:return_launch_url',quiz_id=quiz.pk)
 
-# Changes an existing Explanation object.
-# INPUT: Explanation object ("id", "question_id", "answer_id", "text")
-# OUTPUT: id of Explanation object
-# def change_explanation (request):
-#     errorResponse = verify_params_for_add_explanation(request)
-#     if errorResponse != None:
-#         return errorResponse
-#     if 'id' not in request.GET:
-#         return HttpResponse('id not found in GET parameters')
 
-#     explanation = Explanation(id=request.GET["id"], question_id=request.GET["question_id"],
-#                               answer_id=request.GET["answer_id"], text=request.GET["text"])
-#     explanation.save()
-#     return JsonResponse({ "id": explanation.id })
-
-# Check if all required parameters are contained in the request object
-# for the add_explanation function.
-# def verify_params_for_add_explanation (request):
-#     if 'question_id' not in request.GET:
-#         return HttpResponse('question_id not found in GET parameters')
-#     if 'answer_id' not in request.GET:
-#         return HttpResponse('answer_id not found in GET parameters')
-#     if 'text' not in request.GET:
-#         return HttpResponse('text not found in GET parameters')
-#     return None
-
-# Adds an explanation for a particular answer (1-4) of a particular question.
-# INPUT: question_id, answer_id (1-4), and text
-# OUTPUT: id of new Explanation object
-# def add_explanation (request):
-#     errorResponse = verify_params_for_add_explanation(request)
-#     if errorResponse != None:
-#         return errorResponse
-
-#     explanation = Explanation(question_id=request.GET["question_id"],
-#                               answer_id=request.GET["answer_id"], text=request.GET["text"])
-#     explanation.save()
-#     return JsonResponse({ "id": explanation.id })
-
-# Computes and returns the Explanation that a particular student should receive for
-# a particular question.
-# INPUT: answer_id, student_id
-# OUTPUT: JSON dictionary: { "explanation": theExplanation, "exp_value": expectedValueOfExplanation }
-def get_explanation_for_student (request):
-    # if 'question_id' not in request.GET:
-    #     return HttpResponse('question_id not found in GET parameters')
-    if 'answer_id' not in request.GET:
-        return HttpResponse('answer_id not found in GET parameters')
-    if 'student_id' not in request.GET:
-        return HttpResponse('student_id not found in GET parameters')
-
-    allExplanations = []
-    allResultsForExplanations = []
-    for explanation in Explanation.objects.filter(answer__id=request.GET['answer_id']).iterator():
-        someResults = []
-        for result in Result.objects.filter(explanation_id=explanation.id).iterator():
-            someResults.append(result.value)
-        allResultsForExplanations.append(someResults)
-        allExplanations.append(explanation)
-    selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
-    return JsonResponse({ "explanation": serializers.serialize("json", [ selectedExplanation ]), "exp_value": exp_value })
-
-# Submits a scalar score (1-7) associated with a particular student who received a
-# particular explanation.
-# INPUT: explanation_id, student_id, value (1-7)
-# OUTPUT: id of new Result object
-def submit_result_of_explanation (request):
-    if 'explanation_id' not in request.GET:
-        return HttpResponse('explanation_id not found in GET parameters')
-    if 'student_id' not in request.GET:
-        return HttpResponse('student_id not found in GET parameters')
-    if 'value' not in request.GET:
-        return HttpResponse('value not found in GET parameters')
+def create_quiz(request):
+    '''
+    displays some a form to collect question, answers and explanations
+    '''
     
-    theValue = (float(request.GET['value']) - 1.0) / 6.0
-    result = Result(student_id=request.GET['student_id'], explanation_id=request.GET['explanation_id'], value=theValue)
-    result.save()
-    return JsonResponse({ "id": result.id })
+    if request.method == 'GET':
+
+        INITIAL_NUM_CHOICES = 4
+        INITIAL_NUM_EXPLANATIONS = 2
+
+        AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','order','correct'), can_delete=False, extra=4)
+        ExplanationFormset = inlineformset_factory(Answer, Explanation, fields=('text',),can_delete=False, extra=2)
+        
+        answer_formsets = AnswerFormset(initial=[{'order':i} for i in range(1,INITIAL_NUM_CHOICES+1)])
+
+        answer_formgroups = zip(
+            answer_formsets,
+            [ExplanationFormset() for i in range(4)]
+        )
+
+        context = {
+            # 'quiz_form':CreateQuizForm(),
+            # 'Question':ModelForm(Question),
+            'quiz_form':QuizForm(),
+            'question_form':QuestionForm(),
+            'answer_formsets': answer_formsets,
+            'answer_formgroups':answer_formgroups,
+        }
+
+        return render(request, 'engine/create_quiz.html', context)
+
+    elif request.method == 'POST':
+
+        # logic for handling create quiz form data
+        quiz_form = QuizForm(request.POST)
+        if not quiz_form.is_valid():
+            # TODO change this so that we return to the form and display a warning
+            raise Exception('quiz not valid')
+
+        quiz = quiz_form.save(commit=False)
+        # quiz.course = 7566
+        if 'LTI_LAUNCH' is request.session:
+            quiz.context = request.session['LTI_LAUNCH']['context_id']
+        quiz.user = request.user
+        quiz.url = ''
+        quiz.save()
+
+        question_form = QuestionForm(request.POST)
+        question = question_form.save(commit=False)
+        question.quiz = quiz
+        question.save()
+
+        AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','order','correct'), can_delete=False, extra=4)
+        ExplanationFormset = inlineformset_factory(Answer, Explanation, fields=('text',),can_delete=False, extra=2)
+
+        answer_forms = AnswerFormset(request.POST, instance=question)
+        answers = answer_forms.save()
+
+        for i in range(len(answers)):
+            explanations = ExplanationFormset(request.POST, instance=answers[i])
+            explanations.save()
+
+        if quiz_form.cleaned_data['use_qualtrics']:
+            qsf_url = 'https://'+request.get_host()+reverse('lti:qsf_for_quiz')
+            survey_name = 'Survey from modified qsf'
+            qualtrics_url = upload_qsf_to_qualtrics(qsf_url, survey_name)
+            if qualtrics_url:
+                quiz.url = qualtrics_url
+                HttpResponseRedirect(reverse('lti:lti_return_launch_url',kwargs={'quiz_id':quiz.pk}))
+            else:
+                raise Exception('quiz creation failed and did not return a qualtrics id')
+
+        # pass back lti launch url to LMS
+        # return redirect('lti:return_launch_url',quiz_id=quiz.pk)
+
+        # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
+        return redirect('engine:select_or_create_quiz')
+
+# def manage_quiz(request, quiz_id):
+#     '''
+#     Instructor analytics/preview view for a quiz
+#     maybe put modification options directly on here
+#     '''
+
+
+def modify_quiz(request, quiz_id):
+    '''
+    Modify a quiz (question/answer text)
+    Accessed from the display quiz
+    '''
+
+    # similar to add_or_create quiz except there should be a modify currently used quiz option
+    
+    pass
+
+
+
+

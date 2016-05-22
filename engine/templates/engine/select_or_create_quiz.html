@@ -1,0 +1,20 @@
+<html>
+<head>
+
+<title>Select or create new quiz</title>
+<!-- TODO add some stylesheets -->
+</head>
+<body>
+	<div>
+
+		<h1> Select or create new quiz </h1>
+		<p> Select a quiz </p>
+		<form method="post" action="{% url 'engine:select_or_create_quiz' %}">
+			{{select_quiz_form}}
+			<input type="submit">
+		</form>
+		<p> <a href="{% url 'engine:create_quiz' %}">Create new quiz</a> </p>
+		<p> <a href="{% url 'qualtrics:create_qualtrics_quiz_from_url' %}"> Use an existing custom qualtrics quiz</a> </p>
+	</div>
+</body>
+</html>

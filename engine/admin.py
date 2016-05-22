@@ -1,17 +1,26 @@
 from django.contrib import admin
 
 # Register your models here.
-# from .models import Question, Explanation, Result
+from .models import *
 
-# class QuestionAdmin (admin.ModelAdmin):
-# 	list_display = ('id', 'text', 'answer1', 'answer2', 'answer3', 'answer4')
+class QuizAdmin (admin.ModelAdmin):
+	list_display = ['id','name','user','url','course']
 
-# class ExplanationAdmin (admin.ModelAdmin):
-# 	list_display = ('answer_text', 'text')
+class QuestionAdmin (admin.ModelAdmin):
+	list_display = ['id','quiz','text']
 
-# class ResultAdmin (admin.ModelAdmin):
-# 	list_display = ('explanation_text', 'student_id', 'value')
+class AnswerAdmin (admin.ModelAdmin):
+	# list_display = Answer._meta.get_all_field_names()
+	list_display = ['id','question','text','order','correct']
 
-# admin.site.register(Question, QuestionAdmin)
-# admin.site.register(Explanation, ExplanationAdmin)
-# admin.site.register(Result, ResultAdmin)
+class ExplanationAdmin (admin.ModelAdmin):
+	list_display = ['id','answer','text']
+
+class ResultAdmin (admin.ModelAdmin):
+	list_display = ['id','user','explanation','value']
+
+admin.site.register(Quiz, QuizAdmin)
+admin.site.register(Question, QuestionAdmin)
+admin.site.register(Answer, AnswerAdmin)
+admin.site.register(Explanation, ExplanationAdmin)
+admin.site.register(Result, ResultAdmin)

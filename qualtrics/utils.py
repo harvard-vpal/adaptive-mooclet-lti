@@ -1,19 +1,30 @@
 import requests
 from django.conf import settings
 
-
 class QSF:
+	'''
+	class for initializing qsf from template and modifying it
+	'''
     def __init__(self,template):
         with open(QSF_TEMPLATE,'rb') as f:
             self.content = json.loads(f.read())
     
     def replace_question_text(self,new_question_text):
+    	'''
+		replaces question text based on element tag
+    	'''
         for element in self.content['SurveyElements']:
             if 'Payload' not in element: continue
             if type(element['Payload'])!=type({}): continue
             if element['Payload'].get('DataExportTag')=='Question':
                 element['Payload']['QuestionText'] = new_question_text
 
+    def replace_question_id(self,new_question_text):
+    	'''
+		insert the question id into the qsf template
+    	'''
+    	pass
+    	
 
 def modify_qsf_template(quiz):
 	'''

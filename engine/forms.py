@@ -1,5 +1,5 @@
 from django import forms
-from .models import Quiz, Question, Answer, Explanation
+from .models import *
 
 # class SelectQualtricsForm(forms.Form):
 # 	qualtrics_url = forms.CharField(label='Qualtrics URL', max_length=100)
@@ -14,7 +14,7 @@ class QuizForm(forms.ModelForm):
 	Create new Quiz
 	Used in "create_quiz" view
 	'''
-	use_qualtrics = forms.BooleanField()
+	use_qualtrics = forms.BooleanField(required=False)
 	class Meta:
 		model = Quiz
 		fields = ['name']
@@ -53,23 +53,4 @@ class SelectQuizForm(forms.Form):
 	'''
 	quiz = forms.ModelChoiceField(queryset=Quiz.objects.all())
 
-
-class ChooseAnswerForm(forms.Form):
-	'''
-	Quiz form 1: Student chooses answer to question
-	On initialization (in view), restrict the answer queryset to specific question's answer choices
-
-	'''
-	answer = forms.ModelChoiceField(queryset=Answer.objects.all(),widget=forms.RadioSelect,empty_label=None)
-	
-
-class RateExplanationForm(forms.Form):
-	'''
-	Quiz form 2: Student rates the explanation they recieve
-	Currently presents integer choices between 1 and 7
-	'''
-	rating = forms.ChoiceField(
-		widget=forms.RadioSelect,
-		choices=tuple((i,str(i)) for i in range(1,8))
-	)
 

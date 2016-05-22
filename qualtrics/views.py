@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from engine import *
 
 # Create your views here.
 
@@ -7,7 +8,7 @@ def create_qualtrics_quiz_from_url(request):
         context = {
             'qualtrics_quiz_form':QualtricsUrlQuizForm(),
         }
-        return render(request, 'lti/create_qualtrics_quiz_from_url.html', context) 
+        return render(request, 'qualtrics/create_qualtrics_quiz_from_url.html', context) 
     else:
         qualtrics_quiz_form = QualtricsUrlQuizForm(request.POST)
         quiz = qualtrics_quiz_form.save(commit=False)
@@ -17,7 +18,7 @@ def create_qualtrics_quiz_from_url(request):
         quiz.save()
 
         # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
-        return HttpResponseRedirect(reverse('lti:embed_quiz',kwargs={'quiz_id':quiz.pk}))
+        return HttpResponseRedirect(reverse('lti:return_launch_rul',kwargs={'quiz_id':quiz.pk}))
 
 def qsf_for_quiz(request, quiz_id):
     '''

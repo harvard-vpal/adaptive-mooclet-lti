@@ -42,13 +42,7 @@ SECRET_KEY = SECURE_SETTINGS.get('django_secret_key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-## moved to TEMPLATE dict
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
-
-
-# Application definition
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -59,6 +53,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'lti',
     'engine',
+    'quiz',
+    'qualtrics',
+    'api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -78,6 +75,30 @@ AUTHENTICATION_BACKENDS = (
     'django_auth_lti.backends.LTIAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS':[
+        normpath(join(SITE_ROOT, 'templates')),
+    ],
+    'OPTIONS':{
+        'context_processors': [
+            # django auth
+            'django.contrib.auth.context_processors.auth',
+
+            # access the request inside django template
+            # 'django.core.context_processors.request'
+
+            # enable django messages
+            'django.contrib.messages.context_processors.messages',
+        ],
+        'loaders': [
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ],
+        'debug':True,
+    },
+},]
 
 LOGIN_URL = reverse_lazy('lti_auth_error')
 
@@ -106,7 +127,6 @@ DATABASES = {
     }
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -134,15 +154,6 @@ STATICFILES_DIRS = (
 )
 STATIC_ROOT = normpath(join(SITE_ROOT, 'http_static'))
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    #'django.template.loaders.eggs.Loader',
-)
-TEMPLATE_DIRS = (
-    normpath(join(SITE_ROOT, 'templates')),
-)
-
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get('lti_oauth_credentials', None)
@@ -151,27 +162,17 @@ LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get('lti_oauth_credentials', None)
 from oauthlib.oauth1 import RequestValidator
 LTI_REQUEST_VALIDATOR = 'lti.validator.LTIRequestValidator'
 
+
+############################################
+#### APP SETTINGS FOR ADAPTIVE-QUIZ-LTI ####
+############################################
+
 # Qualtrics API token
 QUALTRICS_API_TOKEN = SECURE_SETTINGS.get('qualtrics_api_token')
 QUALTRICS_BASE_URL = SECURE_SETTINGS.get('qualtrics_base_url','https://yourdatacenterid.qualtrics.com')
 
-# TEMPLATES = [{
-#     'DEBUG': True,
-#     'OPTIONS':{
-#         # 'context_processors': [
-#         #     # access the request inside django template
-#         #     # 'django.core.context_processors.request'
-#         # ],
-#     },
-#     'DIRS':[
-#         normpath(join(SITE_ROOT, 'static')),
-#     ],
-#     # List of callables that know how to import templates from various sources.
-#     'TEMPLATE_LOADERS':[
-#         'django.template.loaders.filesystem.Loader',
-#         'django.template.loaders.app_directories.Loader',
-#     ],
-# },]
+
+
 
 
 
