@@ -6,6 +6,8 @@ import json
 
 from engine.algorithms import computeExplanation_Thompson 
 from engine.models import *
+from engine import utils
+
 
 # Retrieves a Question object with the specified question_id.
 # INPUT: question_id
@@ -16,6 +18,29 @@ def get_question (request):
     question = get_object_or_404(Question, id=request.GET['id'])
     jsonDict = json.loads(serializers.serialize("json", [ question ]))[0]
     return JsonResponse(jsonDict['fields'])
+
+# Computes and returns the Explanation that a particular student should receive for
+# a particular question.
+# INPUT: answer_id, student_id
+# OUTPUT: JSON dictionary: { "explanation": theExplanation, "exp_value": expectedValueOfExplanation }
+def get_explanation_for_student (request):
+    # if 'question_id' not in request.GET:
+    #     return HttpResponse('question_id not found in GET parameters')
+    if 'answer_id' not in request.GET:
+        return HttpResponse('answer_id not found in GET parameters')
+    if 'student_id' not in request.GET:
+        return HttpResponse('student_id not found in GET parameters')
+
+    answer = get_object_or_404(Question, id=request.GET['answer_id'])
+    student = get_object_or_404(User, id=request.GET['student_id'])
+
+    explanation = utils.get_explanation_for_student(answer,user)
+
+    # return JsonResponse({ "explanation": serializers.serialize("json", [ explanation ]), "exp_value": exp_value })
+    return JsonResponse({ "explanation": serializers.serialize("json", [ explanation ]), "exp_value": exp_value })
+
+
+
 
 # Check if all required parameters are contained in the request object
 # for the add_question function.
@@ -125,28 +150,6 @@ def get_explanations_for_question (request):
 #     explanation.save()
 #     return JsonResponse({ "id": explanation.id })
 
-# Computes and returns the Explanation that a particular student should receive for
-# a particular question.
-# INPUT: answer_id, student_id
-# OUTPUT: JSON dictionary: { "explanation": theExplanation, "exp_value": expectedValueOfExplanation }
-def get_explanation_for_student (request):
-    # if 'question_id' not in request.GET:
-    #     return HttpResponse('question_id not found in GET parameters')
-    if 'answer_id' not in request.GET:
-        return HttpResponse('answer_id not found in GET parameters')
-    if 'student_id' not in request.GET:
-        return HttpResponse('student_id not found in GET parameters')
-
-    allExplanations = []
-    allResultsForExplanations = []
-    for explanation in Explanation.objects.filter(answer__id=request.GET['answer_id']).iterator():
-        someResults = []
-        for result in Result.objects.filter(explanation_id=explanation.id).iterator():
-            someResults.append(result.value)
-        allResultsForExplanations.append(someResults)
-        allExplanations.append(explanation)
-    selectedExplanation, exp_value = computeExplanation_Thompson(request.GET['student_id'], allExplanations, allResultsForExplanations)
-    return JsonResponse({ "explanation": serializers.serialize("json", [ selectedExplanation ]), "exp_value": exp_value })
 
 # Submits a scalar score (1-7) associated with a particular student who received a
 # particular explanation.

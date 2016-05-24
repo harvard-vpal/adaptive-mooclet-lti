@@ -1,5 +1,5 @@
 """
-Django settings for adaptive_quiz_lti project.
+Django settings for adaptive_mooclet_lti project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.9/topics/settings/
@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'lti',
     'engine',
     'quiz',
@@ -102,9 +103,9 @@ TEMPLATES = [{
 
 LOGIN_URL = reverse_lazy('lti_auth_error')
 
-ROOT_URLCONF = 'adaptive_quiz_lti.urls'
+ROOT_URLCONF = 'adaptive_mooclet_lti.urls'
 
-WSGI_APPLICATION = 'adaptive_quiz_lti.wsgi.application'
+WSGI_APPLICATION = 'adaptive_mooclet_lti.wsgi.application'
 
 
 # Database
@@ -164,15 +165,23 @@ LTI_REQUEST_VALIDATOR = 'lti.validator.LTIRequestValidator'
 
 
 ############################################
-#### APP SETTINGS FOR ADAPTIVE-QUIZ-LTI ####
+#### APP SETTINGS FOR ADAPTIVE-MOOCLET-LTI ####
 ############################################
 
 # Qualtrics API token
 QUALTRICS_API_TOKEN = SECURE_SETTINGS.get('qualtrics_api_token')
 QUALTRICS_BASE_URL = SECURE_SETTINGS.get('qualtrics_base_url','https://yourdatacenterid.qualtrics.com')
+QUALTRICS_TEMPLATE = 'New_MOOClet_template.qsf'
 
 
+#### DJANGO REST FRAMEWORK SETTINGS ####
 
-
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 

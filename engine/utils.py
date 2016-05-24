@@ -3,8 +3,10 @@ from .models import Explanation, Result
 import random
 
 
-def get_explanation_for_student(answer, user, method):
-
+def get_explanation_for_student(answer, user, method=None):
+    if not method:
+        method = 'random'
+        
     explanations = answer.explanation_set.all()
 
     if method == 'thompson':

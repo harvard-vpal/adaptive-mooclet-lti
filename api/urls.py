@@ -4,8 +4,8 @@ from django.contrib import admin
 
 urlpatterns = patterns('',
 	
-    # url(r'^$', 'adaptive_quiz_lti.views.home', name='home'),
-    # url(r'^auth_error/', 'adaptive_quiz_lti.views.lti_auth_error', name='lti_auth_error'),
+    # url(r'^$', 'adaptive_mooclet_lti.views.home', name='home'),
+    # url(r'^auth_error/', 'adaptive_mooclet_lti.views.lti_auth_error', name='lti_auth_error'),
     # url(r'^admin/', include(admin.site.urls)),
     # url(r'^lti/', include('lti.urls', namespace="lti")),
     # url(r'^quiz/', include('quiz.urls', namespace="quiz")),

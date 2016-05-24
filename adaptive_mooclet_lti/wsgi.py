@@ -1,5 +1,5 @@
 """
-WSGI config for adaptive_quiz_lti project.
+WSGI config for adaptive_mooclet_lti project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "adaptive_quiz_lti.settings.base")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "adaptive_mooclet_lti.settings.base")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()

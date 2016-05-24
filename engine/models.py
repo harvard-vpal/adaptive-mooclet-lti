@@ -48,6 +48,7 @@ class Result(models.Model):
     user = models.ForeignKey(User)
     explanation = models.ForeignKey(Explanation)
     value = models.FloatField()
+    # store lis_result_sourcedid, lis_outcome_service_url
 
     def __unicode__(self):
         return "{}, explanation {}".format(self.value, self.explanation.id)

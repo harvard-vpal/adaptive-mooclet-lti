@@ -1,19 +1,40 @@
-# Qualtrics LTI Bridge
+# Adaptive MOOClet LTI
 
 ## Introduction
 
 ### Description
-Django/Python implementation of Qualtrics LTI Bridge (Joseph Jay Williams and Sam Maldonaldo) and Adaptive Quiz Engine (Jacob Whitehill). Django LTI functionality from [bootstrap_lti_django](https://github.com/penzance/bootstrap_lti_django) LTI Django template.
+An LTI tool that enables the creation and embedding of adaptive MOOClet quizzes in a course. Implemented in Python/Django.
 
-### Requirements
-External libraries used include
+
+## Installing the tool in an LMS
+
+Currently only tested with Canvas.
+
+### Canvas
+Open a browser and enter:
+`https://adaptive.vpal.io/lti/tool_config`
+
+Copy all the XML data; you will need this to install your tool in Canvas.
+
+Navigate to the settings page of the course you would like to install the tool for. (Note that this settings page can be found on the left sidebar of the course page. This is different from the settings page found in the upper right toolbar.)
+![Add tool to Canvas 1](/images/add_app_canvas.png)
+
+Click the "Add New App" button.
+You may choose any name for the tool. Consumer Key and Shared Secret must be the key and value you choose for `lti_oauth_credentials` in `secure.py`. Configuration type should be Paste XML. In the following text box, paste the XML that was generated at `https://adaptive.vpal.io/lti/tool_config`
+
+![Add tool to Canvas 2](/images/add_app_canvas_2.png)
+
+
+
+## Developer setup
+
+### Dependencies
+Libraries include
 * [django-auth-lti](https://github.com/Harvard-University-iCommons/django-auth-lti)
 * [ims-lti-py](https://github.com/harvard-dce/dce_lti_py)
 * [dce-lti-py](https://github.com/harvard-dce/dce_lti_py) (A fork of [ims-lti-py](https://github.com/tophatmonocle/ims_lti_py))
 * [django-sslserver](https://github.com/teddziuba/django-sslserver)
-
-
-## Setup
+* numpy
 
 ### Downloading the repository and installing requirements
 ```
@@ -60,15 +81,5 @@ Your browser will likely block you from viewing this page. You must override thi
 
 Copy all the XML data; you will need this to install your tool in Canvas.
 
-Resources on LTI XML configuration:
-* [XML config builder](https://www.edu-apps.org/build_xml.html)
-* [XML config examples](https://canvas.instructure.com/doc/api/file.tools_xml.html)
 
-### Install tool on Canvas
-Navigate to the settings page of the COURSE you would like to install the tool for. (Note that this settings page can be found on the left sidebar of the course page. This is different from the settings page found in the upper right toolbar.)
-![Add tool to Canvas 1](/images/add_app_canvas.png)
 
-Click the "Add New App" button.
-You may choose any name for the tool. Consumer Key and Shared Secret must be the key and value you choose for `lti_oauth_credentials` in `secure.py`. Configuration type should be Paste XML. In the following text box, paste the XML that was generated at `https://localhost:8000/lti_tools/basic_lti_app/tool_config`
-
-![Add tool to Canvas 2](/images/add_app_canvas_2.png)

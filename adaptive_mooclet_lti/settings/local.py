@@ -78,11 +78,6 @@ LOGGING = {
            'level': 'DEBUG',
            'propagate': True,
        },
-       'maptoolapp': {
-           'handlers': ['console', 'logfile'],
-           'level': 'DEBUG',
-           'propagate': True,
-       },
        'django_auth_lti': {
            'handlers': ['console', 'logfile'],
            'level': 'DEBUG',
