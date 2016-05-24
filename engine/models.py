@@ -53,3 +53,26 @@ class Result(models.Model):
     def __unicode__(self):
         return "{}, explanation {}".format(self.value, self.explanation.id)
 
+
+# class Role(models.Model):
+#     name = models.CharField(max_length=50,default='')
+#     description = models.CharField(max_length=200,default='')
+
+
+class CourseUser(models.Model):
+    user = models.ForeignKey(User)
+    context = models.CharField(max_length=100,default='')
+    # role = models.ForeignKey(Role)
+
+class CourseUserVariable(models.Model):
+    name = models.CharField(max_length=50,default='')
+    description = models.CharField(max_length=200,default='')
+
+class CourseUserState(models.Model):
+    courseuser = models.ForeignKey(CourseUser)
+    variable = models.ForeignKey(CourseUserVariable)
+    
+
+
+
+

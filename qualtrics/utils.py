@@ -9,36 +9,32 @@ class QSF:
     '''
     def __init__(self, qsf_path=None):
         if not qsf_path:
-            qsf_path = path.join(settings.STATIC_ROOT, 'qualtrics/'+settings.QUALTRICS_TEMPLATE)
+            # QSF template location, assumes it is in static/qualtrics
+            qsf_path = path.join(settings.STATIC_ROOT, 'qualtrics/'+settings.QUALTRICS_TEMPLATE_NAME)
         with open(qsf_path,'rb') as f:
             self.content = json.loads(f.read())
-    
-    def replace_question_text(self,new_question_text):
-        '''
-        replaces question text based on element tag
-        '''
-        for element in self.content['SurveyElements']:
-            if 'Payload' not in element: continue
-            if type(element['Payload'])!=type({}): continue
-            if element['Payload'].get('DataExportTag')=='Question':
-                element['Payload']['QuestionText'] = new_question_text
 
-    def insert_question_id(self,question_id):
+
+    def insert_question_id(self,question_id,to_replace=None):
         '''
         insert the question id into the qsf template
+        looks for to_replace in any of the embedded data fields
+        defaults to looking for 'INSERT_QUESTIONID'
         '''
-        TO_REPLACE = 'INSERT_QUESTIONID'
+        if not to_replace: 
+            to_replace = 'INSERT_QUESTIONID'
+        replace_with = question_id
 
         for element in self.content['SurveyElements']:
             if element['Element']=='FL':
                 for flow_element in element['Payload']['Flow']:
                     if 'EmbeddedData' in flow_element:
                         for embedded_variable in flow_element['EmbeddedData']:
-                            if embedded_variable.get('Value') == TO_REPLACE:
-                                embedded_variable['Value'] = question_id
+                            # if the embedded variable value matches the keyword
+                            if embedded_variable.get('Value') == to_replace:
+                                # replace with the new value
+                                embedded_variable['Value'] = replace_with
 
-
-        
 
 def modify_qsf_template(quiz):
     '''
@@ -49,11 +45,12 @@ def modify_qsf_template(quiz):
 
     qsf = QSF(QSF_TEMPLATE)
     qsf.insert_question_id(question.text)
+    # TODO other operations on QSF 
 
     return json.dumps(qsf.content)
 
 
-def upload_qsf_to_qualtrics(qsf_url, survey_name, ):
+def upload_qsf_to_qualtrics(qsf_url, survey_name ):
     '''
     uploads the qsf file hosted at qsf_url to qualtrics, using qualtrics API v3
     return the qualtrics id of the newly created survey

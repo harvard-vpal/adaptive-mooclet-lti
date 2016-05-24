@@ -164,14 +164,16 @@ from oauthlib.oauth1 import RequestValidator
 LTI_REQUEST_VALIDATOR = 'lti.validator.LTIRequestValidator'
 
 
-############################################
+###############################################
 #### APP SETTINGS FOR ADAPTIVE-MOOCLET-LTI ####
-############################################
+###############################################
 
 # Qualtrics API token
 QUALTRICS_API_TOKEN = SECURE_SETTINGS.get('qualtrics_api_token')
+# Qualtrics base url for making API (v3) calls
 QUALTRICS_BASE_URL = SECURE_SETTINGS.get('qualtrics_base_url','https://yourdatacenterid.qualtrics.com')
-QUALTRICS_TEMPLATE = 'New_MOOClet_template.qsf'
+# QSF template name, assumes it is in static/qualtrics
+QUALTRICS_TEMPLATE_NAME = 'MOOClet_template.qsf'
 
 
 #### DJANGO REST FRAMEWORK SETTINGS ####
