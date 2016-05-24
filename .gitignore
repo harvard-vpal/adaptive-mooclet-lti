@@ -4,7 +4,6 @@ secure.py
 *.log
 *.sqlite3
 http_static/
-static/
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
