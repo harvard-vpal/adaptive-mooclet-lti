@@ -1,0 +1,11 @@
+[
+  {
+    "model": "qualtrics.template",
+    "pk": 1,
+    "fields": {
+      "name": "Basic quiz template",
+      "description": "Single question, adaptive explanation",
+      "filename": "MOOClet_template.qsf"
+    }
+  }
+]

@@ -4,14 +4,13 @@ from django.contrib import admin
 from .models import *
 
 class QuizAdmin (admin.ModelAdmin):
-	list_display = ['id','name','user','url','course']
+	list_display = ['id','name','user','url']
 
 class QuestionAdmin (admin.ModelAdmin):
 	list_display = ['id','quiz','text']
 
 class AnswerAdmin (admin.ModelAdmin):
-	# list_display = Answer._meta.get_all_field_names()
-	list_display = ['id','question','text','order','correct']
+	list_display = ['id','question','text','correct']
 
 class ExplanationAdmin (admin.ModelAdmin):
 	list_display = ['id','answer','text']

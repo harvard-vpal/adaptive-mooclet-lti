@@ -2,6 +2,7 @@ Django>=1.9
 requests
 psycopg2
 numpy>=1.10
+django-ordered-model
 
 
 #django-cached-authentication-middleware>=0.2.0

@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'ordered_model',
     'lti',
     'engine',
     'quiz',

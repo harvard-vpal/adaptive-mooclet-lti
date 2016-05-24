@@ -20,7 +20,7 @@ def create_qualtrics_quiz_from_url(request):
         quiz = qualtrics_quiz_form.save(commit=False)
 
         # placeholder values
-        quiz.course = 7566 
+        # quiz.course = 7566 
         quiz.user = request.user
 
         quiz.save()
