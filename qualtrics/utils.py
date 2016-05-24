@@ -6,8 +6,9 @@ import json
 class QSF:
     '''
     class for initializing qsf from template and modifying it
+    # TODO would like to initialize from a QSF at some URL
     '''
-    def __init__(self, qsf_path=None):
+    def __init__(self, qsf_path=None, qsf_version=None):
         if not qsf_path:
             # QSF template location, assumes it is in static/qualtrics
             qsf_path = path.join(settings.STATIC_ROOT, 'qualtrics/'+settings.QUALTRICS_TEMPLATE_NAME)
@@ -36,15 +37,14 @@ class QSF:
                                 embedded_variable['Value'] = replace_with
 
 
-def modify_qsf_template(quiz):
+def get_modified_qsf(question, template_version=None):
     '''
-    given a django quiz object, modify the template qsf file to match the information
+    given a django question object, modify the template qsf file to match the information
     '''
-    question = quiz.question_set.first()
     answers = question.answer_set.order_by('order')
 
-    qsf = QSF(QSF_TEMPLATE)
-    qsf.insert_question_id(question.text)
+    qsf = QSF()
+    qsf.insert_question_id(question.id)
     # TODO other operations on QSF 
 
     return json.dumps(qsf.content)

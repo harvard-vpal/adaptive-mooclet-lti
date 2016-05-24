@@ -1,13 +1,16 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
+from qualtrics.models import Template
 
 # Create your models here.
 
 class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
-    url = models.CharField(max_length=2000, default='')
+    # url of a custom qualtrics surveey, 
+    # or the url of the first provisioned qualtrics survey/question in the the quiz
+    url = models.CharField(max_length=500, default='')
     context = models.CharField(max_length=100,default='')
     course = models.PositiveIntegerField(null=True)
 
@@ -21,6 +24,7 @@ class Quiz(models.Model):
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz)
     text = models.CharField('question text', max_length=500)
+    # template = models.ForeignKey(Template)
 
     def __unicode__(self):
         return self.text

@@ -5,6 +5,8 @@ from django.forms import formset_factory,inlineformset_factory, ModelForm
 from .models import *
 from .forms import *
 from .utils import *
+# from qualtrics.utils import upload_qsf_to_qualtrics
+import qualtrics.utils.upload_qsf_to_qualtrics
 
 from engine.algorithms import computeExplanation_Thompson 
 
@@ -119,9 +121,12 @@ def create_quiz(request):
             explanations.save()
 
         if quiz_form.cleaned_data['use_qualtrics']:
-            qsf_url = 'https://'+request.get_host()+reverse('lti:qsf_for_quiz')
+            # this is the url that the modified QSF will be available at
+            qsf_url = 'https://'+request.get_host()+reverse('qualtrics:qsf_for_quiz')
+            # name of the survey that will created on Qualtrics after QSF upload
             survey_name = 'Survey from modified qsf'
-            qualtrics_url = upload_qsf_to_qualtrics(qsf_url, survey_name)
+            # new_survey_url is the url of the survey that was just created on Qualtrics
+            new_survey_url = qualtrics.utils.upload_qsf_to_qualtrics(qsf_url, survey_name)
             if qualtrics_url:
                 quiz.url = qualtrics_url
                 HttpResponseRedirect(reverse('lti:lti_return_launch_url',kwargs={'quiz_id':quiz.pk}))
