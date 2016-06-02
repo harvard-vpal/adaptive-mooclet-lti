@@ -9,16 +9,22 @@ from ordered_model.models import OrderedModel
 class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
-    # url of a custom qualtrics surveey, 
+    # url of a custom qualtrics survey, 
     # or the url of the first provisioned qualtrics survey/question in the the quiz
     url = models.CharField(max_length=500, default='')
     context = models.CharField(max_length=100,default='')
+    class Meta:
+        verbose_name_plural = 'quizzes'
 
     def __unicode__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = 'quizzes'
+    def isValid(self):
+        '''
+        Check whether the quiz is student-ready:
+        Checks whether quiz has questions, questions have answers, and answers have explanations
+        '''
+        pass
 
 
 class Question(OrderedModel):

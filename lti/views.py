@@ -116,7 +116,7 @@ def launch_resource_selection(request):
         }
         request.session['LTI_LAUNCH'].update(more_lti_params)
 
-    return redirect('engine:select_or_create_quiz')
+    return redirect('engine:create_quiz_options')
 
 
 @login_required()

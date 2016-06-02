@@ -1,0 +1,26 @@
+<html>
+<head>
+
+<title>Create/modify quiz</title>
+<!-- TODO add some stylesheets -->
+</head>
+<body>
+	<div>
+
+		<h1> Create/modify quiz </h1>
+		<form method="post">
+			<h3>Quiz</h3>
+			{{quiz_form.as_p}}
+
+			<h3> Question </h3>
+			{{question_form.as_p}}
+
+			<h3>Answers</h3>
+			{{ answer_formset.as_p}}
+
+
+			<input type="submit" value="Submit" />
+		</form>
+	</div>
+</body>
+</html>

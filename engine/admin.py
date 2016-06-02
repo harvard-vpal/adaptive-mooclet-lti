@@ -7,7 +7,10 @@ class QuizAdmin (admin.ModelAdmin):
 	list_display = ['id','name','user','url']
 
 class QuestionAdmin (admin.ModelAdmin):
-	list_display = ['id','quiz','text']
+	list_display = ['id','get_quiz_id','quiz','text']
+
+	def get_quiz_id(self,obj):
+		return obj.quiz.id
 
 class AnswerAdmin (admin.ModelAdmin):
 	list_display = ['id','question','text','correct']

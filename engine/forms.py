@@ -4,7 +4,7 @@ from .models import *
 # class SelectQualtricsForm(forms.Form):
 # 	qualtrics_url = forms.CharField(label='Qualtrics URL', max_length=100)
 
-class QualtricsUrlQuizForm(forms.ModelForm):
+class QuizUrlForm(forms.ModelForm):
 	class Meta:
 		model = Quiz
 		fields = ['name','url']
@@ -35,7 +35,7 @@ class AnswerForm(forms.ModelForm):
 	'''
 	class Meta:
 		model = Answer
-		fields = ['text', 'correct', 'order']
+		fields = ['text', 'correct']
 
 
 class ExplanationForm(forms.ModelForm):

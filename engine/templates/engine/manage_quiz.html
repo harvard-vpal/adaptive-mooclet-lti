@@ -8,19 +8,25 @@
 	<div>
 		<h1> Manage quiz view </h1>
 		
-		<h2> Data tables </h2>
-		<p> Table: explanations and priors <p>
-		<p> Table: Student responses and served explanations </p>
+		<!-- create quiz option -->
+		<h2> Modify quiz </h2>
+
+			<p> <a href="{% url 'engine:modify_quiz' quiz_id=quiz.pk%}">Modify quiz</a></p>
 
 		<h2> Quiz preview </h2>
-		<p> <a href="#">Modify quiz</a></p>
-		<!-- preview quiz -->
-		<iframe src="{{quiz_url}}"  align='center' height='400px' width='80%'>
+
+			<!-- preview quiz -->
+			<iframe src="{{quiz_url}}"  align='center' height='400px' width='80%'>
+
 
 
 		<!-- quiz analytics section -->
+		<h2> Quiz results and analytics </h2>
 
-		<!-- modify quiz option -->
+			<p> Data table: explanations and priors <p>
+			<p> Data table: Student responses and served explanations </p>
+
+		
 
 	</div>
 </body>
