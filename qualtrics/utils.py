@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 from os import path
 import json
+from .models import Template
 
 class QSF:
     '''
