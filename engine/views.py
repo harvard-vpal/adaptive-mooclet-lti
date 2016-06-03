@@ -177,7 +177,7 @@ def modify_quiz(request, quiz_id):
                 qsf_url = request.build_absolute_uri(reverse('qualtrics:qsf_for_question',kwargs={'question_id':question.id}))
 
                 # name of the survey that will created on Qualtrics after QSF upload
-                survey_name = 'adaptive-quiz {} {}'.format(request.get_host().partition(':')[0],quiz.id)
+                survey_name = 'adaptive-quiz june2 {} {} {}'.format(request.get_host().partition(':')[0], quiz.id, question.text)
                 
                 # new_survey_url is the url of the survey that was just created on Qualtrics
                 new_survey_url = upload_qsf_to_qualtrics(qsf_url, survey_name)
