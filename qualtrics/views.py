@@ -1,7 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from engine import *
-from engine.models import Quiz
+from engine.models import *
 from .utils import get_modified_qsf
 
 # Create your views here.
@@ -18,24 +17,21 @@ def create_qualtrics_quiz_from_url(request):
     elif request.method == 'POST':
         qualtrics_quiz_form = QualtricsUrlQuizForm(request.POST)
         quiz = qualtrics_quiz_form.save(commit=False)
-
-        # placeholder values
-        # quiz.course = 7566 
         quiz.user = request.user
-
+        quiz.context = request.session['LTI_LAUNCH']['context_id']
         quiz.save()
 
-        # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
         return HttpResponseRedirect(reverse('lti:return_launch_url',kwargs={'quiz_id':quiz.pk}))
 
 
-def qsf_for_question(request, quiz_id):
+def qsf_for_question(request, question_id):
     '''
-    Generates the qsf corresponding to the quiz_id provided as input
+    Generates the qsf corresponding to the question_id provided as input
     Referenced by 'upload QSF by URL' Qualtrics API call
     '''
-    quiz = Quiz.objects.get(pk=quiz_id)
-    quiz_qsf = get_modified_qsf(quiz)
-    # upload multiple qsf for multiple questions in a quiz?
+    question = get_object_or_404(Question, pk=question_id)
+    question_qsf = get_modified_qsf(question)
 
-    return HttpResponse(quiz_qsf)
+    # TODO LATER upload multiple qsf for multiple questions in a quiz?
+
+    return HttpResponse(question_qsf)

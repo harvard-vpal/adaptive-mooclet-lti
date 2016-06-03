@@ -40,17 +40,19 @@ def manage_quiz(request, quiz_id):
     
     return render(request, 'engine/manage_quiz.html',context)
 
+
 def create_quiz_options(request):
     return render(request, 'engine/create_quiz_options.html')
 
-def create_blank_quiz(request):
 
-    quiz = Quiz.objects.create(
+def create_blank_quiz(request):
+    quiz = Quiz(
         user=request.user,
         context = request.session['LTI_LAUNCH']['context_id'],
     )
     quiz.save()
     return redirect('lti:return_launch_url', quiz_id=quiz.pk)
+
 
 def create_quiz_from_url(request):
     if request.method == 'GET':
