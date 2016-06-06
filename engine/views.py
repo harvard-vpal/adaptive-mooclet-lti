@@ -7,7 +7,7 @@ from .models import *
 from .forms import *
 from .utils import *
 
-from qualtrics.utils import provision_qualtrics_quiz, upload_qsf_to_qualtrics
+from qualtrics.utils import provision_qualtrics_quiz
 from engine.algorithms import computeExplanation_Thompson 
 
 
@@ -22,17 +22,23 @@ def manage_quiz(request, quiz_id):
     '''
     quiz = Quiz.objects.get(pk=quiz_id)
 
+    # get question_url, which is the display url for the quiz
+    # might move this into a model method if its useful elsewhere
 
-    # Check if the quiz has a qualtrics url. If not, then we can host the quiz ourself
-    if question.url:
-        # qualtrics url
-        question_url = question.url
+    if not quiz.question_set.all().exists()
+        question_url = reverse('quiz:placeholder')
     else:
-        # django url
-        question_url = reverse('quiz:display_quiz_question',kwargs={'question_id':question.id})
+        question = quiz.question_set.first()
+        # Check if the quiz has a qualtrics url. If not, then we can host the quiz ourself
+        if question.url:
+            # qualtrics url
+            question_url = question.url
+        else:
+            # django url
+            question_url = reverse('quiz:display_quiz_question',kwargs={'question_id':question.id})
 
 
-    # pass in qualtrics url so iframe in template can display qualtrics quiz preview
+    # pass in quiz url to template context to use for iframe
     context = {
         'quiz': quiz,
         'question_url':question_url,
@@ -108,7 +114,6 @@ def modify_quiz(request, quiz_id):
         # else:
         #     question = Question(quiz=quiz)
 
-        print question.quiz.id
         question_form = QuestionForm(instance=question)
 
         answer_formset = AnswerFormset(instance=question)

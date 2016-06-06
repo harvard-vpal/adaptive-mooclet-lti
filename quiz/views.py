@@ -75,3 +75,7 @@ def display_quiz_explanation(request, explanation_id):
             return redirect('lti:return_outcome')
 
 
+def placeholder(request):
+    return render('quiz/placeholder.html')
+
+    
