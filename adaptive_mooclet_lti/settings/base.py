@@ -171,6 +171,7 @@ LTI_REQUEST_VALIDATOR = 'lti.validator.LTIRequestValidator'
 
 # Qualtrics API token
 QUALTRICS_API_TOKEN = SECURE_SETTINGS.get('qualtrics_api_token')
+QUALTRICS_USER = SECURE_SETTINGS.get('qualtrics_user')
 # Qualtrics base url for making API (v3) calls
 QUALTRICS_BASE_URL = SECURE_SETTINGS.get('qualtrics_base_url','https://yourdatacenterid.qualtrics.com')
 # QSF template name, assumes it is in static/qualtrics

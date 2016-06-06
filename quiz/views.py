@@ -6,14 +6,15 @@ from engine.utils import get_explanation_for_student
 
 # Create your views here.
 
-def display_quiz_question(request, quiz_id):
+def display_quiz_question(request, question_id):
     '''
     self-hosted quiz: display initial question and prompt for answer choice
     '''
     if request.method=='GET':
-        quiz = Quiz.objects.get(pk=quiz_id)
+        # quiz = Quiz.objects.get(pk=quiz_id)
+
         # just get first question in quiz for now
-        question = quiz.question_set.first()
+        question = Question.objects.get(pk=question_id)
         answers = question.answer_set.all().order_by('order')
 
         # could simulate web service request to get: questions, answers

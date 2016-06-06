@@ -31,7 +31,7 @@ class Question(OrderedModel):
     quiz = models.ForeignKey(Quiz)
     text = models.CharField('question text', max_length=500)
     # template = models.ForeignKey(Template)
-
+    url = models.CharField(max_length=500, default='')
     # settings for django-ordered-model
     order_with_respect_to = 'quiz'
     
