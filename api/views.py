@@ -8,97 +8,75 @@ from engine.algorithms import computeExplanation_Thompson
 from engine.models import *
 from engine import utils
 
+from rest_framework import viewsets
+from api.serializers import *
 
-# Retrieves a Question object with the specified question_id.
+##### rest-framework #####
+
+class QuizViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+
+#### custom endpoints, used by qualtrics to retrieve object text ####
+
+# Get question text and answer choices using a question id
 # INPUT: question_id
-# OUTPUT: Question object
+# OUTPUT: question text, answer texts, correct answer choice
 def get_question (request):
     if 'id' not in request.GET:
         return HttpResponse('question_id not found in GET parameters')
     question = get_object_or_404(Question, id=request.GET['id'])
-    jsonDict = json.loads(serializers.serialize("json", [ question ]))[0]
-    return JsonResponse(jsonDict['fields'])
+    answers = question.answer_set.all()
+
+    correctAnswerChoice = 0
+    for i in range(len(answers)):
+        if answers[i].correct:
+            correctAnswerChoice = i+1
+            break
+
+    return JsonReponse({
+        'questionText':question.text,
+        'answer1':answers[0].text,
+        'answer2':answers[1].text,
+        'answer3':answers[2].text,
+        'answer4':answers[3].text,
+        'correctAnswerChoice':correctAnswerChoice,
+    })
+    return JsonResponse(data)
 
 # Computes and returns the Explanation that a particular student should receive for
 # a particular question.
-# INPUT: answer_id, student_id
-# OUTPUT: JSON dictionary: { "explanation": theExplanation, "exp_value": expectedValueOfExplanation }
 def get_explanation_for_student (request):
-    # if 'question_id' not in request.GET:
-    #     return HttpResponse('question_id not found in GET parameters')
     if 'answer_id' not in request.GET:
         return HttpResponse('answer_id not found in GET parameters')
-    if 'student_id' not in request.GET:
-        return HttpResponse('student_id not found in GET parameters')
+    # if 'student_id' not in request.GET:
+    #     return HttpResponse('student_id not found in GET parameters')
 
-    answer = get_object_or_404(Question, id=request.GET['answer_id'])
-    student = get_object_or_404(User, id=request.GET['student_id'])
+    answer = get_object_or_404(Answer, id=request.GET['answer_id'])
 
-    explanation = utils.get_explanation_for_student(answer,user)
+    # placeholder student for now
+    student = User.objects.first()
+    # student = get_object_or_404(User, id=request.GET['student_id'])
 
-    # return JsonResponse({ "explanation": serializers.serialize("json", [ explanation ]), "exp_value": exp_value })
-    return JsonResponse({ "explanation": serializers.serialize("json", [ explanation ]), "exp_value": exp_value })
+    explanation = utils.get_explanation_for_student(answer,student)
 
+    return JsonResponse({
+        'explanationid':explanation.id,
+        'explanation':explanation.text,
+    })
 
-
-
-# Check if all required parameters are contained in the request object
-# for the add_question function.
-# def verify_params_for_add_question (request):
-#     if 'text' not in request.GET:
-#         return HttpResponse('text not found in GET parameters')
-#     if 'answer1' not in request.GET:
-#         return HttpResponse('answer1 not found in GET parameters')
-#     if 'answer2' not in request.GET:
-#         return HttpResponse('answer2 not found in GET parameters')
-#     if 'answer3' not in request.GET:
-#         return HttpResponse('answer3 not found in GET parameters')
-#     if 'answer4' not in request.GET:
-#         return HttpResponse('answer4 not found in GET parameters')
-#     return None
-
-# Adds a new Question object with the specified question text and answers.
-# INPUT: text, answer1, answer2, answer3, and answer4
-# OUTPUT: id of new Question object
-# def add_question (request):
-#     errorResponse = verify_params_for_add_question(request)
-#     if errorResponse != None:
-#         return errorResponse
-    
-#     question = Question(text=request.GET['text'], answer1=request.GET['answer1'], \
-#                                                   answer2=request.GET['answer2'], \
-#                                                   answer3=request.GET['answer3'], \
-#                                                   answer4=request.GET['answer4'])
-#     question.save()
-#     return JsonResponse({ "id": question.id })
-
-# Removes an existing Question object.
-# INPUT: id of Question object
-# OUTPUT: id of removed Question object
-# def remove_question (request):
-#     if 'id' not in request.GET:
-#         return HttpResponse('id not found in GET parameters')
-#     question = get_object_or_404(Question, id=request.GET['id'])
-#     question.delete()
-#     return JsonResponse({ "id": request.GET['id'] })
-
-# Changes an existing Question object.
-# INPUT: Question object ("id", "text", "answer1", "answer2", "answer3", and "answer4")
-# OUTPUT: id of Question object
-# def change_question (request):
-#     errorResponse = verify_params_for_add_question(request)
-#     if errorResponse != None:
-#         return errorResponse
-#     if 'id' not in request.GET:
-#         return HttpResponse('id not found in GET parameters')
-
-#     question = Question(id=request.GET['id'], text=request.GET['text'], \
-#                         answer1=request.GET['answer1'], \
-#                         answer2=request.GET['answer2'], \
-#                         answer3=request.GET['answer3'], \
-#                         answer4=request.GET['answer4'])
-#     question.save()
-#     return JsonResponse({ "id": question.id })
 
 # Retrieves all explanations for a particular question.
 # INPUT: question_id
@@ -110,45 +88,6 @@ def get_explanations_for_question (request):
     for explanation in Explanation.objects.filter(question_id=request.GET['question_id']).iterator():
         allExplanations.append(explanation)
     return JsonResponse(json.loads(serializers.serialize("json", allExplanations)), safe=False)
-
-# Changes an existing Explanation object.
-# INPUT: Explanation object ("id", "question_id", "answer_id", "text")
-# OUTPUT: id of Explanation object
-# def change_explanation (request):
-#     errorResponse = verify_params_for_add_explanation(request)
-#     if errorResponse != None:
-#         return errorResponse
-#     if 'id' not in request.GET:
-#         return HttpResponse('id not found in GET parameters')
-
-#     explanation = Explanation(id=request.GET["id"], question_id=request.GET["question_id"],
-#                               answer_id=request.GET["answer_id"], text=request.GET["text"])
-#     explanation.save()
-#     return JsonResponse({ "id": explanation.id })
-
-# Check if all required parameters are contained in the request object
-# for the add_explanation function.
-# def verify_params_for_add_explanation (request):
-#     if 'question_id' not in request.GET:
-#         return HttpResponse('question_id not found in GET parameters')
-#     if 'answer_id' not in request.GET:
-#         return HttpResponse('answer_id not found in GET parameters')
-#     if 'text' not in request.GET:
-#         return HttpResponse('text not found in GET parameters')
-#     return None
-
-# Adds an explanation for a particular answer (1-4) of a particular question.
-# INPUT: question_id, answer_id (1-4), and text
-# OUTPUT: id of new Explanation object
-# def add_explanation (request):
-#     errorResponse = verify_params_for_add_explanation(request)
-#     if errorResponse != None:
-#         return errorResponse
-
-#     explanation = Explanation(question_id=request.GET["question_id"],
-#                               answer_id=request.GET["answer_id"], text=request.GET["text"])
-#     explanation.save()
-#     return JsonResponse({ "id": explanation.id })
 
 
 # Submits a scalar score (1-7) associated with a particular student who received a

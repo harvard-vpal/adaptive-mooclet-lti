@@ -87,17 +87,10 @@ def launch(request,quiz_id):
     # TODO researcher role check
 
     else:
-        # TODO store canvas user id and lti user id so that we can have a mapping
-
+        # TODO store canvas user id and lti user id so that we can have a mapping?
         quiz = get_object_or_404(Quiz, pk=quiz_id)
+        return redirect('engine:display_quiz', quiz_id=quiz.id)
 
-        # Check if the quiz has a qualtrics url. If not, then we can host the quiz ourself
-        if quiz.getUrl():
-            quiz_url = quiz.getUrl()
-        else:
-            quiz_url = reverse('quiz:display_quiz_question',kwargs={'quiz_id':quiz.id})
-
-        return redirect(quiz_url)
 
 
 @login_required()

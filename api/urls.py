@@ -1,16 +1,19 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-# admin.autodiscover()
 
-urlpatterns = patterns('',
-	
-    # url(r'^$', 'adaptive_mooclet_lti.views.home', name='home'),
-    # url(r'^auth_error/', 'adaptive_mooclet_lti.views.lti_auth_error', name='lti_auth_error'),
-    # url(r'^admin/', include(admin.site.urls)),
-    # url(r'^lti/', include('lti.urls', namespace="lti")),
-    # url(r'^quiz/', include('quiz.urls', namespace="quiz")),
-    # url(r'^qualtrics/', include('qualtrics.urls', namespace="qualtrics")),
-    # url(r'^engine/', include('engine.urls', namespace="engine")),
-    # url(r'^api/', include('api.urls', namespace="api")),
+from rest_framework import routers
+from api import views
 
-)
+router = routers.DefaultRouter()
+router.register(r'quizzes', views.QuizViewSet)
+router.register(r'questions', views.QuestionViewSet)
+
+urlpatterns = [
+	url(r'^', include(router.urls)),
+
+	# custom endpoints
+	url(r'^get_question$', 'api.views.get_question', name='get_question'),
+	url(r'^get_explanation_for_student$', 'api.views.get_explanation_for_student', name='get_explanation_for_student'),
+
+]
+

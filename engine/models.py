@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from qualtrics.models import Template
 from ordered_model.models import OrderedModel
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
 # Create your models here.
 
@@ -38,22 +39,9 @@ class Quiz(models.Model):
             if first_question.url:
                 return redirect(first_question.url)
             else:
-                return reverse('quiz:display_quiz_question',kwargs={'question_id':self.id})
+                return reverse('quiz:question',kwargs={'question_id':self.id})
         else:
             return reverse('quiz:placeholder')
-    # def getUrl(self):
-    #     '''
-    #     url to serve quiz, could be a custom quiz url, url of first qualtrics question
-    #     '''
-    #     if self.url:
-    #         return self.url
-    #     elif self.question_set.all().exists():
-    #         first_question = self.question_set.first()
-    #         if first_question.url:
-    #             return first_question.url
-    #         else:
-    #             return reverse('quiz:display_quiz_question',kwargs={'question_id':.id})
-    #     else return None
 
 
 class Question(OrderedModel):
@@ -64,7 +52,6 @@ class Question(OrderedModel):
     # settings for django-ordered-model
     order_with_respect_to = 'quiz'
     
-
     def __unicode__(self):
         return self.text
 

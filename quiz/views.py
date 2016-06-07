@@ -6,7 +6,7 @@ from engine.utils import get_explanation_for_student
 
 # Create your views here.
 
-def display_quiz_question(request, question_id):
+def question(request, question_id):
     '''
     self-hosted quiz: display initial question and prompt for answer choice
     '''
@@ -30,7 +30,7 @@ def display_quiz_question(request, question_id):
             'choose_answer_form': choose_answer_form,
         }
 
-        return render(request, 'quiz/display_quiz_question.html', context)
+        return render(request, 'quiz/question.html', context)
 
     elif request.method=='POST':
         choose_answer_form = ChooseAnswerForm(request.POST)
@@ -40,10 +40,10 @@ def display_quiz_question(request, question_id):
             selected_explanation = get_explanation_for_student(answer, request.user, 'random')
 
             # redirect to explanation/rating view, for the selected explanation
-            return redirect('quiz:display_quiz_explanation',explanation_id=selected_explanation.id)
+            return redirect('quiz:explanation',explanation_id=selected_explanation.id)
 
 
-def display_quiz_explanation(request, explanation_id):
+def explanation(request, explanation_id):
     '''
     self-hosted quiz: show explanation and let student rate the explanation
     '''
@@ -57,7 +57,7 @@ def display_quiz_explanation(request, explanation_id):
             'rate_explanation_form':rate_explanation_form
         }
 
-        return render(request, 'quiz/display_quiz_explanation.html', context)
+        return render(request, 'quiz/explanation.html', context)
 
     elif request.method == 'POST':
         print "posted to display_quiz_explanation"

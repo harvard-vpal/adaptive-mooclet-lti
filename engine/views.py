@@ -29,7 +29,8 @@ def manage_quiz(request, quiz_id):
 
 def display_quiz(request, quiz_id):
     '''
-    display quiz, might go to qualtrics or self-hosted quiz app
+    getDisplayUrl model instance method handles the logic of figuring out qualtrics/non-qualtrics and redirects accordingly
+
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     return redirect(getDisplayUrl(quiz))
