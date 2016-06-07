@@ -6,10 +6,9 @@ from django.http import HttpResponse
 from .models import *
 from .forms import *
 from .utils import *
+from .algorithms import computeExplanation_Thompson
 
 from qualtrics.utils import provision_qualtrics_quiz
-from engine.algorithms import computeExplanation_Thompson 
-
 
 # from django.views.generic.edit import CreateView
 
@@ -21,33 +20,22 @@ def manage_quiz(request, quiz_id):
     Teacher view for a quiz
     '''
     quiz = Quiz.objects.get(pk=quiz_id)
-
-    # get question_url, which is the display url for the quiz
-    # might move this into a model method if its useful elsewhere
-
-    if not quiz.question_set.all().exists()
-        question_url = reverse('quiz:placeholder')
-    else:
-        question = quiz.question_set.first()
-        # Check if the quiz has a qualtrics url. If not, then we can host the quiz ourself
-        if question.url:
-            # qualtrics url
-            question_url = question.url
-        else:
-            # django url
-            question_url = reverse('quiz:display_quiz_question',kwargs={'question_id':question.id})
-
-
-    # pass in quiz url to template context to use for iframe
     context = {
         'quiz': quiz,
-        'question_url':question_url,
     }
     
     return render(request, 'engine/manage_quiz.html',context)
 
 
-def create_quiz_options(request):
+def display_quiz(request, quiz_id):
+    '''
+    display quiz, might go to qualtrics or self-hosted quiz app
+    '''
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    return redirect(getDisplayUrl(quiz))
+
+
+def quiz_creation_options(request):
     return render(request, 'engine/create_quiz_options.html')
 
 
@@ -57,32 +45,12 @@ def create_blank_quiz(request):
         context = request.session['LTI_LAUNCH']['context_id'],
     )
     quiz.save()
-    return redirect('lti:return_launch_url', quiz_id=quiz.pk)
+    return redirect('lti:return_launch_url', quiz_id=quiz.id)
 
 
 def create_quiz_from_url(request):
     if request.method == 'GET':
         quiz_url_form = QuizUrlForm()
-
-
-# def select_or_create_quiz(request):
-#     '''
-#     Accessed via select resource mode when editing assignment
-#     Select a quiz that has already been made, or create a new one
-#     see https://www.edu-apps.org/extensions/content.html
-#     '''
-#     if request.method == 'GET':
-#         select_quiz_form = SelectQuizForm()
-#         context = {'select_quiz_form':select_quiz_form}
-#         return render(request, 'engine/select_or_create_quiz.html', context)
-
-#     elif request.method == 'POST':
-#         select_quiz_form = SelectQuizForm(request.POST)
-#         if select_quiz_form.is_valid():
-#             quiz = select_quiz_form.cleaned_data['quiz']
-
-#             # embed quiz
-#             return redirect('lti:return_launch_url',quiz_id=quiz.pk)
 
 
 def modify_quiz(request, quiz_id):
@@ -91,6 +59,7 @@ def modify_quiz(request, quiz_id):
     '''
     quiz = Quiz.objects.get(pk=quiz_id)
 
+    # determine whether question is being created or modified
     if quiz.question_set.all().exists():
         question = quiz.question_set.first()
         question_status = 'exists'
@@ -98,6 +67,7 @@ def modify_quiz(request, quiz_id):
         question = Question(quiz=quiz)
         question_status = 'new'
     
+    # handle form display
     if request.method == 'GET':
 
         INITIAL_NUM_CHOICES = 4
@@ -135,11 +105,10 @@ def modify_quiz(request, quiz_id):
 
         return render(request, 'engine/modify_quiz.html', context)
 
+    # handle form submission/processing
     elif request.method == 'POST':
 
-        # logic for handling create quiz form data
         quiz_form = QuizForm(request.POST, instance=quiz)
-
         quiz = quiz_form.save(commit=False)
 
         # quiz.course = 7566
@@ -148,18 +117,10 @@ def modify_quiz(request, quiz_id):
         quiz.user = request.user
         quiz.save()
 
-        # if quiz.question_set.all().exists():
-        #     question = quiz.question_set.first()
-        # else:
-        #     question = Question(quiz=quiz)
 
         question_form = QuestionForm(request.POST, instance=question)
-
         question = question_form.save(commit=False)
-
         question.save()
-        # question.quiz = quiz
-        # question_form.save()
 
         AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
         # ExplanationFormset = inlineformset_factory(Answer, Explanation, fields=('text',),can_delete=False, extra=2)
@@ -185,21 +146,26 @@ def modify_quiz(request, quiz_id):
                 question.url = new_survey_url
                 question.save()
 
+        return redirect('engine:manage_quiz', quiz_id=quiz_id)
 
-        # pass back lti launch url to LMS
-        # return redirect('lti:return_launch_url',quiz_id=quiz.pk)
 
-        # alternatively, could redirect back to select_or_create_quiz and have user select the quiz they just created
-        return redirect('engine:manage_quiz',quiz_id=quiz_id)
-
-# def manage_quiz(request, quiz_id):
+# def select_or_create_quiz(request):
 #     '''
-#     Instructor analytics/preview view for a quiz
-#     maybe put modification options directly on here
+#     Accessed via select resource mode when editing assignment
+#     Select a quiz that has already been made, or create a new one
+#     see https://www.edu-apps.org/extensions/content.html
 #     '''
+#     if request.method == 'GET':
+#         select_quiz_form = SelectQuizForm()
+#         context = {'select_quiz_form':select_quiz_form}
+#         return render(request, 'engine/select_or_create_quiz.html', context)
 
+#     elif request.method == 'POST':
+#         select_quiz_form = SelectQuizForm(request.POST)
+#         if select_quiz_form.is_valid():
+#             quiz = select_quiz_form.cleaned_data['quiz']
 
-
-
+#             # embed quiz
+#             return redirect('lti:return_launch_url',quiz_id=quiz.pk)
 
 

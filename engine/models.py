@@ -3,14 +3,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from qualtrics.models import Template
 from ordered_model.models import OrderedModel
+from django.core.urlresolvers import reverse
 
 # Create your models here.
 
 class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
-    # url of a custom qualtrics survey, 
-    # or the url of the first provisioned qualtrics survey/question in the the quiz
+    # url of a custom qualtrics survey
     url = models.CharField(max_length=500, default='')
     context = models.CharField(max_length=100,default='')
     class Meta:
@@ -25,6 +25,35 @@ class Quiz(models.Model):
         Checks whether quiz has questions, questions have answers, and answers have explanations
         '''
         pass
+
+    def getDisplayUrl(self):
+        '''
+        gets the appropriate url to display the quiz
+        based on whether questions exist and whether custom urls are present
+        ''' 
+        if self.url:
+            return redirect(self.url)
+        elif self.question_set.all().exists():
+            first_question = self.question_set.first()
+            if first_question.url:
+                return redirect(first_question.url)
+            else:
+                return reverse('quiz:display_quiz_question',kwargs={'question_id':self.id})
+        else:
+            return reverse('quiz:placeholder')
+    # def getUrl(self):
+    #     '''
+    #     url to serve quiz, could be a custom quiz url, url of first qualtrics question
+    #     '''
+    #     if self.url:
+    #         return self.url
+    #     elif self.question_set.all().exists():
+    #         first_question = self.question_set.first()
+    #         if first_question.url:
+    #             return first_question.url
+    #         else:
+    #             return reverse('quiz:display_quiz_question',kwargs={'question_id':.id})
+    #     else return None
 
 
 class Question(OrderedModel):

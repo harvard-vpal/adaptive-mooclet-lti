@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -82,18 +82,18 @@ def launch(request,quiz_id):
     request.session['LTI_LAUNCH'].update(more_lti_params)
 
     if 'Instructor' in request.session['LTI_LAUNCH']['roles']:
-        return redirect('engine:manage_quiz',quiz_id=quiz_id)
+        return redirect('engine:manage_quiz', quiz_id=quiz_id)
 
     # TODO researcher role check
 
     else:
         # TODO store canvas user id and lti user id so that we can have a mapping
 
-        quiz = Quiz.objects.get(pk=quiz_id)
+        quiz = get_object_or_404(Quiz, pk=quiz_id)
 
         # Check if the quiz has a qualtrics url. If not, then we can host the quiz ourself
-        if quiz.url:
-            quiz_url = quiz.url
+        if quiz.getUrl():
+            quiz_url = quiz.getUrl()
         else:
             quiz_url = reverse('quiz:display_quiz_question',kwargs={'quiz_id':quiz.id})
 
@@ -116,7 +116,7 @@ def launch_resource_selection(request):
         }
         request.session['LTI_LAUNCH'].update(more_lti_params)
 
-    return redirect('engine:create_quiz_options')
+    return redirect('engine:quiz_creation_options')
 
 
 @login_required()
@@ -172,9 +172,6 @@ def return_outcome(request):
         }
     )
     
-    # print 'outcome service url: {}'.format(outcome.lis_outcome_service_url)
-    # print 'result source id: {}'.format(outcome.lis_result_sourcedid)
-    # print 'operation: {}'.format(outcome.operation)
     outcome_response = outcome.post_replace_result(
         score,
         # result_data={
@@ -183,33 +180,6 @@ def return_outcome(request):
         # }
     )
 
-    # print 'OUTCOME REQUEST VARIABLES'
-    # print 'consumer key: {}'.format(outcome.consumer_key)
-    # print 'consumer secret: {}'.format(outcome.consumer_secret)
-    # print 'result sourcedid: {}'.format(outcome.lis_result_sourcedid)
-
-    # print 'outcome response successful? {}'.format(outcome_response.is_success())
-    # print 'outcome response status code: {}'.format(outcome_response.response_code)
-    
-    # print 'outcome response content: {}'.format(outcome_response.post_response)
-
-    # print 'outcome response code major: {}'.format(outcome_response.code_major)
-    # print 'outcome response description: {}'.format(outcome_response.description)
-    # print 'outcome response message ref {}'.format(outcome_response.message_ref_identifier)
-
-    # print 'outcome response headers: {}'.format(outcome_response.post_response.headers)
-
-    # print 'outcome response code major: {}'.format(outcome_response.code_major)
-    # print 'outcome request body: {}'.format(outcome_response.post_response.request.body)
-    # print 'outcome request url: {}'.format(outcome_response.post_response.request.url)
-    # print 'outcome request headers: {}'.format(outcome_response.post_response.request.headers)
-    # 
-    # print 'outcome response content: {}'.format(outcome_response.post_response.text)
-
-    # print 'outcome response description: {}'.format(outcome_response.post_response.imsx_description)
-    # print 'outcome response message ref id: {}'.format(outcome_response.post_response.message_ref_identifier)
-
-    # return HttpResponse(outcome_response.post_response.content)
     return redirect(request.session['LTI_LAUNCH'].get('launch_presentation_return_url'))
 
 

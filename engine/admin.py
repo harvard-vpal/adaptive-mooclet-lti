@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import *
 
 class QuizAdmin (admin.ModelAdmin):
-	list_display = ['id','name','user','url']
+	list_display = ['id','name','user']
 
 class QuestionAdmin (admin.ModelAdmin):
 	list_display = ['id','get_quiz_id','quiz','text']

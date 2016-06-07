@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('',
 	# resource selection
-	url(r'^create_quiz_options$', 'engine.views.create_quiz_options', name='create_quiz_options'),
+	url(r'^quiz_creation_options$', 'engine.views.quiz_creation_options', name='quiz_creation_options'),
 	url(r'^create_blank_quiz$', 'engine.views.create_blank_quiz', name='create_blank_quiz'),
 
 	# instructor lti view

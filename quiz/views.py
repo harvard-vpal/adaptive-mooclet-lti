@@ -76,6 +76,6 @@ def display_quiz_explanation(request, explanation_id):
 
 
 def placeholder(request):
-    return render('quiz/placeholder.html')
+    return render(request, 'quiz/placeholder.html')
 
     
