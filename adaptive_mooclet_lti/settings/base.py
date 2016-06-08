@@ -37,7 +37,7 @@ path.append(SITE_ROOT)
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECURE_SETTINGS.get('django_secret_key')
+SECRET_KEY = SECURE_SETTINGS.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'rest_framework',
     'ordered_model',
     'lti',
@@ -145,7 +146,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/lti_tools/static/'
+STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -158,7 +159,19 @@ STATIC_ROOT = normpath(join(SITE_ROOT, 'http_static'))
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get('lti_oauth_credentials', None)
+
+#### AMAZON STORAGE ####
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+AWS_STORAGE_BUCKET_NAME = SECURE_SETTINGS.get('AWS_STORAGE_BUCKET_NAME', None)
+AWS_S3_ACCESS_KEY_ID = SECURE_SETTINGS.get('AWS_S3_ACCESS_KEY_ID', None)
+AWS_SECRET_ACCESS_KEY = SECURE_SETTINGS.get('AWS_SECRET_ACCESS_KEY', None)
+
+
+#####################
+#### LTI-related ####
+#####################
+
+LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get('LTI_OAUTH_CREDENTIALS', None)
 
 ## for dce version of django-auth-lti
 from oauthlib.oauth1 import RequestValidator

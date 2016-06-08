@@ -8,21 +8,29 @@ from git. secure.py should never be put under version control.
 
 '''
 SECURE_SETTINGS = {
-	# you only need to change the database settings
-	# if your app needs to access a database
-	# you would also need to configure the
-	# database in base.py. These settings are
-	# here just to show you that you can put secure 
-	# settings in this file. 
-	'django_db_user': 'changeme',
-	'django_db_pass': 'changeme',
+	# database info
+	'db_name': '',
+	'db_user': '',
+	'db_pass': '',
+	'db_host': '',
+	'db_port': 5432,
 
-	# required for Django
-	'django_secret_key': "changeme",
+	# django secret key
+	'SECRET_KEY': "",
 
-	# required for LTI
-	'lti_oauth_credentials': {
-		'key': 'value',
+	# LTI credentials
+	'LTI_OAUTH_CREDENTIALS': {
+		'': '',
 	},
-	
+
+	# qualtrics-related settings
+	'qualtrics_base_url':'',
+	'qualtrics_user':'',
+	'qualtrics_api_token':'',
+
+
+	# amazon S3 credentials for static file storage
+	'AWS_STORAGE_BUCKET_NAME':'',
+	'AWS_S3_ACCESS_KEY_ID': '',
+	'AWS_SECRET_ACCESS_KEY': '',
 }
