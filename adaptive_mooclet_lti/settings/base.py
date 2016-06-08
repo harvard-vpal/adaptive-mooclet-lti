@@ -122,11 +122,11 @@ WSGI_APPLICATION = 'adaptive_mooclet_lti.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': SECURE_SETTINGS.get('rds_name'),
-        'USER': SECURE_SETTINGS.get('rds_user'),
-        'PASSWORD': SECURE_SETTINGS.get('rds_pass'),
-        'HOST': SECURE_SETTINGS.get('rds_host'),
-        'PORT': SECURE_SETTINGS.get('rds_port'),
+        'NAME': SECURE_SETTINGS.get('db_name'),
+        'USER': SECURE_SETTINGS.get('db_user'),
+        'PASSWORD': SECURE_SETTINGS.get('db_pass'),
+        'HOST': SECURE_SETTINGS.get('db_host'),
+        'PORT': SECURE_SETTINGS.get('db_port'),
     }
 }
 
