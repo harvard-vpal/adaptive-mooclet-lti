@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
-
+from collections import OrderedDict
 import json
 
 from engine.algorithms import computeExplanation_Thompson 
@@ -11,11 +11,13 @@ from engine import utils
 from rest_framework import viewsets
 from api.serializers import *
 
+##########################
 ##### rest-framework #####
+##########################
 
 class QuizViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    list quizzes
     """
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
@@ -23,86 +25,143 @@ class QuizViewSet(viewsets.ModelViewSet):
 
 class QuestionViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    list questions
     """
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
 
+#####################################################################
 #### custom endpoints, used by qualtrics to retrieve object text ####
+#####################################################################
 
-# Get question text and answer choices using a question id
-# INPUT: question_id
-# OUTPUT: question text, answer texts, correct answer choice
-def get_question (request):
+def get_question(request):
+    '''
+    INPUT (via GET params): question_id
+    OUTPUT: quiz_id, question_text, correct_choice, [answer{n}_text]*n
+    '''
     if 'id' not in request.GET:
         return HttpResponse('question_id not found in GET parameters')
     question = get_object_or_404(Question, id=request.GET['id'])
     answers = question.answer_set.all()
 
-    correctAnswerChoice = 0
-    for i in range(len(answers)):
+    num_answers = len(answers)
+
+    # identifies the correct answer choice
+    # if there's more than one labelled correct only the first is identified
+    correct_choice = 0
+    for i in range(num_answers):
         if answers[i].correct:
-            correctAnswerChoice = i+1
+            correct_choice = i+1
             break
 
-    return JsonReponse({
-        'questionText':question.text,
-        'answer1':answers[0].text,
-        'answer2':answers[1].text,
-        'answer3':answers[2].text,
-        'answer4':answers[3].text,
-        'correctAnswerChoice':correctAnswerChoice,
-    })
-    return JsonResponse(data)
+    output = {
+        'quiz_id': question.quiz.id,
+        'question_text':question.text,
+        'correct_answer_choice':correct_choice,
+    }
 
-# Computes and returns the Explanation that a particular student should receive for
-# a particular question.
-def get_explanation_for_student (request):
+    # add answer text to output, e.g. answer1_text: "answer text"
+    for i in range(num_answers):
+        output['answer{}_text'.format(i+1)] = answers[i].text
+    
+    return JsonResponse(output, json_dumps_params={'sort_keys':True})
+
+def is_correct(request):
+    '''
+    INPUT (via GET params): answer_id
+    OUTPUT: quiz_id, question_text, correct_answer_id, [answer{n}_text]*n
+    '''
+    if 'id' not in request.GET:
+        return HttpResponse('question_id not found in GET parameters')
+    question = get_object_or_404(Question, id=request.GET['id'])
+    answers = question.answer_set.all()
+
+    num_answers = len(answers)
+
+    # identifies the correct answer choice
+    # if there's more than one labelled correct only the first is identified
+    correct_answer_id = 0
+    for i in range(num_answers):
+        if answers[i].correct:
+            correct_answer_id = i+1
+            break
+
+    output = {
+        'quiz_id': question.quiz.id,
+        'question_text':question.text,
+        'correct_answer_id':correct_answer_id,
+    }
+
+    # add answer text to output, e.g. answer1_text: "answer text"
+    for i in range(num_answers):
+        output['answer{}_text'.format(i+1)] = answers[i].text
+    
+    return JsonResponse(output, json_dumps_params={'sort_keys':True})
+
+def get_explanation_for_student(request):
+    '''
+    Computes and returns the Explanation that a particular student should receive for
+    a particular question.
+
+    INPUT (via GET params): answer_id, user_id
+    OUTPUT: explanation_id, explanation_text
+    '''
     if 'answer_id' not in request.GET:
         return HttpResponse('answer_id not found in GET parameters')
-    # if 'student_id' not in request.GET:
-    #     return HttpResponse('student_id not found in GET parameters')
+    # disabled for ease of testing
+    # if 'user_id' not in request.GET:
+    #     return HttpResponse('user_id not found in GET parameters')
 
     answer = get_object_or_404(Answer, id=request.GET['answer_id'])
 
     # placeholder student for now
-    student = User.objects.first()
-    # student = get_object_or_404(User, id=request.GET['student_id'])
+    user = User.objects.first()
+    # student = get_object_or_404(User, id=request.GET['user_id'])
 
-    explanation = utils.get_explanation_for_student(answer,student)
+    explanation = utils.get_explanation_for_student(answer, user)
 
     return JsonResponse({
-        'explanationid':explanation.id,
-        'explanation':explanation.text,
+        'explanation_id':explanation.id,
+        'explanation_text':explanation.text,
     })
 
 
-# Retrieves all explanations for a particular question.
-# INPUT: question_id
-# OUTPUT: Array of Explanation objects
-def get_explanations_for_question (request):
-    if 'question_id' not in request.GET:
-        return HttpResponse('question_id not found in GET parameters')
-    allExplanations = []
-    for explanation in Explanation.objects.filter(question_id=request.GET['question_id']).iterator():
-        allExplanations.append(explanation)
-    return JsonResponse(json.loads(serializers.serialize("json", allExplanations)), safe=False)
+def submit_result_of_explanation(request):
+    '''
+    # Submits a scalar score (1-7) associated with a particular student who received a
+    # particular explanation.
 
-
-# Submits a scalar score (1-7) associated with a particular student who received a
-# particular explanation.
-# INPUT: explanation_id, student_id, value (1-7)
-# OUTPUT: id of new Result object
-def submit_result_of_explanation (request):
+    INPUT (via GET params): explanation_id, user_id, value (1-7)
+    OUTPUT: result_id
+    '''
     if 'explanation_id' not in request.GET:
         return HttpResponse('explanation_id not found in GET parameters')
-    if 'student_id' not in request.GET:
-        return HttpResponse('student_id not found in GET parameters')
+    # if 'user_id' not in request.GET:
+    #     return HttpResponse('user_id not found in GET parameters')
     if 'value' not in request.GET:
         return HttpResponse('value not found in GET parameters')
     
-    theValue = (float(request.GET['value']) - 1.0) / 6.0
-    result = Result(student_id=request.GET['student_id'], explanation_id=request.GET['explanation_id'], value=theValue)
+    value = (float(request.GET['value']) - 1.0) / 6.0
+
+    result = Result(
+        user_id=request.GET['user_id'],
+        explanation_id=request.GET['explanation_id'],
+        value=value
+    )
     result.save()
-    return JsonResponse({ "id": result.id })
+    return JsonResponse({ "result_id": result.id })
+
+
+def submit_quiz_grade(request):
+    '''
+    Submits a quiz grade and triggers grade passback to the LMS
+
+    INPUT (via GET params): user_id, quiz_id, grade
+    '''
+    return JsonResponse({'message': 'not implemented'})
+
+
+
+
+
