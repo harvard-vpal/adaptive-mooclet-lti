@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from collections import OrderedDict
@@ -43,7 +43,7 @@ def get_question(request):
     if 'id' not in request.GET:
         return HttpResponse('question_id not found in GET parameters')
     question = get_object_or_404(Question, pk=request.GET['id'])
-    answers = question.answer_set.all()
+    answers = question.answer_set.order_by('order')
 
     num_answers = len(answers)
 
@@ -92,7 +92,12 @@ def get_explanation_for_student(request):
     #     return HttpResponse('user_id not found in GET parameters')
 
     question = get_object_or_404(Question, id=request.GET['question_id'])
-    answer = get_object_or_404(Answer, question=question, order=request.GET['answer_choice'])
+
+    # errors if more than one returned
+    # answer = get_object_or_404(Answer, question=question, order=request.GET['answer_choice'])
+    
+    # still need to validate such that order is unique within answer_set, in the meantime use this
+    answer = get_list_or_404(Answer, question=question, order=request.GET['answer_choice'])[0]
 
     # placeholder student for now, still need to determine what kind of user_id to use (internal django, lti id, etc)
     user = User.objects.first()
