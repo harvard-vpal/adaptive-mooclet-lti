@@ -106,8 +106,8 @@ def get_explanation_for_student(request):
     explanation = utils.get_explanation_for_student(answer, user)
 
     return JsonResponse({
-        'explanation_id':explanation.id,
-        'explanation_text':explanation.text,
+        'id':explanation.id,
+        'text':explanation.text,
     })
 
 
