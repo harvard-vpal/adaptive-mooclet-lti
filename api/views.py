@@ -70,36 +70,10 @@ def get_question(request):
 
 def is_correct(request):
     '''
-    INPUT (via GET params): answer_id
-    OUTPUT: quiz_id, question_text, correct_answer_id, [answer{n}_text]*n
+    to be implemented
+    check whether a
     '''
-    if 'id' not in request.GET:
-        return HttpResponse('question_id not found in GET parameters')
-    question = get_object_or_404(Question, id=request.GET['id'])
-    answers = question.answer_set.all()
-
-    num_answers = len(answers)
-
-    # identifies the correct answer choice
-    # if there's more than one labelled correct only the first is identified
-    correct_answer_id = 0
-    for i in range(num_answers):
-        if answers[i].correct:
-            correct_answer_id = i+1
-            break
-
-    output = {
-        'quiz_id': question.quiz.id,
-        'question_id': question.id,
-        'question_text':question.text,
-        'correct_answer_id':correct_answer_id,
-    }
-
-    # add answer text to output, e.g. answer1_text: "answer text"
-    for i in range(num_answers):
-        output['answer{}_text'.format(i+1)] = answers[i].text
-    
-    return JsonResponse(output, json_dumps_params={'sort_keys':True})
+    pass
 
 def get_explanation_for_student(request):
     '''
@@ -117,9 +91,10 @@ def get_explanation_for_student(request):
     # if 'user_id' not in request.GET:
     #     return HttpResponse('user_id not found in GET parameters')
 
-    answer = get_object_or_404(Answer, id=request.GET['answer_id'])
+    question = get_object_or_404(Question, id=request.GET['question_id'])
+    answer = get_object_or_404(Answer, question=question, order=request.GET['answer_choice'])
 
-    # placeholder student for now
+    # placeholder student for now, still need to determine what kind of user_id to use (internal django, lti id, etc)
     user = User.objects.first()
     # student = get_object_or_404(User, id=request.GET['user_id'])
 
