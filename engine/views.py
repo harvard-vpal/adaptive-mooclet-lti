@@ -40,7 +40,7 @@ def display_quiz(request, quiz_id):
         extra_params = {
             'user_id':request.user.id,
         }
-        return redirect(quiz.external_url+'?'+urlencode(extra_params))
+        return redirect(external_url+'?'+urlencode(extra_params))
     else:
         if quiz.question_set.all().exists():
             question = quiz.question_set.first()
