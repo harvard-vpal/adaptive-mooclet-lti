@@ -4,7 +4,6 @@ from os import path
 import json
 from .models import Template
 from django.core.urlresolvers import reverse
-from django.contrib.staticfiles.templatetags.staticfiles import static
 
 class QSF:
     '''
@@ -64,7 +63,29 @@ class QSF:
                                 embedded_variable['Value'] = replace_with
         self.question_id = question_id
 
-    def upload_to_qualtrics(self, survey_name, method='url', qsf_url=None):
+    def upload_to_qualtrics(self,survey_name,qsf_url,method=None):
+        '''
+        upload and activate survey using api v2
+        '''
+        params = {
+            'User': settings.QUALTRICS_USER,
+            'Token': settings.QUALTRICS_API_TOKEN,
+            'Version': '2.5',
+            'Format': 'JSON',
+            'Request': 'importSurvey',
+            'ImportFormat': 'QSF',
+            'Name': survey_name,
+            'Activate': 1,
+            'URL': qsf_url,
+        }
+        response = requests.post(settings.QUALTRICS_API_URL, params=params)
+        
+        if not response.status_code == 200:
+            raise Exception('Something went wrong with qualtrics survey creation: {}'.format(response.text))
+        
+        return response.json()['Result']['SurveyID']
+
+    def upload_to_qualtrics_v3(self, survey_name, method='url', qsf_url=None):
         '''
         upload the QSF object to qualtrics 
         options:

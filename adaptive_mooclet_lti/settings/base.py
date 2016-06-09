@@ -185,6 +185,10 @@ QUALTRICS_API_TOKEN = SECURE_SETTINGS.get('qualtrics_api_token')
 QUALTRICS_USER = SECURE_SETTINGS.get('qualtrics_user')
 # Qualtrics base url for making API (v3) calls
 QUALTRICS_BASE_URL = SECURE_SETTINGS.get('qualtrics_base_url','https://yourdatacenterid.qualtrics.com')
+
+# Qualtrics base url for making API (v2) calls
+QUALTRICS_API_URL = 'https://survey.qualtrics.com/WRAPI/ControlPanel/api.php'
+
 # QSF template name, assumes it is in static/qualtrics
 QUALTRICS_TEMPLATE_NAME = 'MOOClet_template.qsf'
 QSF_ROOT = normpath(join(SITE_ROOT, 'static/qsf'))
