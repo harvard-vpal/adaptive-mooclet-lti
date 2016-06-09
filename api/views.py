@@ -42,7 +42,7 @@ def get_question(request):
     '''
     if 'id' not in request.GET:
         return HttpResponse('question_id not found in GET parameters')
-    question = get_object_or_404(Question, id=request.GET['id'])
+    question = get_object_or_404(Question, pk=request.GET['id'])
     answers = question.answer_set.all()
 
     num_answers = len(answers)
@@ -57,7 +57,7 @@ def get_question(request):
 
     output = {
         'quiz_id': question.quiz.id,
-        'question_text':question.text,
+        'text':question.text,
         'correct_answer_choice':correct_choice,
     }
 
