@@ -4,6 +4,7 @@ from os import path
 import json
 from .models import Template
 from django.core.urlresolvers import reverse
+from django.contrib.staticfiles.templatetags.staticfiles import static
 
 class QSF:
     '''
@@ -12,7 +13,6 @@ class QSF:
     def __init__(self, template=None, url=None):
         if template and url:
             raise Exception('Too many arguments')
-
         # Option 1: Initialize QSF from a given URL
         elif url:
             try:
@@ -25,7 +25,7 @@ class QSF:
             # get the template path
             if template:
                 # assumes it is in static/qualtrics
-                template_path = path.join(settings.STATIC_ROOT, 'qualtrics/'+template.filename)
+                template_path = path.join(settings.QSF_ROOT+'/'+template.filename)
             
             else:
                 # default to the first template
