@@ -13,7 +13,7 @@ class QuestionAdmin (admin.ModelAdmin):
 		return obj.quiz.id
 
 class AnswerAdmin (admin.ModelAdmin):
-	list_display = ['id','question','text','correct']
+	list_display = ['id','question','text','correct','order']
 
 class ExplanationAdmin (admin.ModelAdmin):
 	list_display = ['id','answer','text']

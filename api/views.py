@@ -50,7 +50,7 @@ def get_question(request):
     # identifies the correct answer choice
     # if there's more than one labelled correct only the first is identified
     correct_choice = 0
-    for a in answers:
+    for answer in answers:
         if answer.correct:
             # answer.order is zero-indexed
             correct_choice = answer.order+1
