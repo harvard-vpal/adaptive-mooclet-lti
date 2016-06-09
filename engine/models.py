@@ -14,6 +14,7 @@ class Quiz(models.Model):
     # url of a custom qualtrics survey
     url = models.URLField(default='')
     context = models.CharField(max_length=100,default='')
+
     class Meta:
         verbose_name_plural = 'quizzes'
 
@@ -25,23 +26,21 @@ class Quiz(models.Model):
         Check whether the quiz is student-ready:
         Checks whether quiz has questions, questions have answers, and answers have explanations
         '''
-        pass
+        if self.question_set.all().exists():
+            return True
+        # TODO: check answers of questions, explanations of answers
 
-    def getDisplayUrl(self):
+    def getExternalUrl(self):
         '''
-        gets the appropriate url to display the quiz
-        based on whether questions exist and whether custom urls are present
-        ''' 
+        gets an external url to display the quiz, return None if one not available
+        '''
         if self.url:
             return redirect(self.url)
         elif self.question_set.all().exists():
             first_question = self.question_set.first()
             if first_question.url:
                 return redirect(first_question.url)
-            else:
-                return reverse('quiz:question',kwargs={'question_id':self.id})
-        else:
-            return reverse('quiz:placeholder')
+        return None
 
 
 class Question(OrderedModel):

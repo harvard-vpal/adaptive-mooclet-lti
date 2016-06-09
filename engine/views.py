@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.forms import formset_factory,inlineformset_factory, ModelForm
 from django.http import HttpResponse
+from urllib import urlencode
 
 from .models import *
 from .forms import *
@@ -29,11 +30,23 @@ def manage_quiz(request, quiz_id):
 
 def display_quiz(request, quiz_id):
     '''
-    getDisplayUrl model instance method handles the logic of figuring out qualtrics/non-qualtrics and redirects accordingly
-
+    redirect to proper mode of displaying quiz
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
-    return redirect(getDisplayUrl(quiz))
+
+    external_url = quiz.getExternalUrl()
+
+    if external_url:
+        extra_params = {
+            'user_id':request.user.id,
+        }
+        return redirect(quiz.external_url+'?'+urlencode(extra_params))
+    else:
+        if quiz.question_set.all().exists():
+            question = quiz.question_set.first()
+            return redirect('quiz:question',question_id=question.id)
+        else:
+            return redirect('quiz:placeholder')
 
 
 def quiz_creation_options(request):

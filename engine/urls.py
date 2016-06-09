@@ -2,11 +2,12 @@ from django.conf.urls import patterns, url
 from . import views
 
 urlpatterns = [
-	# resource selection
-	url(r'^quiz_creation_options$', views.quiz_creation_options, name='quiz_creation_options'),
-	url(r'^create_blank_quiz$', views.create_blank_quiz, name='create_blank_quiz'),
+    # resource selection
+    url(r'^quiz_creation_options$', views.quiz_creation_options, name='quiz_creation_options'),
+    url(r'^create_blank_quiz$', views.create_blank_quiz, name='create_blank_quiz'),
 
-	# instructor lti view
+    # instructor lti view
+    url(r'^display_quiz/(?P<quiz_id>[0-9]+)$', views.display_quiz, name='display_quiz'),
     url(r'^manage_quiz/(?P<quiz_id>[0-9]+)$', views.manage_quiz, name='manage_quiz'),
     url(r'^modify_quiz/(?P<quiz_id>[0-9]+)$', views.modify_quiz, name='modify_quiz'),
 
