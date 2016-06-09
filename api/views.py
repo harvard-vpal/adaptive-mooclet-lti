@@ -50,15 +50,16 @@ def get_question(request):
     # identifies the correct answer choice
     # if there's more than one labelled correct only the first is identified
     correct_choice = 0
-    for i in range(num_answers):
-        if answers[i].correct:
-            correct_choice = i+1
+    for a in answers:
+        if answer.correct:
+            # answer.order is zero-indexed
+            correct_choice = answer.order+1
             break
 
     output = {
         'quiz_id': question.quiz.id,
         'text':question.text,
-        'correct_answer_choice':correct_choice,
+        'correct_choice':correct_choice,
     }
 
     # add answer text to output, e.g. answer1_text: "answer text"
@@ -89,6 +90,7 @@ def is_correct(request):
 
     output = {
         'quiz_id': question.quiz.id,
+        'question_id': question.id,
         'question_text':question.text,
         'correct_answer_id':correct_answer_id,
     }
@@ -104,11 +106,13 @@ def get_explanation_for_student(request):
     Computes and returns the Explanation that a particular student should receive for
     a particular question.
 
-    INPUT (via GET params): answer_id, user_id
+    INPUT (via GET params): question_id, answer_choice, user_id
     OUTPUT: explanation_id, explanation_text
     '''
-    if 'answer_id' not in request.GET:
-        return HttpResponse('answer_id not found in GET parameters')
+    if 'answer_choice' not in request.GET:
+        return HttpResponse('answer_choice not found in GET parameters')
+    if 'question_id' not in request.GET:
+        return HttpResponse('question_id not found in GET parameters')
     # disabled for ease of testing
     # if 'user_id' not in request.GET:
     #     return HttpResponse('user_id not found in GET parameters')
