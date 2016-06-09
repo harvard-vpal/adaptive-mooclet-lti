@@ -83,7 +83,11 @@ class QSF:
         if not response.status_code == 200:
             raise Exception('Something went wrong with qualtrics survey creation: {}'.format(response.text))
         
-        return response.json()['Result']['SurveyID']
+        survey_id = response.json()['Result']['SurveyID']
+        qualtrics_url = "{}/SE/?SID={}".format(settings.QUALTRICS_BASE_URL, survey_id)
+        
+        return qualtrics_url
+
 
     def upload_to_qualtrics_v3(self, survey_name, method='url', qsf_url=None):
         '''
