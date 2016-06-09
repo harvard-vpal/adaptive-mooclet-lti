@@ -12,7 +12,7 @@ class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
     # url of a custom qualtrics survey
-    url = models.URLField(default='')
+    url = models.URLField(default='',blank=True)
     context = models.CharField(max_length=100,default='')
 
     class Meta:
@@ -32,7 +32,7 @@ class Quiz(models.Model):
 
     def getExternalUrl(self):
         '''
-        gets an external url to display the quiz, return None if one not available
+        gets the external url to display the quiz, return None if not available
         '''
         if self.url:
             return self.url
@@ -47,7 +47,7 @@ class Question(OrderedModel):
     quiz = models.ForeignKey(Quiz)
     text = models.TextField('question text')
     # template = models.ForeignKey(Template)
-    url = models.URLField(default='')
+    url = models.URLField(default='',blank=True)
     # settings for django-ordered-model
     order_with_respect_to = 'quiz'
     
