@@ -35,11 +35,11 @@ class Quiz(models.Model):
         gets an external url to display the quiz, return None if one not available
         '''
         if self.url:
-            return redirect(self.url)
+            return self.url
         elif self.question_set.all().exists():
             first_question = self.question_set.first()
             if first_question.url:
-                return redirect(first_question.url)
+                return first_question.url
         return None
 
 
