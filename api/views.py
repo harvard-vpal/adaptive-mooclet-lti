@@ -50,10 +50,9 @@ def get_question(request):
     # identifies the correct answer choice
     # if there's more than one labelled correct only the first is identified
     correct_choice = 0
-    for answer in answers:
-        if answer.correct:
-            # answer.order is zero-indexed
-            correct_choice = answer.order+1
+    for i in range(num_answers):
+        if answers[i].correct:
+            correct_choice = i+1
             break
 
     output = {
@@ -68,12 +67,14 @@ def get_question(request):
     
     return JsonResponse(output, json_dumps_params={'sort_keys':True})
 
+
 def is_correct(request):
     '''
-    to be implemented
-    check whether a
+    to be implemented if useful
+    check whether a answer is correct or not
     '''
     pass
+
 
 def get_explanation_for_student(request):
     '''
@@ -92,12 +93,14 @@ def get_explanation_for_student(request):
     #     return HttpResponse('user_id not found in GET parameters')
 
     question = get_object_or_404(Question, id=request.GET['question_id'])
-
+    answer_choice = int(request.GET['answer_choice'])
     # errors if more than one returned
     # answer = get_object_or_404(Answer, question=question, order=request.GET['answer_choice'])
     
     # still need to validate such that order is unique within answer_set, in the meantime use this
-    answer = get_list_or_404(Answer, question=question, order=request.GET['answer_choice'])[0]
+    # answer = get_list_or_404(Answer, question=question, order=answer_choice)[0]
+    # also answer_choice is 1-indexed
+    answer = question.answer_set.order_by('order')[answer_choice-1]
 
     # placeholder student for now, still need to determine what kind of user_id to use (internal django, lti id, etc)
     user = User.objects.first()
