@@ -12,7 +12,7 @@ class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
     # url of a custom qualtrics survey
-    url = models.CharField(max_length=500, default='')
+    url = models.URLField(default='')
     context = models.CharField(max_length=100,default='')
     class Meta:
         verbose_name_plural = 'quizzes'
@@ -46,9 +46,9 @@ class Quiz(models.Model):
 
 class Question(OrderedModel):
     quiz = models.ForeignKey(Quiz)
-    text = models.CharField('question text', max_length=500)
+    text = models.TextField('question text')
     # template = models.ForeignKey(Template)
-    url = models.CharField(max_length=500, default='')
+    url = models.URLField(default='')
     # settings for django-ordered-model
     order_with_respect_to = 'quiz'
     
@@ -58,7 +58,7 @@ class Question(OrderedModel):
 
 class Answer(OrderedModel):
     question = models.ForeignKey(Question)
-    text = models.CharField('answer choice text', max_length=500)
+    text = models.TextField('answer choice text', max_length=500)
     correct = models.BooleanField('is correct')
     # order = models.PositiveIntegerField('choice order')
 
@@ -71,7 +71,7 @@ class Answer(OrderedModel):
 
 class Explanation(models.Model):
     answer = models.ForeignKey(Answer)
-    text = models.CharField('explanation text', max_length=500)
+    text = models.TextField('explanation text')
 
     def __unicode__(self):
         return "{}: {}".format(self.id,self.text)
@@ -105,7 +105,7 @@ class CourseUser(models.Model):
 
 class CourseUserVariable(models.Model):
     name = models.CharField(max_length=50,default='')
-    description = models.CharField(max_length=200,default='')
+    description = models.TextField(default='')
 
 class CourseUserState(models.Model):
     courseuser = models.ForeignKey(CourseUser)
