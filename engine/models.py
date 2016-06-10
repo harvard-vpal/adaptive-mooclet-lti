@@ -71,9 +71,13 @@ class Answer(OrderedModel):
 class Explanation(models.Model):
     answer = models.ForeignKey(Answer)
     text = models.TextField('explanation text')
+    # policy = models.ForeignKey(Policy)
 
     def __unicode__(self):
         return "{}: {}".format(self.id,self.text)
+
+# class Policy(models.Model):
+#    pass
 
 
 class Result(models.Model):
