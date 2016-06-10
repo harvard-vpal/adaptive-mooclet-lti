@@ -49,6 +49,14 @@ class ExplanationForm(forms.ModelForm):
 	class Meta:
 		model = Explanation
 		fields = ['text']
+		
+class ExplanationParameters(forms.ModelForm):
+	'''
+	This will be a table for each explanation, whose
+	fields will be different kinds of parameters. 
+	E.g. entry one might be 
+	[source=inst1, role = instructor, confidence = 3, value = 0.3, weight = 5]
+	'''
 
 class SelectQuizForm(forms.Form):
 	'''
