@@ -56,4 +56,10 @@ class SelectQuizForm(forms.Form):
 	'''
 	quiz = forms.ModelChoiceField(queryset=Quiz.objects.all())
 
-
+class PolicyForm(forms.ModelForm):
+	'''
+	Where Andrew will define the PolicyForm 
+	to allow people to choose which policy to use. 
+	Right now it's all thompson1
+	'''
+	pass
