@@ -87,7 +87,7 @@ def modify_quiz(request, quiz_id):
         INITIAL_NUM_CHOICES = 4
         INITIAL_NUM_EXPLANATIONS = 2
         
-        AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
+        AnswerFormset = inlineformset_factory(Question, Answer, form=AnswerForm, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
         # ExplanationFormset = inlineformset_factory(Answer, Explanation, fields=('text',),can_delete=False, extra=2)
         
         #TODO fix this
@@ -162,6 +162,27 @@ def modify_quiz(request, quiz_id):
 
         return redirect('engine:manage_quiz', quiz_id=quiz_id)
 
+def manage_explanations(request, quiz_id):
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = quiz.question_set.first()
+    answers = question.answer_set.order_by('order')
+
+    context = {'answers':answers}
+
+    return render(request, 'engine/manage_explanations.html', context)
+
+def create_explanation_for_answer(request, answer_id):
+    answer = get_object_or_404(Answer,pk=answer_id)
+    if request.method=='GET':
+        # explanation_form = ExplanationForm()
+        context = {
+            'answer':answer,
+            'explanation_form':ExplanationForm()
+        }
+        return render(request, 'engine/create_explanation_for_answer.html')
+    elif request.method=='POST':
+        answer = get_object_or_404(Answer,pk=answer_id)
+        pass
 
 # def select_or_create_quiz(request):
 #     '''

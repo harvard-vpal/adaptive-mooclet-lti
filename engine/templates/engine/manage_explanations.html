@@ -1,0 +1,30 @@
+<html>
+<head>
+
+<title>Manage explanations</title>
+<!-- TODO add some stylesheets -->
+</head>
+<body>
+	<div>
+
+		<h1> Create/modify quiz </h1>
+		
+		{% for answer in answers %}
+
+			<p>Answer: {{answer.text}}</p>
+
+			<ul>
+			{% for explanation in answer.explanation_set.all %}
+
+				<li>{{explanation.text}}</li>
+
+			{% endfor %}
+			<li><a href="{% url 'engine:create_explanation_for_answer' answer_id=answer.pk %}">Add a new explanation</a></li>
+			</ul>
+			
+				
+			
+		{% endfor %}
+	</div>
+</body>
+</html>

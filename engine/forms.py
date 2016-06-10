@@ -36,6 +36,9 @@ class AnswerForm(forms.ModelForm):
 	class Meta:
 		model = Answer
 		fields = ['text', 'correct']
+		widgets = {
+			'text': forms.widgets.TextInput,
+		}
 
 
 class ExplanationForm(forms.ModelForm):

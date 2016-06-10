@@ -9,9 +9,11 @@
 		<h1> Manage quiz view </h1>
 		
 		<!-- create quiz option -->
-		<h2> Modify quiz </h2>
+		<h2> Edit quiz and explanations </h2>
 
-			<p> <a href="{% url 'engine:modify_quiz' quiz_id=quiz.pk %}">Modify quiz</a></p>
+			<p> <a href="{% url 'engine:modify_quiz' quiz_id=quiz.pk %}">Edit quiz</a></p>
+
+			<p> <a href="{% url 'engine:manage_explanations' quiz_id=quiz.pk %}">Edit explanations</a></p>
 
 		<h2> Quiz preview </h2>
 
