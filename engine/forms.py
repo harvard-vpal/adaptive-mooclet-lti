@@ -44,7 +44,6 @@ class AnswerForm(forms.ModelForm):
 class ExplanationForm(forms.ModelForm):
 	'''
 	Create new explanation
-	Used in "create_quiz" view
 	'''
 	class Meta:
 		model = Explanation

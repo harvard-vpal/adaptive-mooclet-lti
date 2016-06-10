@@ -181,8 +181,9 @@ def create_explanation_for_answer(request, answer_id):
         }
         return render(request, 'engine/create_explanation_for_answer.html')
     elif request.method=='POST':
-        answer = get_object_or_404(Answer,pk=answer_id)
-        pass
+        explanation_form = ExplanationForm(request.POST)
+        explanation = explanation_form.save()
+        return redirect('engine:manage_explanations',quiz_id=answer.question.quiz.id)
 
 # def select_or_create_quiz(request):
 #     '''
