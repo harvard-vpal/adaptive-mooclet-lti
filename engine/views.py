@@ -183,7 +183,9 @@ def create_explanation_for_answer(request, answer_id):
 
     elif request.method=='POST':
         explanation_form = ExplanationForm(request.POST)
-        explanation = explanation_form.save()
+        explanation = explanation_form.save(commit=False)
+        explanation.answer = answer
+        explanation.save()
         return redirect('engine:manage_explanations',quiz_id=answer.question.quiz.id)
 
 # def select_or_create_quiz(request):
