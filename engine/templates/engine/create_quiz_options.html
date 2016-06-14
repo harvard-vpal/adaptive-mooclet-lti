@@ -1,21 +1,17 @@
 <!-- This page will appear after the LTI launch in resource selection mode -->
 <!-- Gives the option to embed a completely custom (qualtrics) url, or insert a placeholder quiz -->
 
-<html>
-<head>
+{% extends "engine/base.html" %}
+{% load staticfiles %}
 
-<title>Create quiz</title>
-<!-- TODO add some stylesheets -->
-</head>
-<body>
-	<div>
+{% block body %}
+<div>
 
-		<h1> Create quiz </h1>
+	<h1> Create quiz </h1>
 
-		<p> Option 1: <a href="{% url 'engine:create_blank_quiz' %}"> Create blank quiz </a>
+	<p> Option 1: <a href="{% url 'engine:create_blank_quiz' %}"> Create blank quiz </a>
 
-		<p> Option 2: <a href="{% url 'qualtrics:create_qualtrics_quiz_from_url' %}"> Or provide a URL to your own Qualtrics quiz</a> </p>
-		
-	</div>
-</body>
-</html>
+	<p> Option 2: <a href="{% url 'qualtrics:create_qualtrics_quiz_from_url' %}"> Or provide a URL to your own Qualtrics quiz</a> </p>
+	
+</div>
+{% endblock %}

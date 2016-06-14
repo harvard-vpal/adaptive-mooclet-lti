@@ -51,14 +51,20 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    ## external apps
     'storages',
     'rest_framework',
     'ordered_model',
+    'bootstrap3',
+    # 'crispy_forms',
+
+    ## core functions
     'lti',
     'engine',
     'quiz',
     'qualtrics',
     'api',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -164,6 +170,13 @@ AWS_STORAGE_BUCKET_NAME = SECURE_SETTINGS.get('AWS_STORAGE_BUCKET_NAME', None)
 AWS_S3_ACCESS_KEY_ID = SECURE_SETTINGS.get('AWS_S3_ACCESS_KEY_ID', None)
 AWS_SECRET_ACCESS_KEY = SECURE_SETTINGS.get('AWS_SECRET_ACCESS_KEY', None)
 
+#### crispy-forms ####
+# CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+#### django-bootstrap ####
+BOOTSTRAP3 = {
+    'include_jquery':True,
+}
 
 #####################
 #### LTI-related ####

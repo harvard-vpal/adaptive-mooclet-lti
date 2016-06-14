@@ -173,13 +173,14 @@ def manage_explanations(request, quiz_id):
 
 def create_explanation_for_answer(request, answer_id):
     answer = get_object_or_404(Answer,pk=answer_id)
+
     if request.method=='GET':
-        # explanation_form = ExplanationForm()
         context = {
             'answer':answer,
             'explanation_form':ExplanationForm()
         }
-        return render(request, 'engine/create_explanation_for_answer.html')
+        return render(request, 'engine/create_explanation_for_answer.html',context)
+
     elif request.method=='POST':
         explanation_form = ExplanationForm(request.POST)
         explanation = explanation_form.save()

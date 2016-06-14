@@ -1,10 +1,7 @@
-<html>
-<head>
+{% extends "engine/base.html" %}
+{% load staticfiles %}
 
-<title>Create/modify quiz</title>
-<!-- TODO add some stylesheets -->
-</head>
-<body>
+{% block body %}
 	<div>
 
 		<h1> Create/modify quiz </h1>
@@ -16,11 +13,14 @@
 			{{question_form.as_p}}
 
 			<h3>Answers</h3>
-			{{ answer_formset.as_p}}
-
+			{{ answer_formset.management_form}}
+			{% for answer_form in answer_formset %}
+				<h4> Answer choice {{forloop.counter}}: </h4>
+				{{answer_form.as_p}}
+				
+			{% endfor %}
 
 			<input type="submit" value="Submit" />
 		</form>
 	</div>
-</body>
-</html>
+{% endblock %}

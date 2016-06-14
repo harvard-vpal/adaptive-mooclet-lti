@@ -1,10 +1,7 @@
-<html>
-<head>
+{% extends "engine/base.html" %}
+{% load staticfiles %}
 
-<title>Manage explanations</title>
-<!-- TODO add some stylesheets -->
-</head>
-<body>
+{% block body %}
 	<div>
 
 		<h1> Create/modify quiz </h1>
@@ -26,5 +23,4 @@
 			
 		{% endfor %}
 	</div>
-</body>
-</html>
+{% endblock %}

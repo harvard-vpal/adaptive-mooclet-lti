@@ -1,20 +1,16 @@
-<html>
-<head>
+{% extends "engine/base.html" %}
+{% load staticfiles %}
 
-<title>Create explanation</title>
-<!-- TODO add some stylesheets -->
-</head>
-<body>
-	<div>
+{% block body %}
+<div>
 
-		<h1> Create explanation </h1>
-		Answer: {{answer.text}}
-		<form method="post">
-			
-			{{explanation_form.as_p}}
-			
-			<input type="submit" value="Submit" />
-		</form>
-	</div>
-</body>
-</html>
+	<h1> Create explanation </h1>
+	Answer: {{answer.text}}
+	<form method="post">
+		
+		{{explanation_form.as_p}}
+		
+		<input type="submit" value="Submit" />
+	</form>
+</div>
+{% endblock %}

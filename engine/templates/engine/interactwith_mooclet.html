@@ -1,33 +1,26 @@
-<html>
-<head>
+{% extends "engine/base.html" %}
+{% load staticfiles %}
 
-<title>Interact with Explanation-MOOClet</title>
+{% block body %}
+<div>
 
-<!-- This .html has already received the explanation_form object -->
+	<h1> Interact with Explanation-MOOClet</h1>
+	
+	<h2> Edit Versions of Explanation-MOOClet </h2>
+	
+	<form method="post">
+		{{explanation_form.as_p}}
 
-<!-- TODO add some stylesheets -->
-</head>
-<body>
-	<div>
-
-		<h1> Interact with Explanation-MOOClet</h1>
+		<h2> View Policy or probability of person receiving Version of Explanation-MOOClet </h3>
+		{{policy_form}}
 		
-		<h2> Edit Versions of Explanation-MOOClet </h2>
-		
-		<form method="post">
-			{{explanation_form.as_p}}
+		{{explanationparameters_form.as_p}}
 
-			<h2> View Policy or probability of person receiving Version of Explanation-MOOClet </h3>
-			{{policy_form}}
-			
-			{{explanationparameters_form.as_p}}
-
-			<h3>Answers</h3>
-			{{ answer_formset.as_p}}
+		<h3>Answers</h3>
+		{{ answer_formset.as_p}}
 
 
-			<input type="submit" value="Submit" />
-		</form>
-	</div>
-</body>
-</html>
+		<input type="submit" value="Submit" />
+	</form>
+</div>
+{% endblock %}

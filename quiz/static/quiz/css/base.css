@@ -1,0 +1,23 @@
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+h1 {
+	font-size:1.8em;
+	/*font-weight: 300;*/
+	line-height:1.5;
+}
+h2 {
+	font-size:1.8em;
+	font-weight:300;
+	line-height:1.5;
+}
+h3 {
+	font-size:1.5em;
+}
+h4 {
+	font-size:1.2em;
+}
+textarea {
+	display: block;
+}

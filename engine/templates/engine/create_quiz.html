@@ -1,28 +1,24 @@
-<html>
-<head>
+<!-- {% extends "engine/base.html" %}
+{% load staticfiles %}
 
-<title>Create new quiz</title>
-<!-- TODO add some stylesheets -->
-</head>
-<body>
-	<div>
+{% block body %}
+<div>
 
-		<h1> Create new quiz </h1>
-		<form method="post">
-			<h3>Quiz</h3>
-			{{quiz_form.as_p}}
-			{{question_form.as_p}}
-			<h3>Answers</h3>
-			{{ answer_formsets.management_form }}
+	<h1> Create new quiz </h1>
+	<form method="post">
+		<h3>Quiz</h3>
+		{{quiz_form.as_p}}
+		{{question_form.as_p}}
+		<h3>Answers</h3>
+		{{ answer_formsets.management_form }}
 
-			{% for answer_formset, explanation_formset in answer_formgroups %}
-				<h4> Answer choice </h4>
-				<p>{{ answer_formset }}</p>
-				<h4> Explanations </h4>
-				{{ explanation_formset.as_p }}
-			{% endfor %}
-			<input type="submit" value="Submit" />
-		</form>
-	</div>
-</body>
-</html>
+		{% for answer_formset, explanation_formset in answer_formgroups %}
+			<h4> Answer choice </h4>
+			<p>{{ answer_formset }}</p>
+			<h4> Explanations </h4>
+			{{ explanation_formset.as_p }}
+		{% endfor %}
+		<input type="submit" value="Submit" />
+	</form>
+</div>
+{% endblock %} -->
