@@ -9,11 +9,11 @@ from django.shortcuts import redirect
 # Create your models here.
 
 class Quiz(models.Model):
-    name = models.CharField('quiz name', max_length=100)
-    user = models.ForeignKey(User)
-    # url of a custom qualtrics survey
-    url = models.URLField(default='',blank=True)
-    context = models.CharField(max_length=100,default='')
+    name = models.CharField('quiz name', max_length=100) # the name for internal use
+    user = models.ForeignKey(User) # the user who created this quiz, e.g. The internal Djangoapp identifier
+    # url of a custom qualtrics survey e.g. harvard.qualtrics.com/SID=23fjdkkfdf"
+    url = models.URLField(default='',blank=True) # IF the person said they had a URL directly to their own qualtrics quiz, this is it
+    context = models.CharField(max_length=100,default='') # the course identifier, e.g. "324kj3fodkjsf2", the VPAL Sandbox in Canvas
 
     class Meta:
         verbose_name_plural = 'quizzes'
