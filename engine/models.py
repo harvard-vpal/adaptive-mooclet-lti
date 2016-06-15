@@ -44,6 +44,7 @@ class Quiz(models.Model):
 
 
 class Question(OrderedModel):
+    name = models.CharField('question name', max_length=100)
     quiz = models.ForeignKey(Quiz)
     text = models.TextField('question text')
     # template = models.ForeignKey(Template)
