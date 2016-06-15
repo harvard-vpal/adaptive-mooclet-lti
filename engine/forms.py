@@ -72,3 +72,11 @@ class PolicyForm(forms.ModelForm):
 	Right now it's all thompson1
 	'''
 	pass
+
+class ResearcherForm(forms.ModelForm):
+	'''
+	Create Researcher
+	'''
+	class Meta:
+		model = Researcher
+		fields = ['user']

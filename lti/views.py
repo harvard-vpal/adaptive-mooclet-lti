@@ -82,14 +82,14 @@ def launch(request,quiz_id):
     request.session['LTI_LAUNCH'].update(more_lti_params)
 
     if 'Instructor' in request.session['LTI_LAUNCH']['roles']:
-        return redirect('engine:manage_quiz', quiz_id=quiz_id)
+        return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     # TODO researcher role check
 
     else:
         # TODO store canvas user id and lti user id so that we can have a mapping?
         quiz = get_object_or_404(Quiz, pk=quiz_id)
-        return redirect('engine:display_quiz', quiz_id=quiz.id)
+        return redirect('engine:quiz_display', quiz_id=quiz.id)
 
 
 
@@ -109,7 +109,7 @@ def launch_resource_selection(request):
         }
         request.session['LTI_LAUNCH'].update(more_lti_params)
 
-    return redirect('engine:quiz_creation_options')
+    return redirect('engine:quiz_create_options')
 
 
 @login_required()

@@ -1,0 +1,15 @@
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+
+{% block body %}
+<div>
+
+	<h1> Create explanation </h1>
+	{# Answer: {{answer.text}} #}
+	<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+</form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,20 @@
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+
+{% block body %}
+<div>
+
+	<h1> Researcher request </h1>
+	CONFIRM THE FOLLOWING INFO:
+	<ul>
+
+		<li>Class: {{request.session.LTI_LAUNCH.context_title}}</li>
+		<li>Researcher email: {{request.session.LTI_LAUNCH.lis_person_contact_email_primary}}</li>
+		<li>Researcher name: {{request.session.LTI_LAUNCH.lis_person_name_full}}</li>
+
+	
+
+	</ul>
+	User id: {{request.user.id}}
+</div>
+{% endblock %}

@@ -94,15 +94,22 @@ class Result(models.Model):
 #     name = models.CharField(max_length=50,default='')
 #     description = models.CharField(max_length=200,default='')
 
+
+class Course(models.Model):
+    context = models.CharField(max_length=100,default='')
+    instance = models.CharField(max_length=200,default='')
+
+
 class Researcher(models.Model):
     user = models.ForeignKey(User)
     # like a canvas id or username; something that instructors would be able to provide
-    user_lms_id = models.CharField(max_length=50)
+    # user_lms_id = models.CharField(max_length=50)
     context = models.CharField(max_length=100,default='')
 
 class CourseUser(models.Model):
     user = models.ForeignKey(User)
-    context = models.CharField(max_length=100,default='')
+    course = models.ForeignKey(Course)
+    # context = models.CharField(max_length=100,default='')
     # is_researcher = models.BooleanField()
     # role = models.ForeignKey(Role)
 
@@ -114,7 +121,5 @@ class CourseUserState(models.Model):
     courseuser = models.ForeignKey(CourseUser)
     variable = models.ForeignKey(CourseUserVariable)
     
-
-
 
 

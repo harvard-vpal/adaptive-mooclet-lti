@@ -11,29 +11,34 @@ from .algorithms import computeExplanation_Thompson
 
 from qualtrics.utils import provision_qualtrics_quiz
 
-# from django.views.generic.edit import CreateView
+from django.views import generic
+
+#### RESOURCE SELECTION ####
+
+def quiz_create_options(request):
+    return render(request, 'engine/quiz_create_options.html')
+
+def quiz_create_blank(request):
+    quiz = Quiz(
+        user=request.user,
+        context = request.session['LTI_LAUNCH']['context_id'],
+    )
+    quiz.save()
+    return redirect('lti:return_launch_url', quiz_id=quiz.id)
+
+def quiz_create_url(request):
+    if request.method == 'GET':
+        quiz_url_form = QuizUrlForm()
+    pass
 
 
-#### QUIZ MANAGEMENT ####
+#### REDIRECTION UTILITY VIEW ####
 
-def manage_quiz(request, quiz_id):
+def quiz_display(request, quiz_id):
     '''
-    Teacher view for a quiz
-    '''
-    quiz = Quiz.objects.get(pk=quiz_id)
-    context = {
-        'quiz': quiz,
-    }
-    
-    return render(request, 'engine/manage_quiz.html',context)
-
-
-def display_quiz(request, quiz_id):
-    '''
-    redirect to proper mode of displaying quiz
+    Redirect to proper mode of displaying quiz, based on urls present in quiz model fields
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
-
     external_url = quiz.getExternalUrl()
 
     if external_url:
@@ -49,25 +54,29 @@ def display_quiz(request, quiz_id):
             return redirect('quiz:placeholder')
 
 
-def quiz_creation_options(request):
-    return render(request, 'engine/create_quiz_options.html')
+#### QUIZ MANAGEMENT ####
+
+def quiz_detail(request, quiz_id):
+    '''
+    Quiz management home for instructors
+    '''
+    quiz = Quiz.objects.get(pk=quiz_id)
+    context = {'quiz':quiz}
+
+    return render(request, 'engine/quiz_detail.html', context)
+
+# def manage_quiz(request, quiz_id):
+#     '''
+#     Teacher view for a quiz
+#     '''
+#     quiz = Quiz.objects.get(pk=quiz_id)
+#     context = {
+#         'quiz': quiz,
+#     }
+#     return render(request, 'engine/manage_quiz.html',context)
 
 
-def create_blank_quiz(request):
-    quiz = Quiz(
-        user=request.user,
-        context = request.session['LTI_LAUNCH']['context_id'],
-    )
-    quiz.save()
-    return redirect('lti:return_launch_url', quiz_id=quiz.id)
-
-
-def create_quiz_from_url(request):
-    if request.method == 'GET':
-        quiz_url_form = QuizUrlForm()
-
-
-def modify_quiz(request, quiz_id):
+def quiz_update(request, quiz_id):
     '''
     displays some a form to collect question, answers and explanations
     '''
@@ -88,25 +97,12 @@ def modify_quiz(request, quiz_id):
         INITIAL_NUM_EXPLANATIONS = 2
         
         AnswerFormset = inlineformset_factory(Question, Answer, form=AnswerForm, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
-        # ExplanationFormset = inlineformset_factory(Answer, Explanation, fields=('text',),can_delete=False, extra=2)
-        
-        #TODO fix this
+       
         quiz_form = QuizForm(instance=quiz)
-
-        # if quiz.question_set.all().exists():
-        #     question = quiz.question_set.first()
-        # else:
-        #     question = Question(quiz=quiz)
 
         question_form = QuestionForm(instance=question)
 
         answer_formset = AnswerFormset(instance=question)
-        # answers = answer_formsets.save(commit=False)
-
-        # answer_formgroups = zip(
-        #     answer_formsets,
-        #     [ExplanationFormset(instance=answer) for answer in answers]
-        # )
 
         context = {
             # 'quiz_form':CreateQuizForm(),
@@ -117,7 +113,7 @@ def modify_quiz(request, quiz_id):
             # 'answer_formgroups':answer_formgroups,
         }
 
-        return render(request, 'engine/modify_quiz.html', context)
+        return render(request, 'engine/quiz_update.html', context)
 
     # handle form submission/processing
     elif request.method == 'POST':
@@ -131,20 +127,13 @@ def modify_quiz(request, quiz_id):
         quiz.user = request.user
         quiz.save()
 
-
         question_form = QuestionForm(request.POST, instance=question)
         question = question_form.save(commit=False)
         question.save()
 
         AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
-        # ExplanationFormset = inlineformset_factory(Answer, Explanation, fields=('text',),can_delete=False, extra=2)
-
         answer_formset = AnswerFormset(request.POST, instance=question)
         answers = answer_formset.save()
-
-        # for i in range(len(answers)):
-        #     explanations = ExplanationFormset(request.POST, instance=answers[i])
-        #     explanations.save()
 
         quiz_form.is_valid()
         if quiz_form.cleaned_data['use_qualtrics']:
@@ -160,18 +149,22 @@ def modify_quiz(request, quiz_id):
                 question.url = new_survey_url
                 question.save()
 
-        return redirect('engine:manage_quiz', quiz_id=quiz_id)
+        return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
-def manage_explanations(request, quiz_id):
+
+def explanation_list(request, quiz_id):
+    '''
+    list explanations for a single question (multiple choices)
+    '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     question = quiz.question_set.first()
     answers = question.answer_set.order_by('order')
-
     context = {'answers':answers}
 
-    return render(request, 'engine/manage_explanations.html', context)
+    return render(request, 'engine/explanation_list.html', context)
 
-def create_explanation_for_answer(request, answer_id):
+
+def explanation_create(request, answer_id):
     answer = get_object_or_404(Answer,pk=answer_id)
 
     if request.method=='GET':
@@ -179,32 +172,55 @@ def create_explanation_for_answer(request, answer_id):
             'answer':answer,
             'explanation_form':ExplanationForm()
         }
-        return render(request, 'engine/create_explanation_for_answer.html',context)
+        return render(request, 'engine/explanation_create.html',context)
 
     elif request.method=='POST':
         explanation_form = ExplanationForm(request.POST)
         explanation = explanation_form.save(commit=False)
         explanation.answer = answer
         explanation.save()
-        return redirect('engine:manage_explanations',quiz_id=answer.question.quiz.id)
 
-# def select_or_create_quiz(request):
-#     '''
-#     Accessed via select resource mode when editing assignment
-#     Select a quiz that has already been made, or create a new one
-#     see https://www.edu-apps.org/extensions/content.html
-#     '''
-#     if request.method == 'GET':
-#         select_quiz_form = SelectQuizForm()
-#         context = {'select_quiz_form':select_quiz_form}
-#         return render(request, 'engine/select_or_create_quiz.html', context)
+        return redirect('engine:explanation_list',quiz_id=answer.question.quiz.id)
 
-#     elif request.method == 'POST':
-#         select_quiz_form = SelectQuizForm(request.POST)
-#         if select_quiz_form.is_valid():
-#             quiz = select_quiz_form.cleaned_data['quiz']
 
-#             # embed quiz
-#             return redirect('lti:return_launch_url',quiz_id=quiz.pk)
+# def ExplanationCreate(generic.edit.CreateView):
+#     model = Explanation
+#     fields = ['text']
+
+
+def researcher_request(request):
+    # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
+    # display session data, researcher sends their user id to instructor
+    # TODO optional instructor could create a passcode that might be required to access this view
+    # show additional info to confirm session data is correct
+
+    return render(request, 'engine/researcher_request.html')
+
+# class ResearcherCreate(generic.edit.CreateView):
+
+#     # add researcher to a course
+#     model = Researcher
+#     fields = ['user','user_lms_id']
+
+#     def form_valid(self,form):
+#         researcher = form.save(commit=False)
+#         researcher.course = Course.objects.get(context=self.request['LTI_LAUNCH']['context_id'])
+#         return super(ResearcherCreate, self).form_valid(form)
+
+
+def researcher_create(request):
+    # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
+    if request.method=='GET':
+        context = {
+            'researcher_form':ResearcherForm(),
+        }
+        return render(request, 'engine/researcher_create.html',context)
+    if request.method=='POST':
+        researcher_form = ResearcherForm(request.POST)
+    
+
+
+
+
 
 

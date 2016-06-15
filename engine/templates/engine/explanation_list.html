@@ -16,7 +16,8 @@
 				<li>{{explanation.text}}</li>
 
 			{% endfor %}
-			<li><a href="{% url 'engine:create_explanation_for_answer' answer_id=answer.pk %}">Add a new explanation</a></li>
+			<li><a href="{% url 'engine:explanation_create' answer_id=answer.pk %}">Add a new explanation</a></li>
+			<li><a href="#"> Add new explanation using class-based view </a></li>
 			</ul>
 			
 			
