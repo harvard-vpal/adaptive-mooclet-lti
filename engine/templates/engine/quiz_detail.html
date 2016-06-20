@@ -8,11 +8,15 @@
 		<!-- create quiz option -->
 		<h2> Edit quiz and explanations </h2>
 
+
 			<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Create/Edit quiz</a></p>
 
 			<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk %}">Create/Edit explanations</a></p>
 
-			<p> <a href="#">Edit adaptive policy</a></p>
+			{# <p> <a href="#">Edit adaptive policy</a></p> #}
+
+			<p> <a href="#">Add collaborator (to be implemented)</a></p>
+
 
 		<h2> Quiz preview </h2>
 
@@ -26,6 +30,12 @@
 			<p> Data table: explanations and priors <p>
 			<p> Data table: Student responses and served explanations </p>
 
+
 		
 	</div>
+
+	
+	
+	
+
 {% endblock %}

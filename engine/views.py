@@ -85,10 +85,13 @@ def quiz_update(request, quiz_id):
     # determine whether question is being created or modified
     if quiz.question_set.all().exists():
         question = quiz.question_set.first()
-        question_status = 'exists'
     else:
         question = Question(quiz=quiz)
-        question_status = 'new'
+
+    # set initial value for use_qualtrics checkbox
+    use_qualtrics = True
+    if quiz.question_set.all().exists():
+        use_qualtrics = bool(quiz.question_set.first().url)
     
     # handle form display
     if request.method == 'GET':
@@ -97,8 +100,8 @@ def quiz_update(request, quiz_id):
         INITIAL_NUM_EXPLANATIONS = 2
         
         AnswerFormset = inlineformset_factory(Question, Answer, form=AnswerForm, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
-       
-        quiz_form = QuizForm(instance=quiz)
+        
+        quiz_form = QuizForm(instance=quiz,initial={'use_qualtrics':False})
 
         question_form = QuestionForm(instance=question)
 
@@ -137,18 +140,23 @@ def quiz_update(request, quiz_id):
         answers = answer_formset.save()
 
         quiz_form.is_valid()
-        if quiz_form.cleaned_data['use_qualtrics']:
+        if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
 
-            if question_status is 'new' or not question.url:
-                print "starting quiz provisioning process"
-   
-                new_survey_url = provision_qualtrics_quiz(request, question)
-                
-                if not new_survey_url:
-                    raise Exception('quiz creation failed and did not return a qualtrics id')
+            
+            print "starting quiz provisioning process"
 
-                question.url = new_survey_url
-                question.save()
+            new_survey_url = provision_qualtrics_quiz(request, question)
+            
+            if not new_survey_url:
+                raise Exception('quiz creation failed and did not return a qualtrics id')
+
+            question.url = new_survey_url
+            question.save()
+
+
+        # TODO remove url field if checkbox deselected
+        # elif quiz_form.clear
+
 
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
