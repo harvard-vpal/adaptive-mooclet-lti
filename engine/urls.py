@@ -23,6 +23,7 @@ urlpatterns = [
 
     url(r'^explanation_list/(?P<quiz_id>[0-9]+)$', views.explanation_list, name='explanation_list'),
     url(r'^explanation_create/(?P<answer_id>[0-9]+)$', views.explanation_create, name='explanation_create'),
+    url(r'^explanation_modify/(?P<explanation_id>[0-9]+)$', views.explanation_modify, name='explanation_modify'),
 
 
     ## CBVs

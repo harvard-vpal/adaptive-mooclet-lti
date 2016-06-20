@@ -28,7 +28,7 @@ class QuestionForm(forms.ModelForm):
 		model = Question
 		fields = ['text']
 		widgets = {
-			'text': forms.Textarea(attrs={'rows':3})
+			'text': forms.Textarea(attrs={'rows':3}),
 		}
 
 class AnswerForm(forms.ModelForm):
@@ -50,6 +50,9 @@ class ExplanationForm(forms.ModelForm):
 	class Meta:
 		model = Explanation
 		fields = ['text']
+		widgets = {
+			'text': forms.Textarea(attrs={'rows':3}),
+		}
 		
 class ExplanationParameters(forms.ModelForm):
 	'''

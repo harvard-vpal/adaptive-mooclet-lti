@@ -57,7 +57,7 @@ class Question(OrderedModel):
 
 class Answer(OrderedModel):
     question = models.ForeignKey(Question)
-    text = models.TextField('answer text', max_length=500)
+    text = models.TextField('answer text')
     correct = models.BooleanField()
     # order = models.PositiveIntegerField('choice order')
 

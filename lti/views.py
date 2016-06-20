@@ -80,6 +80,8 @@ def launch(request,quiz_id):
         'oauth_consumer_key': request.POST.get('oauth_consumer_key', None),
     }
     request.session['LTI_LAUNCH'].update(more_lti_params)
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    request.session['quiz_id'] = quiz.pk
 
     if 'Instructor' in request.session['LTI_LAUNCH']['roles']:
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
@@ -88,7 +90,7 @@ def launch(request,quiz_id):
 
     else:
         # TODO store canvas user id and lti user id so that we can have a mapping?
-        quiz = get_object_or_404(Quiz, pk=quiz_id)
+        
         return redirect('engine:quiz_display', quiz_id=quiz.id)
 
 

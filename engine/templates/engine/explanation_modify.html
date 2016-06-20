@@ -3,7 +3,7 @@
 
 {% block body %}
 
-<h1> Create explanation </h1>
+<h1> Edit explanation </h1>
 
 <div>
 <a href="{% url 'engine:explanation_list' quiz_id=request.session.quiz_id %}">Back to quiz explanations</a>
@@ -11,8 +11,9 @@
 
 <div>
 	{# Answer: {{answer.text}} #}
+	
 <form method="post">
-    {{ explanation_form.as_p }}
+	{{explanation_form.as_p}}
     <input type="submit" value="Save" />
 </form>
 </div>

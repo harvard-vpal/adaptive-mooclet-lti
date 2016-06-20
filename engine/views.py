@@ -107,6 +107,7 @@ def quiz_update(request, quiz_id):
         context = {
             # 'quiz_form':CreateQuizForm(),
             # 'Question':ModelForm(Question),
+            'quiz':quiz,
             'quiz_form':quiz_form,
             'question_form':question_form,
             'answer_formset': answer_formset,
@@ -159,9 +160,10 @@ def explanation_list(request, quiz_id):
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     question = quiz.question_set.first()
     answers = question.answer_set.order_by('order')
-    context = {'answers':answers}
+    context = {'answers':answers, 'quiz':quiz}
 
     return render(request, 'engine/explanation_list.html', context)
+
 
 
 def explanation_create(request, answer_id):
@@ -181,6 +183,22 @@ def explanation_create(request, answer_id):
         explanation.save()
 
         return redirect('engine:explanation_list',quiz_id=answer.question.quiz.id)
+
+def explanation_modify(request, explanation_id):
+    explanation = get_object_or_404(Explanation,pk=explanation_id)
+    answer = explanation.answer
+
+    if request.method=='GET':
+        context = {
+            'explanation_form':ExplanationForm(instance=explanation)
+        }
+        return render(request, 'engine/explanation_modify.html',context)
+
+    elif request.method=='POST':
+        explanation_form = ExplanationForm(request.POST,instance=explanation)
+        explanation = explanation_form.save()
+        
+        return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
 
 # def ExplanationCreate(generic.edit.CreateView):
@@ -217,7 +235,7 @@ def researcher_create(request):
         return render(request, 'engine/researcher_create.html',context)
     if request.method=='POST':
         researcher_form = ResearcherForm(request.POST)
-    
+
 
 
 

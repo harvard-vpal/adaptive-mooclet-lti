@@ -2,22 +2,23 @@
 {% load staticfiles %}
 
 {% block body %}
+	<h1> Create/modify quiz </h1>
 	<div>
-
-		<h1> Create/modify quiz </h1>
-		
+		<a href="{% url 'engine:quiz_update' quiz_id=request.session.quiz_id %}">Back to manage quiz</a>
+	</div>
+	<br>
+	<div>	
 		{% for answer in answers %}
 
-			<p>Answer: {{answer.text}}</p>
+			<p>Answer {{forloop.counter}}: {{answer.text}}</p>
 
 			<ul>
 			{% for explanation in answer.explanation_set.all %}
 
-				<li>{{explanation.text}}</li>
+				<li><a href="{% url 'engine:explanation_modify' explanation_id=explanation.pk %}">{{explanation.text}}</a></li>
 
 			{% endfor %}
 			<li><a href="{% url 'engine:explanation_create' answer_id=answer.pk %}">Add a new explanation</a></li>
-			<li><a href="#"> Add new explanation using class-based view </a></li>
 			</ul>
 			
 			

@@ -7,7 +7,6 @@
 <body>
 	<div>
 		<form action={% url 'qlb:embed_qualtrics'%} method="post">
-		    {% csrf_token %}
 		    {{ select_qualtrics_form }}
 		    <input type="submit" value="Submit" />
 		</form>

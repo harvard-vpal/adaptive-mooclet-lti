@@ -2,25 +2,30 @@
 {% load staticfiles %}
 
 {% block body %}
-	<div>
+	
+<h1> Create/modify quiz </h1>
 
-		<h1> Create/modify quiz </h1>
-		<form method="post">
-			<h3>Quiz</h3>
-			{{quiz_form.as_p}}
+<div>
+<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id%}">Back to manage quiz</a>
+</div>
 
-			<h3> Question </h3>
-			{{question_form.as_p}}
+<div>
+<form method="post">
+	<h3>Quiz</h3>
+	{{quiz_form.as_p}}
 
-			<h3>Answers</h3>
-			{{ answer_formset.management_form}}
-			{% for answer_form in answer_formset %}
-				<h4> Answer choice {{forloop.counter}}: </h4>
-				{{answer_form.as_p}}
-				
-			{% endfor %}
+	<h3> Question </h3>
+	{{question_form.as_p}}
 
-			<input type="submit" value="Submit" />
-		</form>
-	</div>
+	<h3>Answers</h3>
+	{{ answer_formset.management_form}}
+	{% for answer_form in answer_formset %}
+		<h4> Answer choice {{forloop.counter}}: </h4>
+		{{answer_form.as_p}}
+		
+	{% endfor %}
+
+	<input type="submit" value="Submit" />
+</form>
+
 {% endblock %}
