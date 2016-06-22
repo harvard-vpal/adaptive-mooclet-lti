@@ -82,7 +82,7 @@ def quiz_update(request, quiz_id):
     '''
     quiz = Quiz.objects.get(pk=quiz_id)
 
-    # determine whether question is being created or modified
+    # get existing or initialize question object
     if quiz.question_set.all().exists():
         question = quiz.question_set.first()
     else:
@@ -141,7 +141,6 @@ def quiz_update(request, quiz_id):
 
         quiz_form.is_valid()
         if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
-
             
             print "starting quiz provisioning process"
 
@@ -151,12 +150,15 @@ def quiz_update(request, quiz_id):
                 raise Exception('quiz creation failed and did not return a qualtrics id')
 
             question.url = new_survey_url
-            question.save()
 
+        # remove url field if checkbox deselected
+        if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
+            question.url = ''
 
-        # TODO remove url field if checkbox deselected
-        # elif quiz_form.clear
-
+            # TODO: delete the corresponding survey on qualtrics
+            # delete_qualtrics_quiz(request, survey_url)
+            
+        question.save()
 
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
@@ -171,7 +173,6 @@ def explanation_list(request, quiz_id):
     context = {'answers':answers, 'quiz':quiz}
 
     return render(request, 'engine/explanation_list.html', context)
-
 
 
 def explanation_create(request, answer_id):
@@ -191,6 +192,7 @@ def explanation_create(request, answer_id):
         explanation.save()
 
         return redirect('engine:explanation_list',quiz_id=answer.question.quiz.id)
+
 
 def explanation_modify(request, explanation_id):
     explanation = get_object_or_404(Explanation,pk=explanation_id)
