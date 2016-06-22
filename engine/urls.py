@@ -26,6 +26,14 @@ urlpatterns = [
     url(r'^explanation_create/(?P<answer_id>[0-9]+)$', views.explanation_create, name='explanation_create'),
     url(r'^explanation_modify/(?P<explanation_id>[0-9]+)$', views.explanation_modify, name='explanation_modify'),
 
+    # "list mooclets"
+    url(r'^answer_list/(?P<question_id>[0-9]+)$', views.answer_list, name='answer_list'),
+
+
+    # "interact with mooclet"
+    url(r'^answer_detail/(?P<answer_id>[0-9]+)$', views.answer_detail, name='answer_detail'),
+
+
 
     ## CBVs
     # url(r'quiz_detail^$',views.QuizDetail.as_view(),name='QuizDetail'),

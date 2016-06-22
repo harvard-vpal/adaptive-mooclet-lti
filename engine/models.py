@@ -8,12 +8,18 @@ from django.shortcuts import redirect
 
 # Create your models here.
 
+class Course(models.Model):
+    context = models.CharField(max_length=100,default='')
+    instance = models.CharField(max_length=200,default='')
+
+
 class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
     user = models.ForeignKey(User)
     # url of a custom qualtrics survey
     url = models.URLField(default='',blank=True)
     context = models.CharField(max_length=100,default='')
+    course = models.ForeignKey(Course)
 
     class Meta:
         verbose_name_plural = 'quizzes'
@@ -42,6 +48,16 @@ class Quiz(models.Model):
                 return first_question.url
         return None
 
+    # def getFirstQuestion(self):
+    #     '''
+    #     get first question, convenience function
+    #     '''
+    #     if self.question_set.all().exists():
+    #         question = self.question_set.first()
+    #         return question
+    #     else:
+    #         return None
+            
 
 class Question(OrderedModel):
     name = models.CharField('question name', max_length=100)
@@ -56,7 +72,22 @@ class Question(OrderedModel):
         return self.text
 
 
-class Answer(OrderedModel):
+class Policy(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Mooclet(models.Model):
+    name = models.CharField(max_length=100)
+    policy = models.ForeignKey(Quiz)
+
+    class Meta:
+        abstract = True
+
+
+
+
+
+class Answer(Mooclet, OrderedModel):
     question = models.ForeignKey(Question)
     text = models.TextField('answer text')
     correct = models.BooleanField()
@@ -77,8 +108,6 @@ class Explanation(models.Model):
     def __unicode__(self):
         return "{}: {}".format(self.id,self.text)
 
-# class Policy(models.Model):
-#    pass
 
 
 class Result(models.Model):
@@ -91,21 +120,12 @@ class Result(models.Model):
         return "{}, explanation {}".format(self.value, self.explanation.id)
 
 
-# class Role(models.Model):
-#     name = models.CharField(max_length=50,default='')
-#     description = models.CharField(max_length=200,default='')
-
-
-class Course(models.Model):
-    context = models.CharField(max_length=100,default='')
-    instance = models.CharField(max_length=200,default='')
-
-
-class Researcher(models.Model):
+class Collaborator(models.Model):
     user = models.ForeignKey(User)
     # like a canvas id or username; something that instructors would be able to provide
     # user_lms_id = models.CharField(max_length=50)
-    context = models.CharField(max_length=100,default='')
+    # context = models.CharField(max_length=100,default='')
+    course = models.ForeignKey(Course)
 
 class CourseUser(models.Model):
     user = models.ForeignKey(User)
@@ -122,5 +142,13 @@ class CourseUserState(models.Model):
     courseuser = models.ForeignKey(CourseUser)
     variable = models.ForeignKey(CourseUserVariable)
     
+class MoocletVersionVariable(models.Model):
+    name = models.CharField(max_length=100)
+
+class MoocletVersionVariableValue(models.Model):
+    mooclet_version_variable = models.ForeignKey(MoocletVersionVariable)
+    user = models.ForeignKey(User)
+    value = models.FloatField()
+
 
 

@@ -76,10 +76,18 @@ class PolicyForm(forms.ModelForm):
 	'''
 	pass
 
-class ResearcherForm(forms.ModelForm):
+class CollaboratorForm(forms.ModelForm):
 	'''
-	Create Researcher
+	Create Collaborator/Researcher
 	'''
 	class Meta:
-		model = Researcher
+		model = Collaborator
 		fields = ['user']
+
+class MoocletVersionVariableValueForm(forms.ModelForm):
+	'''
+	enter mooclet version variable value
+	'''
+	class Meta:
+		model = MoocletVersionVariableValue
+		fields = ['value']

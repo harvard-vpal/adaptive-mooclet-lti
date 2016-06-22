@@ -1,0 +1,17 @@
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+
+{% block body %}
+	<h1> List MOOClets </h1>
+	<div>
+		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to manage quiz</a>
+	</div>
+	<br>
+	<div>	
+		{% for answer in answers %}
+			<ul>
+			<li><a href="{% url 'engine:answer_detail' answer_id=answer.pk %}">Answer: {{answer.text}}</a></li>
+			</ul>
+		{% endfor %}
+	</div>
+{% endblock %}

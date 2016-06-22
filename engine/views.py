@@ -88,8 +88,6 @@ def quiz_update(request, quiz_id):
     else:
         question = Question(quiz=quiz)
 
-
-    
     # handle form display
     if request.method == 'GET':
 
@@ -102,7 +100,7 @@ def quiz_update(request, quiz_id):
         use_qualtrics = True
         if quiz.question_set.all().exists():
             use_qualtrics = bool(quiz.question_set.first().url)
-            
+
         quiz_form = QuizForm(instance=quiz,initial={'use_qualtrics':use_qualtrics})
 
         question_form = QuestionForm(instance=question)
@@ -242,15 +240,24 @@ def collaborator_create(request, quiz_id):
     # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
     if request.method=='GET':
         context = {
-            'researcher_form':ResearcherForm(),
+            'collaborator_form':CollaboratorForm(),
         }
         return render(request, 'engine/collaborator_create.html',context)
     if request.method=='POST':
-        researcher_form = ResearcherForm(request.POST)
+        collaborator_form = CollaboratorForm(request.POST)
 
 
 
+def answer_list(request,question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    answers = question.answer_set.order_by('order')
+    context = {'question':question, 'answers':answers}
+    return render(request, 'engine/answer_list.html', context)
 
+
+def answer_detail(request,answer_id):
+    answer = get_object_or_404(Answer,pk=answer_id)
+    context = {'answer':answer}
 
 
 
