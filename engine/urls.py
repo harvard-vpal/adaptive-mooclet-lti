@@ -14,7 +14,8 @@ urlpatterns = [
     # url(r'^manage_explanations/(?P<quiz_id>[0-9]+)$', views.manage_explanations, name='manage_explanations'),
     # url(r'^create_explanation_for_answer/(?P<answer_id>[0-9]+)$', views.create_explanation_for_answer, name='create_explanation_for_answer'),
 
-    url(r'^researcher_request$', views.researcher_request, name='researcher_request'),
+    url(r'^collaborator_request', views.collaborator_request, name='collaborator_request'),
+    url(r'^collaborator_create/(?P<quiz_id>[0-9]+)$', views.collaborator_create, name='collaborator_create'),
 
     # renamed views
     url(r'^quiz_display/(?P<quiz_id>[0-9]+)$', views.quiz_display, name='quiz_display'),

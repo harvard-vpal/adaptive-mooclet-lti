@@ -4,7 +4,7 @@
 {% block body %}
 <div>
 
-	<h1> Researcher request </h1>
+	<h1> Collaborator access request </h1>
 	CONFIRM THE FOLLOWING INFO:
 	<ul>
 
@@ -12,9 +12,12 @@
 		<li>Researcher email: {{request.session.LTI_LAUNCH.lis_person_contact_email_primary}}</li>
 		<li>Researcher name: {{request.session.LTI_LAUNCH.lis_person_name_full}}</li>
 
-	
-
 	</ul>
-	User id: {{request.user.id}}
+
+	<p>Send this to the instructor:</p>
+	
+	<p>Collaborator id: {{request.user.id}}</p>
+
+
 </div>
 {% endblock %}

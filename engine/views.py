@@ -157,7 +157,7 @@ def quiz_update(request, quiz_id):
 
             # TODO: delete the corresponding survey on qualtrics
             # delete_qualtrics_quiz(request, survey_url)
-            
+
         question.save()
 
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
@@ -216,13 +216,13 @@ def explanation_modify(request, explanation_id):
 #     fields = ['text']
 
 
-def researcher_request(request):
+def collaborator_request(request):
     # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
     # display session data, researcher sends their user id to instructor
     # TODO optional instructor could create a passcode that might be required to access this view
     # show additional info to confirm session data is correct
 
-    return render(request, 'engine/researcher_request.html')
+    return render(request, 'engine/collaborator_request.html')
 
 # class ResearcherCreate(generic.edit.CreateView):
 
@@ -236,13 +236,13 @@ def researcher_request(request):
 #         return super(ResearcherCreate, self).form_valid(form)
 
 
-def researcher_create(request):
+def collaborator_create(request, quiz_id):
     # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
     if request.method=='GET':
         context = {
             'researcher_form':ResearcherForm(),
         }
-        return render(request, 'engine/researcher_create.html',context)
+        return render(request, 'engine/collaborator_create.html',context)
     if request.method=='POST':
         researcher_form = ResearcherForm(request.POST)
 

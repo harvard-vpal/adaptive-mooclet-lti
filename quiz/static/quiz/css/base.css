@@ -1,5 +1,7 @@
+/* quiz base.css */
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	padding:1em;
 }
 
 h1 {
