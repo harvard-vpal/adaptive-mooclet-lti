@@ -88,10 +88,7 @@ def quiz_update(request, quiz_id):
     else:
         question = Question(quiz=quiz)
 
-    # set initial value for use_qualtrics checkbox
-    use_qualtrics = True
-    if quiz.question_set.all().exists():
-        use_qualtrics = bool(quiz.question_set.first().url)
+
     
     # handle form display
     if request.method == 'GET':
@@ -101,7 +98,12 @@ def quiz_update(request, quiz_id):
         
         AnswerFormset = inlineformset_factory(Question, Answer, form=AnswerForm, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
         
-        quiz_form = QuizForm(instance=quiz,initial={'use_qualtrics':False})
+        # set initial value for use_qualtrics checkbox
+        use_qualtrics = True
+        if quiz.question_set.all().exists():
+            use_qualtrics = bool(quiz.question_set.first().url)
+            
+        quiz_form = QuizForm(instance=quiz,initial={'use_qualtrics':use_qualtrics})
 
         question_form = QuestionForm(instance=question)
 
