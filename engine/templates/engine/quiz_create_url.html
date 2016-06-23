@@ -2,11 +2,16 @@
 {% load staticfiles %}
 
 {% block body %}
+
+<div backnav>
+	<a href="{% url 'engine:quiz_create_options' %}">Back to quiz creation options</a>
+</div>
+
 <div>
 
 	<h1> Use an existing qualtrics quiz </h1>
 	<form method="post">
-		{{qualtrics_quiz_form.as_p}}
+		{{quiz_url_form.as_p}}
 		<input type="submit" value="Submit" />
 	</form>
 </div>

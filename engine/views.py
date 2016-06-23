@@ -19,9 +19,13 @@ def quiz_create_options(request):
     return render(request, 'engine/quiz_create_options.html')
 
 def quiz_create_blank(request):
+    course, created = Course.objects.get_or_create(context=request.session['LTI_LAUNCH']['context_id'])
+    if created:
+        course.save()
+
     quiz = Quiz(
         user=request.user,
-        context = request.session['LTI_LAUNCH']['context_id'],
+        course=course,
     )
     quiz.save()
     return redirect('lti:return_launch_url', quiz_id=quiz.id)
@@ -29,7 +33,19 @@ def quiz_create_blank(request):
 def quiz_create_url(request):
     if request.method == 'GET':
         quiz_url_form = QuizUrlForm()
-    pass
+        context = {'quiz_url_form':quiz_url_form}
+        return render(request, 'engine/quiz_create_url.html',context)
+    elif request.method == 'POST':
+        course, created = Course.objects.get_or_create(context=request.session['LTI_LAUNCH']['context_id'])
+        if created:
+            course.save()
+        quiz_url_form = QuizUrlForm(request.POST)
+        quiz = quiz_url_form.save(commit=False)
+        quiz.course = course
+        quiz.user = request.user
+        quiz.save()
+
+        return redirect('lti:return_launch_url', quiz_id=quiz.id)
 
 
 #### REDIRECTION UTILITY VIEW ####
@@ -257,7 +273,25 @@ def answer_list(request,question_id):
 
 def answer_detail(request,answer_id):
     answer = get_object_or_404(Answer,pk=answer_id)
-    context = {'answer':answer}
+    
+
+    # vars = [MoocletVersionVariable1, MoocletVersionVariable2]
+    # for MoocletVersionVariable in vars:
+        # generate a form for each moocletversion
+        # formset = [form1, form2, form3, form4]
+
+    context = {
+        'answer':answer,
+        # 'mooclet_version_variable_value_formsets = [formset1, formset2]
+        
+    }
+
+
+#     return render(request, 'engine/answer_detail.html',context)
+
+# # MoocletVersionVariableValueForm
+#         AnswerFormset = formset_factory(Question, Answer, form=AnswerForm, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
+#         answer_formset = AnswerFormset(instance=question)
 
 
 

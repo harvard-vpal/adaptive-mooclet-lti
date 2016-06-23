@@ -9,9 +9,9 @@
 
 	<h1> Create quiz </h1>
 
-	<p> Option 1: <a href="{% url 'engine:create_blank_quiz' %}"> Create blank quiz </a>
+	<p> Option 1: <a href="{% url 'engine:quiz_create_blank' %}"> Create blank quiz </a>
 
-	<p> Option 2: <a href="{% url 'qualtrics:create_qualtrics_quiz_from_url' %}"> Or provide a URL to your own Qualtrics quiz</a> </p>
+	<p> Option 2: <a href="{% url 'engine:quiz_create_url' %}"> Or provide a URL to your own Qualtrics quiz</a> </p>
 	
 </div>
 {% endblock %}

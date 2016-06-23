@@ -19,7 +19,7 @@ class Quiz(models.Model):
     # url of a custom qualtrics survey
     url = models.URLField(default='',blank=True)
     context = models.CharField(max_length=100,default='')
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, blank=True)
 
     class Meta:
         verbose_name_plural = 'quizzes'
@@ -57,7 +57,7 @@ class Quiz(models.Model):
     #         return question
     #     else:
     #         return None
-            
+
 
 class Question(OrderedModel):
     name = models.CharField('question name', max_length=100)
@@ -74,7 +74,7 @@ class Question(OrderedModel):
 
 class Policy(models.Model):
     name = models.CharField(max_length=100)
-
+    # many to many with policy variables?
 
 class Mooclet(models.Model):
     name = models.CharField(max_length=100)
@@ -149,6 +149,5 @@ class MoocletVersionVariableValue(models.Model):
     mooclet_version_variable = models.ForeignKey(MoocletVersionVariable)
     user = models.ForeignKey(User)
     value = models.FloatField()
-
 
 
