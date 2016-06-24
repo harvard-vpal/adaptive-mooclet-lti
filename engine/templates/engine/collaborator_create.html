@@ -2,19 +2,25 @@
 {% load staticfiles %}
 
 {% block body %}
-<div>
 
-	<h1> Add collaborator </h1>
 
-	<p> Instructions: 
-	<br>
-	Tell your collaborator to login to the course, and open up the quiz. They should see the student view. Immediately after, they should open up <a href="{% url 'engine:collaborator_request' %}">{{ request.get_host }}{% url 'engine:collaborator_request' %}</a> in a new tab, which will tell them their collaborator id. They should send this id to you, and you can enter in the id using the form below. Afterwards, they should see the collaborator view whenever they login to the course and open the quiz. </p>
+<h1> Add collaborator </h1>
 
-	<form action="" method="post">
-    {{ form.as_p }}
-    <input type="submit" value="Save" />
-	</form>
+<div backnav>
+<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to quiz explanations</a>
 </div>
+
+<div>
+<p> Instructions: 
+<br>
+Tell your collaborator to login to the course, and open up the quiz. They should see the student view. Immediately after, they should open up <a href="{% url 'engine:collaborator_request' %}">{{ request.get_host }}{% url 'engine:collaborator_request' %}</a> in a new tab, which will tell them their collaborator id. They should send this id to you, and you can enter in the id using the form below. Afterwards, they should see the collaborator view whenever they login to the course and open the quiz. </p>
+
+<form action="" method="post">
+{{ collaborator_form.as_p }}
+<input type="submit" value="Save" />
+</form>
+</div>
+
 {% endblock %}
 
 

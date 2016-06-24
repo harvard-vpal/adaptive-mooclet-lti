@@ -76,15 +76,13 @@ class Policy(models.Model):
     name = models.CharField(max_length=100)
     # many to many with policy variables?
 
+
 class Mooclet(models.Model):
     name = models.CharField(max_length=100,default='')
     policy = models.ForeignKey(Policy,blank=True,null=True)
 
     class Meta:
         abstract = True
-
-
-
 
 
 class Answer(Mooclet, OrderedModel):
@@ -98,6 +96,8 @@ class Answer(Mooclet, OrderedModel):
 
     def __unicode__(self):
         return self.text
+
+
 
 
 class Explanation(models.Model):
@@ -126,6 +126,7 @@ class Collaborator(models.Model):
     # user_lms_id = models.CharField(max_length=50)
     # context = models.CharField(max_length=100,default='')
     course = models.ForeignKey(Course)
+    # quiz = ManyToManyField(Quiz)
 
 class CourseUser(models.Model):
     user = models.ForeignKey(User)
@@ -144,9 +145,12 @@ class CourseUserState(models.Model):
     
 class MoocletVersionVariable(models.Model):
     name = models.CharField(max_length=100)
+    def __unicode__(self):
+        return self.name
 
 class MoocletVersionVariableValue(models.Model):
     mooclet_version_variable = models.ForeignKey(MoocletVersionVariable)
+    explanation = models.ForeignKey(Explanation,null=True)
     user = models.ForeignKey(User)
     value = models.FloatField()
 

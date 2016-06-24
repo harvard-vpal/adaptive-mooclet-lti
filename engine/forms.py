@@ -83,6 +83,9 @@ class CollaboratorForm(forms.ModelForm):
 	class Meta:
 		model = Collaborator
 		fields = ['user']
+		widgets = {
+			'user': forms.NumberInput(),
+		}
 
 class MoocletVersionVariableValueForm(forms.ModelForm):
 	'''

@@ -26,3 +26,6 @@ admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(Explanation, ExplanationAdmin)
 admin.site.register(Result, ResultAdmin)
+
+admin.site.register(MoocletVersionVariable)
+admin.site.register(MoocletVersionVariableValue)

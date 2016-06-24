@@ -255,12 +255,21 @@ def collaborator_request(request):
 def collaborator_create(request, quiz_id):
     # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
     if request.method=='GET':
-        context = {
-            'collaborator_form':CollaboratorForm(),
-        }
-        return render(request, 'engine/collaborator_create.html',context)
+        pass
+
     if request.method=='POST':
         collaborator_form = CollaboratorForm(request.POST)
+        collaborator = collaborator_form.save()
+
+    collaborators = Collaborator.objects.all()
+    # filter by course?
+    # filter by mooclet?
+
+    context = {
+            'collaborator_form':CollaboratorForm(),
+            'collaborators': collaborators
+        }
+    return render(request, 'engine/collaborator_create.html',context)
 
 
 
@@ -272,22 +281,71 @@ def answer_list(request,question_id):
 
 
 def answer_detail(request,answer_id):
-    answer = get_object_or_404(Answer,pk=answer_id)
-    
 
-    # vars = [MoocletVersionVariable1, MoocletVersionVariable2]
-    # for MoocletVersionVariable in vars:
-        # generate a form for each moocletversion
-        # formset = [form1, form2, form3, form4]
+    if request.method == 'GET':
+        answer = get_object_or_404(Answer,pk=answer_id)
+        explanations = answer.explanation_set
 
-    context = {
-        'answer':answer,
-        # 'mooclet_version_variable_value_formsets = [formset1, formset2]
-        
-    }
+        mooclet_version_variable_ids = [1,2]
+
+        explanation_ids = [1,2,3]
+
+        # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
+        # changing the queryset
+        # MoocletVersionVariableValueFormset = formset_factory(MoocletVersionVariableValue, fields=('value',), can_delete=False, extra=4, max_num=4)
+        # mooclet_version_variable_value_formset = MoocletVersionVariableValueFormset()
 
 
-#     return render(request, 'engine/answer_detail.html',context)
+
+        mooclet_version_variable_value_forms = []
+
+        for mooclet_version_variable_id in mooclet_version_variable_ids:
+
+            forms_for_variable_type = []
+
+            for explanation in explanations.all():
+
+                mooclet_version_variable = MoocletVersionVariable.objects.get(pk=mooclet_version_variable_id)
+                
+                # get or create variable_value_for_explanation
+                variable_value_for_explanation_qset = MoocletVersionVariableValue.objects.filter(
+                    mooclet_version_variable = mooclet_version_variable,
+                    explanation = explanation
+                )
+                if variable_value_for_explanation_qset.exists():
+                    variable_value_for_explanation = variable_value_for_explanation_qset.first()
+                else: # create
+                    variable_value_for_explanation = MoocletVersionVariableValue(
+                        mooclet_version_variable = mooclet_version_variable,
+                        explanation = explanation,
+                        # value = ?
+                    )
+
+                # TODO some kind of form labelling
+                mooclet_version_variable_value_form = MoocletVersionVariableValueForm(instance=variable_value_for_explanation)
+                forms_for_variable_type.append(mooclet_version_variable_value_form)
+
+            mooclet_version_variable_value_forms.append(forms_for_variable_type)
+
+
+
+        # vars = [MoocletVersionVariable1, MoocletVersionVariable2]
+        # for MoocletVersionVariable in vars:
+            # generate a form for each moocletversion
+            # formset = [form1, form2, form3, form4]
+
+        context = {
+            'answer':answer,
+            'mooclet_version_variable_value_forms': mooclet_version_variable_value_forms
+        }
+
+        return render(request, 'engine/answer_detail.html',context)
+
+    elif request.method == 'POST':
+
+        # how do we figure out which form corresponds to which value/explanation/variable
+
+        pass
 
 # # MoocletVersionVariableValueForm
 #         AnswerFormset = formset_factory(Question, Answer, form=AnswerForm, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
