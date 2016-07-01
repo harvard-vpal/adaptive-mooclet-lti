@@ -4,7 +4,7 @@
 {% block body %}
 	<h1> Create/modify quiz </h1>
 	<div>
-		<a href="{% url 'engine:quiz_update' quiz_id=request.session.quiz_id %}">Back to manage quiz</a>
+		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to manage quiz</a>
 	</div>
 	<br>
 	<div>	
