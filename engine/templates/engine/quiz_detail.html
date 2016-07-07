@@ -16,7 +16,7 @@
 
 			{# <p> <a href="#">Edit adaptive policy</a></p> #}
 
-			<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Add collaborator</a></p>
+			<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">How to invite Collaborators to suggest and edit explanations.</a></p>
 
 			{% for question in quiz.question_set.all %}
 			{# <p> <a href="{% url 'engine:answer_list' question_id=question.pk %}">MOOClet list for question {{forloop.counter}} </a></p> #}
