@@ -3,11 +3,10 @@
 
 {% block body %}
 	<div>
-		<h1> Manage quiz view </h1>
+		<h1> Create and Modify Question Text, Answers, Explanations </h1>
 		
 		<!-- create quiz option -->
-		<h2> Edit quiz and explanations </h2>
-
+		<!-- <h2> Edit quiz and explanations </h2> -->
 
 			<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Create/Edit Text of Question and Answer</a></p>
 
@@ -21,7 +20,7 @@
 			<p> <a href="{% url 'engine:answer_list' question_id=question.pk %}">MOOClet list for question {{forloop.counter}} </a></p>
 			{% endfor %}
 
-		<h2> Quiz preview </h2>
+		<h2> Student's View of Question</h2>
 
 			<!-- preview quiz -->
 			<iframe src="{% url 'engine:quiz_display' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
