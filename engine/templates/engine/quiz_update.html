@@ -3,21 +3,21 @@
 
 {% block body %}
 	
-<h1> Create/modify quiz </h1>
+<h1> Create/Modify Question Text & Answers</h1>
 
 <div>
-<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id%}">Back to manage quiz</a>
+<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id%}">Back to Question Manager</a>
 </div>
 
 <div>
 <form method="post">
-	<h3>Quiz</h3>
+	<h3>Question Name</h3>
 	{{quiz_form.as_p}}
 
-	<h3> Question </h3>
+	<h3>Text of Question</h3>
 	{{question_form.as_p}}
 
-	<h3>Answers</h3>
+	<h3>Text of Answers</h3>
 	{{ answer_formset.management_form}}
 	{% for answer_form in answer_formset %}
 		<h4> Answer choice {{forloop.counter}}: </h4>
