@@ -2,9 +2,9 @@
 {% load staticfiles %}
 
 {% block body %}
-	<h1> Create/modify quiz </h1>
+	<h1> Modify/Add Versions of Explanations to be randomly shown after each Answer</h1>
 	<div>
-		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to manage quiz</a>
+		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to Question Manager</a>
 	</div>
 	<br>
 	<div>	
