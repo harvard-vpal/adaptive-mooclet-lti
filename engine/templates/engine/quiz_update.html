@@ -14,10 +14,8 @@
 	<h3>Question Name</h3>
 	{{quiz_form.as_p}}
 
-	<h3>Text of Question</h3>
 	{{question_form.as_p}}
 
-	<h3>Text of Answers</h3>
 	{{ answer_formset.management_form}}
 	{% for answer_form in answer_formset %}
 		<h4> Answer choice {{forloop.counter}}: </h4>
