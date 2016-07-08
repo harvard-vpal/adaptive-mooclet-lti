@@ -57,6 +57,11 @@ def quiz_display(request, quiz_id):
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     external_url = quiz.getExternalUrl()
 
+    if Outcome.objects.filter(user=request.user, quiz=quiz).exists():
+        outcome = Outcome.objects.get(user=request.user, quiz=quiz)
+        if outcome.grade==1:
+            return redirect('quiz:complete')
+
     if external_url:
         extra_params = {
             'user_id':request.user.id,

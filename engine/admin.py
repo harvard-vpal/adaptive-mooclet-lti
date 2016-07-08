@@ -29,3 +29,4 @@ admin.site.register(Result, ResultAdmin)
 
 admin.site.register(MoocletVersionVariable)
 admin.site.register(MoocletVersionVariableValue)
+admin.site.register(Outcome)

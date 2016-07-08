@@ -78,4 +78,8 @@ def explanation(request, explanation_id):
 def placeholder(request):
     return render(request, 'quiz/placeholder.html')
 
+def complete(request):
+    return render(request, 'quiz/complete.html')
+    
+
     

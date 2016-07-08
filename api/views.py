@@ -145,8 +145,24 @@ def submit_quiz_grade(request):
     Submits a quiz grade and triggers grade passback to the LMS
 
     INPUT (via GET params): user_id, quiz_id, grade
+    OUTPUT: confirmation message
     '''
-    return JsonResponse({'message': 'not implemented'})
+    required_get_params = ['user_id', 'quiz_id', 'grade']
+    for param in required_get_params:
+        if param not in request.GET:
+            return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
+    grade = float(request.GET['grade'])
+
+    outcome, created = Outcome.objects.get_or_create(
+        user_id = request.GET['user_id'],
+        quiz_id = request.GET['quiz_id']
+    )
+    # update outcome
+    outcome.grade = grade
+    
+    outcome.save()
+
+    return JsonResponse({'message': 'Outcome successfully submitted'})
 
 
 

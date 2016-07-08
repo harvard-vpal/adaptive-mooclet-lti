@@ -154,4 +154,8 @@ class MoocletVersionVariableValue(models.Model):
     user = models.ForeignKey(User)
     value = models.FloatField()
 
+class Outcome(models.Model):
+    user = models.ForeignKey(User)
+    quiz = models.ForeignKey(Quiz)
+    grade = models.FloatField()
 
