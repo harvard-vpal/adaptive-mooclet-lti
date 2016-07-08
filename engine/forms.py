@@ -53,7 +53,19 @@ class ExplanationForm(forms.ModelForm):
 		widgets = {
 			'text': forms.Textarea(attrs={'rows':3}),
 		}
-		
+
+class ExplanationModifyForm(forms.ModelForm):
+	'''
+	Modify explanation
+	'''
+	delete = forms.BooleanField(required=False)
+	class Meta:
+		model = Explanation
+		fields = ['text']
+		widgets = {
+			'text': forms.Textarea(attrs={'rows':3}),
+		}
+
 class ExplanationParameters(forms.ModelForm):
 	'''
 	This will be a table for each explanation, whose

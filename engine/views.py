@@ -216,13 +216,19 @@ def explanation_modify(request, explanation_id):
 
     if request.method=='GET':
         context = {
-            'explanation_form':ExplanationForm(instance=explanation)
+            'explanation_form':ExplanationModifyForm(instance=explanation)
         }
         return render(request, 'engine/explanation_modify.html',context)
 
     elif request.method=='POST':
-        explanation_form = ExplanationForm(request.POST,instance=explanation)
-        explanation = explanation_form.save()
+        explanation_form = ExplanationModifyForms(request.POST,instance=explanation)
+        explanation_form.is_valid()
+        if explanation_form.cleaned_data['delete']:
+            explanation = explanation.delete()
+        else:
+            explanation = explanation_form.save()
+
+
         
         return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
