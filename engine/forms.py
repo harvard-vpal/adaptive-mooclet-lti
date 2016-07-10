@@ -99,10 +99,10 @@ class CollaboratorForm(forms.ModelForm):
 			'user': forms.NumberInput(),
 		}
 
-class MoocletVersionVariableValueForm(forms.ModelForm):
+class UserVariableValueForm(forms.ModelForm):
 	'''
 	enter mooclet version variable value
 	'''
 	class Meta:
-		model = MoocletVersionVariableValue
+		model = UserVariableValue
 		fields = ['value']

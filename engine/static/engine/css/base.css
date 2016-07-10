@@ -1,4 +1,9 @@
 /* engine base.css */
-/*body {
+body {
 	margin: 1em;
-}*/
+}
+
+div.nav {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}

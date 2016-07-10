@@ -13,10 +13,10 @@ class QuestionAdmin (admin.ModelAdmin):
 		return obj.quiz.id
 
 class AnswerAdmin (admin.ModelAdmin):
-	list_display = ['id','question','text','correct','order']
+	list_display = ['id','question','text','correct']
 
-class ExplanationAdmin (admin.ModelAdmin):
-	list_display = ['id','answer','text']
+# class ExplanationAdmin (admin.ModelAdmin):
+# 	list_display = ['id','answer','text']
 
 class ResultAdmin (admin.ModelAdmin):
 	list_display = ['id','user','explanation','value']
@@ -24,9 +24,6 @@ class ResultAdmin (admin.ModelAdmin):
 admin.site.register(Quiz, QuizAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
-admin.site.register(Explanation, ExplanationAdmin)
-admin.site.register(Result, ResultAdmin)
+admin.site.register(Explanation)
 
-admin.site.register(MoocletVersionVariable)
-admin.site.register(MoocletVersionVariableValue)
 admin.site.register(Outcome)

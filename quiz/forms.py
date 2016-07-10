@@ -8,7 +8,11 @@ class ChooseAnswerForm(forms.Form):
 	On initialization (in view), restrict the answer queryset to specific question's answer choices
 
 	'''
-	answer = forms.ModelChoiceField(queryset=Answer.objects.all(),widget=forms.RadioSelect,empty_label=None)
+	answer = forms.ModelChoiceField(
+		queryset=Answer.objects.all(),
+		widget=forms.RadioSelect,
+		empty_label=None
+	)
 	
 
 class RateExplanationForm(forms.Form):
