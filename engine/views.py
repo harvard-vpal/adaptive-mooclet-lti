@@ -48,7 +48,7 @@ def quiz_create_url(request):
         return redirect('lti:return_launch_url', quiz_id=quiz.id)
 
 
-#### REDIRECTION UTILITY VIEW ####
+#### UTILITY VIEWS ####
 
 def quiz_display(request, quiz_id):
     '''
@@ -56,6 +56,12 @@ def quiz_display(request, quiz_id):
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     external_url = quiz.getExternalUrl()
+
+    # redirect to an alternate view if the quiz is complete
+    if Outcome.objects.filter(user=request.user, quiz=quiz).exists():
+        outcome = Outcome.objects.get(user=request.user, quiz=quiz)
+        if outcome.grade==1:
+            return redirect('quiz:complete')
 
     if external_url:
         extra_params = {
@@ -68,6 +74,20 @@ def quiz_display(request, quiz_id):
             return redirect('quiz:question',question_id=question.id)
         else:
             return redirect('quiz:placeholder')
+
+def launch_sandbox(request):
+    '''
+    non-lti launch that redirects user to a shared default sandbox quiz (instructor view)
+    '''
+    quiz = Quiz.objects.get(pk=1)
+    request.session['quiz_id'] = quiz.pk
+    return redirect('engine:quiz_detail', quiz_id=quiz_id)
+
+def launch_sandbox_quiz(request):
+    '''
+    convenience view/url for launching sandbox quiz (student view)
+    '''
+    return redirect('engine:quiz_display', quiz_id=1)
 
 
 #### QUIZ MANAGEMENT ####
@@ -153,7 +173,14 @@ def quiz_update(request, quiz_id):
 
         AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
         answer_formset = AnswerFormset(request.POST, instance=question)
-        answers = answer_formset.save()
+        answers = answer_formset.save(commit=False)
+        # associate mooclet instances with each answer before saving
+        for answer in answers:
+            if not answer.mooclet:
+                mooclet = Mooclet()
+                mooclet.save()
+                answer.mooclet = Mooclet()
+            answer.save()
 
         quiz_form.is_valid()
         if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
@@ -185,18 +212,20 @@ def explanation_list(request, quiz_id):
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     question = quiz.question_set.first()
-    answers = question.answer_set.order_by('order')
+    answers = question.answer_set.order_by('_order')
     context = {'answers':answers, 'quiz':quiz}
 
     return render(request, 'engine/explanation_list.html', context)
 
 
-def explanation_create(request, answer_id):
-    answer = get_object_or_404(Answer,pk=answer_id)
+def explanation_create(request, mooclet_id):
+    '''
+    create new explanation version
+    '''
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
 
     if request.method=='GET':
         context = {
-            'answer':answer,
             'explanation_form':ExplanationForm()
         }
         return render(request, 'engine/explanation_create.html',context)
@@ -204,25 +233,34 @@ def explanation_create(request, answer_id):
     elif request.method=='POST':
         explanation_form = ExplanationForm(request.POST)
         explanation = explanation_form.save(commit=False)
-        explanation.answer = answer
+        explanation.mooclet = mooclet
         explanation.save()
 
-        return redirect('engine:explanation_list',quiz_id=answer.question.quiz.id)
+        return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
 
 def explanation_modify(request, explanation_id):
+    '''
+    modify an explanation version
+    '''
     explanation = get_object_or_404(Explanation,pk=explanation_id)
-    answer = explanation.answer
+    mooclet = explanation.mooclet
 
     if request.method=='GET':
         context = {
-            'explanation_form':ExplanationForm(instance=explanation)
+            'explanation_form':ExplanationModifyForm(instance=explanation)
         }
         return render(request, 'engine/explanation_modify.html',context)
 
     elif request.method=='POST':
-        explanation_form = ExplanationForm(request.POST,instance=explanation)
-        explanation = explanation_form.save()
+        explanation_form = ExplanationModifyForm(request.POST,instance=explanation)
+        explanation_form.is_valid()
+        if explanation_form.cleaned_data['delete']:
+            explanation = explanation.delete()
+        else:
+            explanation = explanation_form.save()
+
+
         
         return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
@@ -275,7 +313,7 @@ def collaborator_create(request, quiz_id):
 
 def answer_list(request,question_id):
     question = get_object_or_404(Question, pk=question_id)
-    answers = question.answer_set.order_by('order')
+    answers = question.answer_set.order_by('_order')
     context = {'question':question, 'answers':answers}
     return render(request, 'engine/answer_list.html', context)
 

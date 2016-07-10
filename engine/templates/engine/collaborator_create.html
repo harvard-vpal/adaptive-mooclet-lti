@@ -4,21 +4,34 @@
 {% block body %}
 
 
-<h1> Add collaborator </h1>
+<h1>How to invite collaborators to suggest Versions of Explanations</h1>
 
-<div backnav>
-<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to quiz explanations</a>
+<div class="nav">
+	<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to Question Manager</a>
 </div>
 
 <div>
-<p> Instructions: 
-<br>
-Tell your collaborator to login to the course, and open up the quiz. They should see the student view. Immediately after, they should open up <a href="{% url 'engine:collaborator_request' %}">{{ request.get_host }}{% url 'engine:collaborator_request' %}</a> in a new tab, which will tell them their collaborator id. They should send this id to you, and you can enter in the id using the form below. Afterwards, they should see the collaborator view whenever they login to the course and open the quiz. </p>
+	<p> 1. Add your collaborator to your Canvas course as a "Guest", using their Harvard email. 
+	<br>
+	2. Email them the URL hyperlink to the Question you want them to access, along with copy/pasting the instructions below.</p>
+	<p> "Dear Collaborator,
+	<br>
+	I have added you as a "Guest" to the Canvas course, using your email. 
+	<br>
+	Please go to this URL hyperlink: ___[Add URL to Question here]___
+	<br>
+	Once you have successfully logged into Canvas and are able to see the Student View of a Question, part A of your request will be automatically submitted.
+	Then, go to <a href="{% url 'engine:collaborator_request' %}">{{ request.get_host }}{% url 'engine:collaborator_request' %}</a>
+	This will provide you with information you can copy/paste and email to joseph_jay_williams@harvard.edu. Please also cc me.
+	<br>
+	Once part B of your request is matched against part A and approved, we will both receive confirmation by email.
+	<br>
+	You can then go back to the URL hyperlink, and you will see both the Student View and the Collaborator View of the Question, which will allow you to suggest and edit explanations.</p>
 
-<form action="" method="post">
-{{ collaborator_form.as_p }}
-<input type="submit" value="Save" />
-</form>
+	<form action="" method="post">
+	{{ collaborator_form.as_p }}
+	<input type="submit" value="Save" />
+	</form>
 </div>
 
 {% endblock %}

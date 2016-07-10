@@ -2,23 +2,24 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from qualtrics.models import Template
-from ordered_model.models import OrderedModel
+# from ordered_model.models import OrderedModel
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
-# Create your models here.
+# course / quiz
 
 class Course(models.Model):
     context = models.CharField(max_length=100,default='')
     instance = models.CharField(max_length=200,default='')
 
-
 class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
     # url of a custom qualtrics survey
     url = models.URLField(default='',blank=True)
-    context = models.CharField(max_length=100,default='')
+    # context = models.CharField(max_length=100,default='')
     course = models.ForeignKey(Course, blank=True,null=True)
 
     class Meta:
@@ -48,76 +49,88 @@ class Quiz(models.Model):
                 return first_question.url
         return None
 
-    # def getFirstQuestion(self):
-    #     '''
-    #     get first question, convenience function
-    #     '''
-    #     if self.question_set.all().exists():
-    #         question = self.question_set.first()
-    #         return question
-    #     else:
-    #         return None
+# generalized mooclet models
+
+class Mooclet(models.Model):
+    # name = models.CharField(max_length=100,default='')
+    policy = models.ForeignKey('Policy',blank=True,null=True)
+    # content_type = models.ForeignKey(ContentType)
+    # object_id = models.PositiveIntegerField()
+    # content_object = GenericForeignKey()
 
 
-class Question(OrderedModel):
+class Version(models.Model):
+    '''
+    Mooclet version
+    '''
+    mooclet = models.ForeignKey(Mooclet)
+    class Meta:
+        order_with_respect_to = 'mooclet'
+
+
+class Policy(models.Model):
+    name = models.CharField(max_length=100)
+    user_variable = models.ManyToManyField('UserVariable')
+
+
+class UserVariable(models.Model):
+    name = models.CharField(max_length=100)
+    content_type = models.ForeignKey(ContentType,null=True)
+
+
+class UserVariableValue(models.Model):
+    '''
+    user variable observation, can be associated with either course, mooclet, or mooclet version
+    examples of user variables:
+        course-level: general student characteristics
+        quiz-level: number of attempts
+        mooclet: ?
+        version: student rating of an explanation, instructors prior judgement
+    '''
+    user = models.ForeignKey(User)
+    variable = models.ForeignKey(UserVariable)
+    value = models.FloatField()
+
+    # pick one of the following
+    course = models.ForeignKey(Course,null=True)
+    quiz = models.ForeignKey(Quiz,null=True)
+    mooclet = models.ForeignKey(Mooclet,null=True)
+    version = models.ForeignKey(Version,null=True)
+
+
+### specific mooclet models
+
+class Question(models.Model):
     name = models.CharField('question name', max_length=100)
     quiz = models.ForeignKey(Quiz)
     text = models.TextField('question text')
     # template = models.ForeignKey(Template)
     url = models.URLField(default='',blank=True)
-    # settings for django-ordered-model
-    order_with_respect_to = 'quiz'
+    class Meta:
+        order_with_respect_to = 'quiz'
     
     def __unicode__(self):
         return self.text
 
 
-class Policy(models.Model):
-    name = models.CharField(max_length=100)
-    # many to many with policy variables?
-
-
-class Mooclet(models.Model):
-    name = models.CharField(max_length=100,default='')
-    policy = models.ForeignKey(Policy,blank=True,null=True)
+class Answer(models.Model):
+    question = models.ForeignKey(Question)
+    text = models.TextField('answer text',default='')
+    correct = models.BooleanField()
+    mooclet = models.ForeignKey(Mooclet,null=True)
 
     class Meta:
-        abstract = True
-
-
-class Answer(Mooclet, OrderedModel):
-    question = models.ForeignKey(Question)
-    text = models.TextField('answer text')
-    correct = models.BooleanField()
-    # order = models.PositiveIntegerField('choice order')
-
-    # settings for django-ordered-model
-    order_with_respect_to = 'question'
+        order_with_respect_to = 'question'
 
     def __unicode__(self):
         return self.text
 
 
-
-
-class Explanation(models.Model):
-    answer = models.ForeignKey(Answer)
+class Explanation(Version):
     text = models.TextField('explanation text')
-    # policy = models.ForeignKey(Policy)
 
     def __unicode__(self):
-        return "{}: {}".format(self.id,self.text)
-
-
-
-class Result(models.Model):
-    user = models.ForeignKey(User)
-    explanation = models.ForeignKey(Explanation)
-    value = models.FloatField()
-    # store lis_result_sourcedid, lis_outcome_service_url
-
-    def __unicode__(self):
-        return "{}, explanation {}".format(self.value, self.explanation.id)
+        return self.text
 
 
 class Collaborator(models.Model):
@@ -127,31 +140,10 @@ class Collaborator(models.Model):
     # context = models.CharField(max_length=100,default='')
     course = models.ForeignKey(Course)
     # quiz = ManyToManyField(Quiz)
-
-class CourseUser(models.Model):
-    user = models.ForeignKey(User)
-    course = models.ForeignKey(Course)
-    # context = models.CharField(max_length=100,default='')
-    # is_researcher = models.BooleanField()
-    # role = models.ForeignKey(Role)
-
-class CourseUserVariable(models.Model):
-    name = models.CharField(max_length=50,default='')
-    description = models.TextField(default='')
-
-class CourseUserState(models.Model):
-    courseuser = models.ForeignKey(CourseUser)
-    variable = models.ForeignKey(CourseUserVariable)
-    
-class MoocletVersionVariable(models.Model):
-    name = models.CharField(max_length=100)
     def __unicode__(self):
-        return self.name
+        return self.user.__unicode__()
 
-class MoocletVersionVariableValue(models.Model):
-    mooclet_version_variable = models.ForeignKey(MoocletVersionVariable)
-    explanation = models.ForeignKey(Explanation,null=True)
+class Outcome(models.Model):
     user = models.ForeignKey(User)
-    value = models.FloatField()
-
-
+    quiz = models.ForeignKey(Quiz)
+    grade = models.FloatField()

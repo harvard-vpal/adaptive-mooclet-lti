@@ -1,0 +1,9 @@
+[
+  {
+    "model": "engine.quiz",
+    "pk": 1,
+    "fields": {
+      "name": "Default sandbox quiz"
+    }
+  }
+]

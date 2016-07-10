@@ -80,6 +80,8 @@ def launch(request,quiz_id):
         'oauth_consumer_key': request.POST.get('oauth_consumer_key', None),
     }
     request.session['LTI_LAUNCH'].update(more_lti_params)
+
+    # put quiz id in session variable, referenced by navigation links
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     request.session['quiz_id'] = quiz.pk
 

@@ -15,7 +15,7 @@ def question(request, question_id):
 
         # just get first question in quiz for now
         question = Question.objects.get(pk=question_id)
-        answers = question.answer_set.all().order_by('order')
+        answers = question.answer_set.all().order_by('_order')
 
         # could simulate web service request to get: questions, answers
         # question_data = requests.get(reverse('adaptive_engine:get_question'),params={'id':question.id})
@@ -77,5 +77,9 @@ def explanation(request, explanation_id):
 
 def placeholder(request):
     return render(request, 'quiz/placeholder.html')
+
+def complete(request):
+    return render(request, 'quiz/complete.html')
+    
 
     

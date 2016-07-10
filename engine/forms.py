@@ -53,7 +53,19 @@ class ExplanationForm(forms.ModelForm):
 		widgets = {
 			'text': forms.Textarea(attrs={'rows':3}),
 		}
-		
+
+class ExplanationModifyForm(forms.ModelForm):
+	'''
+	Modify explanation
+	'''
+	delete = forms.BooleanField(required=False)
+	class Meta:
+		model = Explanation
+		fields = ['text']
+		widgets = {
+			'text': forms.Textarea(attrs={'rows':3}),
+		}
+
 class ExplanationParameters(forms.ModelForm):
 	'''
 	This will be a table for each explanation, whose
@@ -87,10 +99,10 @@ class CollaboratorForm(forms.ModelForm):
 			'user': forms.NumberInput(),
 		}
 
-class MoocletVersionVariableValueForm(forms.ModelForm):
+class UserVariableValueForm(forms.ModelForm):
 	'''
 	enter mooclet version variable value
 	'''
 	class Meta:
-		model = MoocletVersionVariableValue
+		model = UserVariableValue
 		fields = ['value']
