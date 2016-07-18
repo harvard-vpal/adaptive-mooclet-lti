@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+import policies
 
 # course / quiz
 
@@ -51,6 +52,10 @@ class Quiz(models.Model):
 
 # generalized mooclet models
 
+# class MoocletType(models.Model):
+#     pass
+
+
 class Mooclet(models.Model):
     # name = models.CharField(max_length=100,default='')
     policy = models.ForeignKey('Policy',blank=True,null=True)
@@ -58,12 +63,17 @@ class Mooclet(models.Model):
     # object_id = models.PositiveIntegerField()
     # content_object = GenericForeignKey()
 
+    def get_version(self):
+        choice = self.policy.run_policy()
+        return self.version_set.get(order=choice)
+
 
 class Version(models.Model):
     '''
     Mooclet version
     '''
     mooclet = models.ForeignKey(Mooclet)
+    #
     class Meta:
         order_with_respect_to = 'mooclet'
 
@@ -72,13 +82,31 @@ class Policy(models.Model):
     name = models.CharField(max_length=100)
     user_variable = models.ManyToManyField('UserVariable')
 
+    def get_policy_function():
+        try:
+            return getattr(policies, self.name)
+        except:
+            print "policy function matching specified name not found"
+            # TODO look through custom user-provided functions
+            return None
 
-class UserVariable(models.Model):
+    def run_policy(versions):
+        policy_function = get_policy_function()
+        policy_function()
+
+
+class VariableType(models.Model):
     name = models.CharField(max_length=100)
+    is_user_variable = models.BooleanField()
     content_type = models.ForeignKey(ContentType,null=True)
 
+    # variable type "classes"
+    description = models.TextField()
+    # policy_relevance = [vpal_researcher, harvard_researcher, course_team, external_researcher]
+    # policy_relevance2 = [student_judgements, instructor_judgements]
 
-class UserVariableValue(models.Model):
+
+class VariableValue(models.Model):
     '''
     user variable observation, can be associated with either course, mooclet, or mooclet version
     examples of user variables:
