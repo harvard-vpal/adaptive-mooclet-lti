@@ -10,6 +10,17 @@ def weighted_random(versions, weights):
 def thompson_sampling(versions, results):
 	pass
 
+# class ThompsonPolicy(models.Model):
+# 	name
+# 	priorvariables 
+# 	evidencevariables 
+	
+# 	alpha-successes
+# 	beta-failures
+# 	probabilityofactions
+	
+	
+
 
 # list of lists, each inner list is a different user variable
 # [()]
