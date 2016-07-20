@@ -1,18 +1,22 @@
-from models import Mooclet, Version
-import random
+from numpy.random import choice
 
-def uniform_random(versions):
-	return random.choice(versions)
+# arguments to policies:
 
-def weighted_random(versions, weights):
+# variables: list of variable objects, can be used to retrieve related data
+# context: dict passed from view, contains current user, course, quiz, question context
+
+
+def uniform_random(variables,context):
+	return choice(context['mooclet'].version_set.all())
+
+def weighted_random(variables,context):
+	Weight = variables.get(name='weight')
+	weight_data = Weight.get_data(context)
+
+	versions = [weight.version for weight in weight_data]
+	weights = [weight.weight for weight in weight_data]
+
+	return choice(versions, weights)
+
+def thompson_sampling(data):
 	pass
-
-def thompson_sampling(versions, results):
-	pass
-
-
-# list of lists, each inner list is a different user variable
-# [()]
-
-# rows: versions
-# columns: variable types

@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 import policies
+from django.db.models import Q
 
 # course / quiz
 
@@ -52,6 +53,7 @@ class Quiz(models.Model):
 
 # generalized mooclet models
 
+## TODO: would we need something like this?
 # class MoocletType(models.Model):
 #     pass
 
@@ -63,10 +65,29 @@ class Mooclet(models.Model):
     # object_id = models.PositiveIntegerField()
     # content_object = GenericForeignKey()
 
-    def get_version(self):
-        choice = self.policy.run_policy()
-        return self.version_set.get(order=choice)
+    def get_version_ids(self):
+        return self.version_set.values_list('id',flat=True)
+        # return [version_id for version in self.version_set.all()]
 
+    def get_version(self, context={}):
+        # context['versions'] = self.version_set.all()
+        context['version_ids'] = self.get_version_ids()
+
+        version = self.policy.run_policy(context)
+        # version = self.version_set.get(pk=version_id)
+        return version
+
+    # def get_relevant_variable_data(self):
+    #     variable_types = self.policy.variable_types.all()
+    #     variable_values = variable_type.variable_value_set.filter(
+    #         Q(
+    #             course = self.mooclet.quiz.course |
+    #             quiz = self.mooclet.quiz |
+    #             mooclet = self.mooclet
+    #         ),
+    #         variable__in = variable_types
+    #     )
+        
 
 class Version(models.Model):
     '''
@@ -80,9 +101,9 @@ class Version(models.Model):
 
 class Policy(models.Model):
     name = models.CharField(max_length=100)
-    user_variable = models.ManyToManyField('UserVariable')
+    variables = models.ManyToManyField('VariableType')
 
-    def get_policy_function():
+    def get_policy_function(self):
         try:
             return getattr(policies, self.name)
         except:
@@ -90,12 +111,22 @@ class Policy(models.Model):
             # TODO look through custom user-provided functions
             return None
 
-    def run_policy(versions):
-        policy_function = get_policy_function()
-        policy_function()
+    def get_variables():
+        # TODO implement returning all, subsets, etc.
+        return self.variables
+
+    def run_policy(self, context):
+        # context['user']
+        # context['quiz']
+        # context ['question']
+        policy_function = self.get_policy_function()
+        variables = self.get_variables()
+
+        version_id = policy_function(variables,context)
+        return version_id
 
 
-class VariableType(models.Model):
+class Variable(models.Model):
     name = models.CharField(max_length=100)
     is_user_variable = models.BooleanField()
     content_type = models.ForeignKey(ContentType,null=True)
@@ -105,8 +136,17 @@ class VariableType(models.Model):
     # policy_relevance = [vpal_researcher, harvard_researcher, course_team, external_researcher]
     # policy_relevance2 = [student_judgements, instructor_judgements]
 
+    def get_data(self,context=None):
+        # optional filtering that could go on here
+        # TODO figure out filtering for multiple object possibilities
+        self.value_set.filter(mooclet = context['mooclet'])
+        return self.value_set.all()
 
-class VariableValue(models.Model):
+    def get_data_dicts(self):
+        return self.get_data().values()
+
+
+class Value(models.Model):
     '''
     user variable observation, can be associated with either course, mooclet, or mooclet version
     examples of user variables:
@@ -119,11 +159,16 @@ class VariableValue(models.Model):
     variable = models.ForeignKey(UserVariable)
     value = models.FloatField()
 
-    # pick one of the following
+    # content_type = models.ForeignKey(ContentType,null=True)
+    # object_id = models.PositiveIntegerField()
+    # content_object = GenericForeignKey('content_type', 'object_id')
+
+    # # pick one of the following
     course = models.ForeignKey(Course,null=True)
     quiz = models.ForeignKey(Quiz,null=True)
     mooclet = models.ForeignKey(Mooclet,null=True)
     version = models.ForeignKey(Version,null=True)
+
 
 
 ### specific mooclet models
@@ -171,7 +216,15 @@ class Collaborator(models.Model):
     def __unicode__(self):
         return self.user.__unicode__()
 
+# TODO replace with generic variable
 class Outcome(models.Model):
     user = models.ForeignKey(User)
     quiz = models.ForeignKey(Quiz)
     grade = models.FloatField()
+
+## TODO use for policies that need persistent storage (e.g. priors)
+# class VersionPolicyState(models.Model):
+#     version = models.ForeignKey(Version)
+#     policy = models.ForeignKey(Policy)
+#     state = models.FloatField()
+
