@@ -59,7 +59,8 @@ target/
 *.sqlite3
 http_static/
 
-# deployed on EB but not tracked by git
-#secure.py
-#secure.config
+######### deploy to eb ############
+
+# secure.py
+# secure.config
 
