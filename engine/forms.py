@@ -99,10 +99,24 @@ class CollaboratorForm(forms.ModelForm):
 			'user': forms.NumberInput(),
 		}
 
-class UserVariableValueForm(forms.ModelForm):
+class ValueForm(forms.ModelForm):
 	'''
-	enter mooclet version variable value
+	enter variable value
 	'''
 	class Meta:
-		model = UserVariableValue
+		model = Value
+		fields = ['value', 'version']
+		widgets = {
+			'version':forms.HiddenInput(),
+		}
+
+class VersionValueForm(forms.ModelForm):
+	'''
+	Form for entering value associated with a mooclet version, and variable type
+	'''
+	value = forms.FloatField(label='')
+	class Meta:
+		model=Value
 		fields = ['value']
+
+# form class representing a row of values for a version?	

@@ -1,0 +1,51 @@
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+{% load custom_tags %}
+
+{% block body %}
+<h1> Interact with MOOClet </h1>
+
+<div class="nav">
+	<a href="{% url 'engine:answer_list' question_id=answer.question.pk %}">Back to MOOClet list</a>
+</div>
+
+<div>
+	
+	<div class="context">
+		{% if answer %}
+			<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
+			Answer text: {{answer.text}}
+		{% else %}
+			No mooclet context provided
+		{% endif %}
+	</div>
+	<div class="version-values-table">
+		<form method="post">
+		<div class="table">
+
+			<div class="tr">
+				<span class="td">Version</span>
+				{% for variable in variables %}
+					<span class="td"> {{variable.name}} </span>
+				{% endfor %}
+			</div>
+
+			
+			{% for version in versions %}
+				<div class="tr">
+				<span class="td"> {{version}} </span>
+
+				{% for variable in variables %}
+					{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
+						<span class="td">{% iloc value_formgroups m n %}</span>
+					{% endwith %}
+				{% endfor %}
+				</div>
+			{% endfor %}
+			
+		</table>
+		<input type="submit" value="Save">
+		
+	</div>
+</div>
+{% endblock %}

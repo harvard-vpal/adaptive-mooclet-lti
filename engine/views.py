@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
-from django.forms import formset_factory,inlineformset_factory, ModelForm
+from django.forms import modelformset_factory,inlineformset_factory, ModelForm
 from django.http import HttpResponse
 from urllib import urlencode
 
 from .models import *
+from django.contrib.contenttypes.models import ContentType
 from .forms import *
 from .utils import *
-from .algorithms import computeExplanation_Thompson
 
 from qualtrics.utils import provision_qualtrics_quiz
 
@@ -314,70 +314,64 @@ def collaborator_create(request, quiz_id):
 def answer_list(request,question_id):
     question = get_object_or_404(Question, pk=question_id)
     answers = question.answer_set.order_by('_order')
-    context = {'question':question, 'answers':answers}
+    # mooclets = [answer.mooclet for answer in answers]
+    context = {
+        'question':question, 
+        'answers':answers, 
+        # 'mooclets':mooclets,
+    }
     return render(request, 'engine/answer_list.html', context)
 
 
-def answer_detail(request,answer_id):
+def mooclet_detail(request,mooclet_id):
 
+    ValueFormSet = modelformset_factory(
+        Value,
+        fields=('value','version'), 
+        can_delete=False, 
+        extra=4, max_num=4,
+    )
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+    versions = mooclet.version_set.all()
+    Version_ct = ContentType.objects.get_for_model(Version)
+    variables = mooclet.policy.variables.filter(content_type=Version_ct).all()
+
+    # page used to display variables that are version-specific
     if request.method == 'GET':
-        answer = get_object_or_404(Answer,pk=answer_id)
-        explanations = answer.explanation_set
 
-        mooclet_version_variable_ids = [1,2]
-
-        explanation_ids = [1,2,3]
-
-        # https://docs.djangoproject.com/en/1.9/topics/forms/modelforms/#model-formsets
-        # changing the queryset
-        # MoocletVersionVariableValueFormset = formset_factory(MoocletVersionVariableValue, fields=('value',), can_delete=False, extra=4, max_num=4)
-        # mooclet_version_variable_value_formset = MoocletVersionVariableValueFormset()
+        # should recieve answer_id as GET parameter, if we are navigating from an answer context
+        answer = None
+        if 'answer_id' in request.GET:
+            answer = get_object_or_404(Answer, id=request.GET['answer_id'])
 
 
+        # explanations = [version.explanation for version in mooclet.version_set.all()]
 
-        mooclet_version_variable_value_forms = []
-
-        for mooclet_version_variable_id in mooclet_version_variable_ids:
-
-            forms_for_variable_type = []
-
-            for explanation in explanations.all():
-
-                mooclet_version_variable = MoocletVersionVariable.objects.get(pk=mooclet_version_variable_id)
-                
-                # get or create variable_value_for_explanation
-                variable_value_for_explanation_qset = MoocletVersionVariableValue.objects.filter(
-                    mooclet_version_variable = mooclet_version_variable,
-                    explanation = explanation
-                )
-                if variable_value_for_explanation_qset.exists():
-                    variable_value_for_explanation = variable_value_for_explanation_qset.first()
-                else: # create
-                    variable_value_for_explanation = MoocletVersionVariableValue(
-                        mooclet_version_variable = mooclet_version_variable,
-                        explanation = explanation,
-                        # value = ?
+        # create m x n array of forms, where m (rows) is the number of versions and n (cols) is the number of variables
+        formgroups = []
+        for version in versions:
+            forms = []
+            for variable in variables:
+                # TODO may want to consider something like "filter or create"
+                # http://stackoverflow.com/questions/6190773/django-get-the-first-object-from-a-filter-query-or-create
+                value, created = Value.objects.get_or_create(version=version, variable=variable)
+                form = VersionValueForm(instance=value
+                        # set auto_id to label forms?
                     )
+                forms.append(form)
+            formgroups.append(forms)
 
-                # TODO some kind of form labelling
-                mooclet_version_variable_value_form = MoocletVersionVariableValueForm(instance=variable_value_for_explanation)
-                forms_for_variable_type.append(mooclet_version_variable_value_form)
-
-            mooclet_version_variable_value_forms.append(forms_for_variable_type)
-
-
-
-        # vars = [MoocletVersionVariable1, MoocletVersionVariable2]
-        # for MoocletVersionVariable in vars:
-            # generate a form for each moocletversion
-            # formset = [form1, form2, form3, form4]
+        # versions_zip = zip(versions, formgroups)
 
         context = {
+            'value_formgroups':formgroups,
             'answer':answer,
-            'mooclet_version_variable_value_forms': mooclet_version_variable_value_forms
+            'variables':variables,
+            'versions':versions,
+            # 'versions_zip':versions_zip,
+            'info':[1,2,3,4]
         }
-
-        return render(request, 'engine/answer_detail.html',context)
+        return render(request, 'engine/mooclet_detail.html',context)
 
     elif request.method == 'POST':
 
