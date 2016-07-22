@@ -1,0 +1,59 @@
+[
+  {
+    "model": "engine.variable",
+    "pk": 1,
+    "fields": {
+      "name": "weight",
+      "description": "Version weight for weighted random policy",
+      "is_user_variable": false,
+      "content_type": ["engine", "version"]
+    }
+  },
+  {
+    "model": "engine.policy",
+    "pk": 1,
+    "fields": {
+      "name": "weighted_random",
+      "variables": [1]
+    }
+  },
+  {
+    "model": "engine.mooclet",
+    "pk": 1,
+    "fields": {
+      "name": "Default mooclet",
+      "version_type": ["engine", "version"],
+      "policy": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 1,
+    "fields": {
+      "mooclet": 1,
+      "_order": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 2,
+    "fields": {
+      "mooclet": 1,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 1,
+    "fields": {
+      "text": "Because 1 plus 1 is 2."
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 2,
+    "fields": {
+      "text": "Because foo bar baz."
+    }
+  }
+]

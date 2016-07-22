@@ -1,0 +1,22 @@
+[
+  {
+    "model": "engine.value",
+    "pk": 1,
+    "fields": {
+      "variable": 1,
+      "value": 0.3,
+      "version": 1
+    }
+  },
+  {
+    "model": "engine.value",
+    "pk": 2,
+    "fields": {
+      "variable": 1,
+      "value": 0.7,
+      "version": 2
+    }
+  }
+]
+
+
