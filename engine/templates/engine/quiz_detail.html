@@ -19,7 +19,7 @@
 			<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Invite Collaborators to suggest and edit Explanations.</a></p>
 
 			{% for question in quiz.question_set.all %}
-			{# <p> <a href="{% url 'engine:answer_list' question_id=question.pk %}">MOOClet list for question {{forloop.counter}} </a></p> #}
+			<p> <a href="{% url 'engine:answer_list' question_id=question.pk %}">See Explanation-MOOClets for answer choices {#} {{forloop.counter}} #} </a></p>
 			{% endfor %}
 
 		<h2> Student's View of Question</h2>

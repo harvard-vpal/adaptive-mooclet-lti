@@ -14,9 +14,9 @@ def weighted_random(variables,context):
 	weight_data = Weight.get_data(context)
 
 	versions = [weight.version for weight in weight_data]
-	weights = [weight.weight for weight in weight_data]
+	weights = [weight.value for weight in weight_data]
 
-	return choice(versions, weights)
+	return choice(versions, weights)[0]
 
 def thompson_sampling(data):
 	pass

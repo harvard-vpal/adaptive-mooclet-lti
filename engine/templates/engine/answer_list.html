@@ -10,9 +10,11 @@
 	
 	<div>	
 		{% for answer in answers %}
-			<ul>
-			<li><a href="{% url 'engine:answer_detail' answer_id=answer.pk %}">Answer: {{answer.text}}</a></li>
-			</ul>
+			<p>
+			Answer: {{answer.text}}
+			<br>
+			<li><a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}">Explanation Mooclet for answer</a></li>
+			</p>
 		{% endfor %}
 	</div>
 {% endblock %}

@@ -13,7 +13,7 @@ class QuestionAdmin (admin.ModelAdmin):
 		return obj.quiz.id
 
 class AnswerAdmin (admin.ModelAdmin):
-	list_display = ['id','question','text','correct']
+	list_display = ['id','question','text','correct','mooclet']
 
 # class ExplanationAdmin (admin.ModelAdmin):
 # 	list_display = ['id','answer','text']
@@ -21,9 +21,27 @@ class AnswerAdmin (admin.ModelAdmin):
 class ResultAdmin (admin.ModelAdmin):
 	list_display = ['id','user','explanation','value']
 
+class MoocletAdmin (admin.ModelAdmin):
+	list_display = ['id','version_type','policy']
+
+class VersionAdmin(admin.ModelAdmin):
+	list_display = ['id','mooclet']
+
+class PolicyAdmin(admin.ModelAdmin):
+	filter_horizontal = ('variables',)
+
 admin.site.register(Quiz, QuizAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(Explanation)
+admin.site.register(Mooclet,MoocletAdmin)
+admin.site.register(Version,VersionAdmin)
+admin.site.register(Variable)
+admin.site.register(Value)
+admin.site.register(Policy, PolicyAdmin)
+admin.site.register(MoocletType)
 
-admin.site.register(Outcome)
+
+
+
+# admin.site.register(Outcome)
