@@ -53,17 +53,24 @@ class Quiz(models.Model):
 
 # generalized mooclet models
 
-## TODO: would we need something like this?
-# class MoocletType(models.Model):
-#     pass
+# TODO: would we need something like this?
+class MoocletType(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
 
 
 class Mooclet(models.Model):
-    # name = models.CharField(max_length=100,default='')
+    name = models.CharField(max_length=100,default='')
+    version_type = models.ForeignKey(ContentType,null=True)
     policy = models.ForeignKey('Policy',blank=True,null=True)
     # content_type = models.ForeignKey(ContentType)
     # object_id = models.PositiveIntegerField()
     # content_object = GenericForeignKey()
+
+    def __unicode__(self):
+        return "Mooclet: {}".format(self.id)
 
     def get_version_ids(self):
         return self.version_set.values_list('id',flat=True)
@@ -73,9 +80,10 @@ class Mooclet(models.Model):
         # context['versions'] = self.version_set.all()
         context['version_ids'] = self.get_version_ids()
 
-        version = self.policy.run_policy(context)
-        # version = self.version_set.get(pk=version_id)
+        version_id = self.policy.run_policy(context)
+        version = self.version_set.get(pk=version_id)
         return version
+
 
     # def get_relevant_variable_data(self):
     #     variable_types = self.policy.variable_types.all()
@@ -98,10 +106,20 @@ class Version(models.Model):
     class Meta:
         order_with_respect_to = 'mooclet'
 
+    def __unicode__(self):
+        return "Version: {}".format(self.id)
+
 
 class Policy(models.Model):
+    # should name be the primary key?
     name = models.CharField(max_length=100)
-    variables = models.ManyToManyField('VariableType')
+    variables = models.ManyToManyField('Variable')
+
+    class Meta:
+        verbose_name_plural = 'policies'
+
+    def __unicode__(self):
+        return self.name
 
     def get_policy_function(self):
         try:
@@ -111,9 +129,9 @@ class Policy(models.Model):
             # TODO look through custom user-provided functions
             return None
 
-    def get_variables():
+    def get_variables(self):
         # TODO implement returning all, subsets, etc.
-        return self.variables
+        return self.variables.all()
 
     def run_policy(self, context):
         # context['user']
@@ -128,22 +146,45 @@ class Policy(models.Model):
 
 class Variable(models.Model):
     name = models.CharField(max_length=100)
-    is_user_variable = models.BooleanField()
+    is_user_variable = models.BooleanField(default=False)
     content_type = models.ForeignKey(ContentType,null=True)
 
     # variable type "classes"
-    description = models.TextField()
+    description = models.TextField(default='')
     # policy_relevance = [vpal_researcher, harvard_researcher, course_team, external_researcher]
     # policy_relevance2 = [student_judgements, instructor_judgements]
+
+    def __unicode__(self):
+        return self.name
 
     def get_data(self,context=None):
         # optional filtering that could go on here
         # TODO figure out filtering for multiple object possibilities
-        self.value_set.filter(mooclet = context['mooclet'])
+        if context:
+            course = context.get('course',0)
+            quiz = context.get('quiz',0)
+            mooclet = context.get('mooclet',0)
+            version = context.get('version',0)
+
+            if 'version' in context:
+                return self.value_set.filter(
+                    Q(course = course)
+                    | Q(quiz = quiz)
+                    | Q(mooclet = mooclet)
+                    | Q(version = version)
+                )
+            if 'mooclet' in context:
+                return self.value_set.filter(
+                    Q(course = course)
+                    | Q(quiz = quiz)
+                    | Q(mooclet = mooclet)
+                    | Q(version__in = mooclet.version_set.all())
+                )
+
         return self.value_set.all()
 
-    def get_data_dicts(self):
-        return self.get_data().values()
+    def get_data_dicts(self,context=None):
+        return self.get_data(context).values()
 
 
 class Value(models.Model):
@@ -155,8 +196,8 @@ class Value(models.Model):
         mooclet: ?
         version: student rating of an explanation, instructors prior judgement
     '''
-    user = models.ForeignKey(User)
-    variable = models.ForeignKey(UserVariable)
+    user = models.ForeignKey(User,null=True,blank=True)
+    variable = models.ForeignKey(Variable)
     value = models.FloatField()
 
     # content_type = models.ForeignKey(ContentType,null=True)
@@ -164,10 +205,10 @@ class Value(models.Model):
     # content_object = GenericForeignKey('content_type', 'object_id')
 
     # # pick one of the following
-    course = models.ForeignKey(Course,null=True)
-    quiz = models.ForeignKey(Quiz,null=True)
-    mooclet = models.ForeignKey(Mooclet,null=True)
-    version = models.ForeignKey(Version,null=True)
+    course = models.ForeignKey(Course,null=True,blank=True)
+    quiz = models.ForeignKey(Quiz,null=True,blank=True)
+    mooclet = models.ForeignKey(Mooclet,null=True,blank=True)
+    version = models.ForeignKey(Version,null=True,blank=True)
 
 
 
