@@ -85,10 +85,10 @@ def launch(request,quiz_id):
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     request.session['quiz_id'] = quiz.pk
 
-    if 'Instructor' in request.session['LTI_LAUNCH']['roles']:
+    # User role check
+    user_roles = request.session['LTI_LAUNCH']['roles']
+    if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
-
-    # TODO researcher role check
 
     else:
         # TODO store canvas user id and lti user id so that we can have a mapping?
