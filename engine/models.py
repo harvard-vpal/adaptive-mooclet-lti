@@ -170,6 +170,10 @@ class Value(models.Model):
 class Course(models.Model):
     context = models.CharField(max_length=100,default='')
     instance = models.CharField(max_length=200,default='')
+    name = models.CharField(max_length=200,default='')
+
+    def __unicode__(self):
+        return self.name
 
 
 class Collaborator(models.Model):
