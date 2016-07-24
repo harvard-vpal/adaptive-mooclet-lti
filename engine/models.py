@@ -10,8 +10,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 import policies
 # from django.db.models import Q
 
-
-
 # generalized mooclet models
 
 # TODO: is this useful to have? leaving in for now
@@ -24,7 +22,6 @@ class MoocletType(models.Model):
 
 class Mooclet(models.Model):
     name = models.CharField(max_length=100,default='')
-    version_type = models.ForeignKey(ContentType,null=True)
     policy = models.ForeignKey('Policy',blank=True,null=True)
 
     def __unicode__(self):
