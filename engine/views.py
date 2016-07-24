@@ -288,16 +288,16 @@ def collaborator_request(request):
 
 def collaborator_create(request, quiz_id):
     # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
-    if request.method=='GET':
-        pass
+
+    course = Quiz.objects.get(pk=quiz_id).course
 
     if request.method=='POST':
         collaborator_form = CollaboratorForm(request.POST)
-        collaborator = collaborator_form.save()
+        collaborator = collaborator_form.save(commit=False)
+        collaborator.course = course
+        collaborator.save()
 
-    collaborators = Collaborator.objects.all()
-    # filter by course?
-    # filter by mooclet?
+    collaborators = Collaborator.objects.filter(course=course)
 
     context = {
             'collaborator_form':CollaboratorForm(),

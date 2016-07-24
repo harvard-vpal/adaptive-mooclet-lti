@@ -32,6 +32,13 @@
 	{{ collaborator_form.as_p }}
 	<input type="submit" value="Save" />
 	</form>
+
+	Current collaborators:
+	<ul>
+	{% for collaborator in collaborators %}
+		<li>{{collaborator.user.first_name}} {{collaborator.user.first_name}} ({{collaborator.user.pk}})
+	{% endfor %}
+	</ul>
 </div>
 
 {% endblock %}

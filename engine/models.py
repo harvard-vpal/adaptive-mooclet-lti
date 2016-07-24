@@ -179,6 +179,9 @@ class Collaborator(models.Model):
     def __unicode__(self):
         return self.user.__unicode__()
 
+    class Meta:
+        unique_together = ('user', 'course',)
+
 
 class Quiz(models.Model):
     name = models.CharField('quiz name', max_length=100)
