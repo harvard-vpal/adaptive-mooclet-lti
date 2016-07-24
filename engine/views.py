@@ -16,7 +16,10 @@ def quiz_create_options(request):
     return render(request, 'engine/quiz_create_options.html')
 
 def quiz_create_blank(request):
-    course, created = Course.objects.get_or_create(context=request.session['LTI_LAUNCH']['context_id'])
+    course, created = Course.objects.get_or_create(
+        context=request.session['LTI_LAUNCH']['context_id'],
+        name = request.session['LTI_LAUNCH']['context_title'],
+    )
     if created:
         course.save()
 
