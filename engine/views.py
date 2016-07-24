@@ -179,11 +179,16 @@ def quiz_update(request, quiz_id):
         answer_formset = AnswerFormset(request.POST, instance=question)
         answers = answer_formset.save(commit=False)
         # associate mooclet instances with each answer before saving
+
+        #TODO create separate create_mooclet page where policy can be chosen
+        # for now, set to a default policy
+        policy = Policy.objects.get(name='uniform_random')
+
         for answer in answers:
             if not answer.mooclet:
-                mooclet = Mooclet()
+                mooclet = Mooclet(policy=policy)
                 mooclet.save()
-                answer.mooclet = Mooclet()
+                answer.mooclet = mooclet
             answer.save()
 
         quiz_form.is_valid()
@@ -308,6 +313,13 @@ def answer_list(request,question_id):
         # 'mooclets':mooclets,
     }
     return render(request, 'engine/answer_list.html', context)
+
+# def mooclet_create(request):
+#     if request.method == 'GET':
+
+#     elif request.method == 'POST':
+    
+        
 
 
 def mooclet_detail(request,mooclet_id):

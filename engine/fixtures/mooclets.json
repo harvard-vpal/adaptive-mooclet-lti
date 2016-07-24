@@ -1,19 +1,10 @@
 [
   {
-    "model": "engine.policy",
-    "pk": 1,
-    "fields": {
-      "name": "weighted_random",
-      "variables": [4]
-    }
-  },
-  {
     "model": "engine.mooclet",
     "pk": 1,
     "fields": {
       "name": "Default mooclet",
-      "version_type": ["engine", "version"],
-      "policy": 1
+      "policy": 2
     }
   },
   {

@@ -22,7 +22,7 @@ class ResultAdmin (admin.ModelAdmin):
 	list_display = ['id','user','explanation','value']
 
 class MoocletAdmin (admin.ModelAdmin):
-	list_display = ['id','version_type','policy']
+	list_display = ['id','policy']
 
 class VersionAdmin(admin.ModelAdmin):
 	list_display = ['id','mooclet']
