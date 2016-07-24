@@ -85,9 +85,13 @@ def launch(request,quiz_id):
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     request.session['quiz_id'] = quiz.pk
 
-    # User role check
+    # LTI User role check
     user_roles = request.session['LTI_LAUNCH']['roles']
     if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
+        return redirect('engine:quiz_detail', quiz_id=quiz_id)
+
+    # collaborator check
+    if request.user.collaborator_set.filter(course=quiz.course).exists():
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:
