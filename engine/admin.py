@@ -30,6 +30,8 @@ class VersionAdmin(admin.ModelAdmin):
 class PolicyAdmin(admin.ModelAdmin):
 	filter_horizontal = ('variables',)
 
+
+
 admin.site.register(Quiz, QuizAdmin)
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Answer, AnswerAdmin)
@@ -40,8 +42,4 @@ admin.site.register(Variable)
 admin.site.register(Value)
 admin.site.register(Policy, PolicyAdmin)
 admin.site.register(MoocletType)
-
-
-
-
-# admin.site.register(Outcome)
+admin.site.register(Collaborator)

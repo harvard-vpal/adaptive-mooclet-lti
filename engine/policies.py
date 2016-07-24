@@ -10,13 +10,12 @@ def uniform_random(variables,context):
 	return choice(context['mooclet'].version_set.all())
 
 def weighted_random(variables,context):
-	Weight = variables.get(name='weight')
+	Weight = variables.get(name='version_weight')
 	weight_data = Weight.get_data(context)
 
 	versions = [weight.version for weight in weight_data]
 	weights = [weight.value for weight in weight_data]
-
-	return choice(versions, weights)[0]
+	return choice(versions, p=weights)
 
 def thompson_sampling(data):
 	pass
