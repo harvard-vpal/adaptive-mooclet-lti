@@ -72,18 +72,23 @@ def answer(request, answer_id):
 
     elif request.method == 'POST':
 
-        # process student rating for explanation
-        rate_explanation_form = RateExplanationForm(request.POST)
+        user_roles = request.session['LTI_LAUNCH']['roles']
+        if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
+            return redirect('quiz:question', question_id=answer.question.id)
 
-        rating = rate_explanation_form.save(commit=False)
-        rating.variable_id = Variable.objects.get(name='version_rating').id
-        rating.user = request.user
-        rating.save()
+        else:
+            # process student rating for explanation
+            rate_explanation_form = RateExplanationForm(request.POST)
 
-        #TODO determine grading policy
-        score = 1
+            rating = rate_explanation_form.save(commit=False)
+            rating.variable_id = Variable.objects.get(name='version_rating').id
+            rating.user = request.user
+            rating.save()
 
-        return redirect('lti:return_outcome',score=score)
+            #TODO determine grading policy
+            score = 1
+
+            return redirect('lti:return_outcome',score=score)
 
         # else:
         #     return redirect('quiz:answer',answer_id=answer.id)
