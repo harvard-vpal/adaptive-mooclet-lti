@@ -3,15 +3,12 @@ from django.core.urlresolvers import reverse
 from django.forms import modelformset_factory,inlineformset_factory, ModelForm
 from django.http import HttpResponse
 from urllib import urlencode
-
 from .models import *
 from django.contrib.contenttypes.models import ContentType
 from .forms import *
 from .utils import *
-
 from qualtrics.utils import provision_qualtrics_quiz
 
-from django.views import generic
 
 #### RESOURCE SELECTION ####
 
@@ -55,25 +52,31 @@ def quiz_display(request, quiz_id):
     Redirect to proper mode of displaying quiz, based on urls present in quiz model fields
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
-    external_url = quiz.getExternalUrl()
-
+    
     # redirect to an alternate view if the quiz is complete
-    if Outcome.objects.filter(user=request.user, quiz=quiz).exists():
-        outcome = Outcome.objects.get(user=request.user, quiz=quiz)
-        if outcome.grade==1:
+    grade_data = Variable.objects.get(name='quiz_grade').get_data({'quiz':quiz,'user':request.user})
+    if grade_data:
+        grade = grade_data.last().value
+        if grade == 1:
             return redirect('quiz:complete')
 
+    # check for external url
+    external_url = quiz.getExternalUrl()
     if external_url:
         extra_params = {
+            # pass in django user_id as a GET parameter to survey
             'user_id':request.user.id,
         }
         return redirect(external_url+'&'+urlencode(extra_params))
+
+    # otherwise use django quiz app
     else:
         if quiz.question_set.all().exists():
             question = quiz.question_set.first()
             return redirect('quiz:question',question_id=question.id)
         else:
             return redirect('quiz:placeholder')
+
 
 def launch_sandbox(request):
     '''
@@ -82,6 +85,7 @@ def launch_sandbox(request):
     quiz = Quiz.objects.get(pk=1)
     request.session['quiz_id'] = quiz.pk
     return redirect('engine:quiz_detail', quiz_id=quiz_id)
+
 
 def launch_sandbox_quiz(request):
     '''
@@ -265,11 +269,6 @@ def explanation_modify(request, explanation_id):
         return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
 
-# def ExplanationCreate(generic.edit.CreateView):
-#     model = Explanation
-#     fields = ['text']
-
-
 def collaborator_request(request):
     # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
     # display session data, researcher sends their user id to instructor
@@ -277,17 +276,6 @@ def collaborator_request(request):
     # show additional info to confirm session data is correct
 
     return render(request, 'engine/collaborator_request.html')
-
-# class ResearcherCreate(generic.edit.CreateView):
-
-#     # add researcher to a course
-#     model = Researcher
-#     fields = ['user','user_lms_id']
-
-#     def form_valid(self,form):
-#         researcher = form.save(commit=False)
-#         researcher.course = Course.objects.get(context=self.request['LTI_LAUNCH']['context_id'])
-#         return super(ResearcherCreate, self).form_valid(form)
 
 
 def collaborator_create(request, quiz_id):
@@ -310,7 +298,6 @@ def collaborator_create(request, quiz_id):
     return render(request, 'engine/collaborator_create.html',context)
 
 
-
 def answer_list(request,question_id):
     question = get_object_or_404(Question, pk=question_id)
     answers = question.answer_set.order_by('_order')
@@ -325,12 +312,6 @@ def answer_list(request,question_id):
 
 def mooclet_detail(request,mooclet_id):
 
-    ValueFormSet = modelformset_factory(
-        Value,
-        fields=('value','version'), 
-        can_delete=False, 
-        extra=4, max_num=4,
-    )
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
@@ -352,36 +333,27 @@ def mooclet_detail(request,mooclet_id):
         for version in versions:
             forms = []
             for variable in variables:
-                # TODO may want to consider something like "filter or create"
-                # http://stackoverflow.com/questions/6190773/django-get-the-first-object-from-a-filter-query-or-create
-                value, created = Value.objects.get_or_create(version=version, variable=variable)
-                form = VersionValueForm(instance=value
-                        # set auto_id to label forms?
-                    )
+                value = Value.objects.filter(object_id=version.id, variable=variable).last()              
+                # TODO set auto_id to label forms in form parameters?
+                if value:
+                    form = VersionValueForm(instance=value)
+                else:
+                    form = VersionValueForm()
+
                 forms.append(form)
             formgroups.append(forms)
-
-        # versions_zip = zip(versions, formgroups)
 
         context = {
             'value_formgroups':formgroups,
             'answer':answer,
             'variables':variables,
             'versions':versions,
-            # 'versions_zip':versions_zip,
-            'info':[1,2,3,4]
         }
         return render(request, 'engine/mooclet_detail.html',context)
 
     elif request.method == 'POST':
 
-        # how do we figure out which form corresponds to which value/explanation/variable
-
+        # TODO figure out which form corresponds to which value/explanation/variable
         pass
-
-# # MoocletVersionVariableValueForm
-#         AnswerFormset = formset_factory(Question, Answer, form=AnswerForm, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
-#         answer_formset = AnswerFormset(instance=question)
-
 
 

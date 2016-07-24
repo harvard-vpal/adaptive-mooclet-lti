@@ -129,12 +129,13 @@ def submit_result_of_explanation(request):
     if 'value' not in request.GET:
         return HttpResponse('value not found in GET parameters')
     
-    value = (float(request.GET['value']) - 1.0) / 6.0
+    # value = (float(request.GET['value']) - 1.0) / 6.0
 
-    result = Result(
-        user_id=request.GET['user_id'],
-        explanation_id=request.GET['explanation_id'],
-        value=value
+
+    result = Value(
+        user = request.GET['user_id'],
+        explanation = request.GET['explanation_id'],
+        value = request.GET['value']
     )
     result.save()
     return JsonResponse({ "result_id": result.id })
@@ -142,7 +143,7 @@ def submit_result_of_explanation(request):
 
 def submit_quiz_grade(request):
     '''
-    Submits a quiz grade and triggers grade passback to the LMS
+    Submits a quiz grade to app db
 
     INPUT (via GET params): user_id, quiz_id, grade
     OUTPUT: confirmation message
@@ -153,17 +154,26 @@ def submit_quiz_grade(request):
             return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
     grade = float(request.GET['grade'])
 
-    outcome, created = Outcome.objects.get_or_create(
-        user_id = request.GET['user_id'],
-        quiz_id = request.GET['quiz_id']
-    )
-    # update outcome
-    outcome.grade = grade
-    
-    outcome.save()
+    Grade = Variable.objects.get(name='quiz_grade')
+    params = {
+        'variable':Grade,
+        'user':request.GET['user_id'],
+        'object_id':request.GET['quiz_id'],
+    }
+    value = Value.objects.filter(**params).last()
+    if value:
+        value.value = grade
+        value.save()
+    else:
+        params['value'] = grade
+        value = Value(**params)
+        value.save()
 
-    return JsonResponse({'message': 'Outcome successfully submitted'})
 
+    return JsonResponse({'message': 'Quiz grade successfully submitted'})
+
+# TODO generic function for submitting values
+# def submit_value()
 
 
 

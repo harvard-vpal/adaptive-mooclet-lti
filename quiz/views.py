@@ -37,7 +37,7 @@ def question(request, question_id):
         if choose_answer_form.is_valid():
             answer = choose_answer_form.cleaned_data['answer']
 
-            # selected_explanation = get_explanation_for_student(answer, request.user, 'random')
+            # TODO save selected answer and grade to database
 
             # redirect to explanation/rating view, for the selected explanation
             return redirect('quiz:answer',answer_id=answer.id)
@@ -57,9 +57,10 @@ def answer(request, answer_id):
             'user':request.user,
             'mooclet':mooclet,
         }
-        explanation = mooclet.get_version(mooclet_context).explanation
+        version = mooclet.get_version(mooclet_context)
+        explanation = version.explanation
 
-        rate_explanation_form = RateExplanationForm()
+        rate_explanation_form = RateExplanationForm(initial={'object_id':version.id})
 
         context = {
             'answer':answer,
@@ -70,24 +71,27 @@ def answer(request, answer_id):
         return render(request, 'quiz/answer.html', context)
 
     elif request.method == 'POST':
-        # how to pass expalnation version that was served back
-        # insert as GET/POST parameter on page? is this generalizable? 
-        # initialize in form and hide?
 
-
-        # process student rating for explanation
-        rate_explanation_form = RateExplanationForm(request.POST)
-
-        if rate_explanation_form.is_valid():
-            rating = rate_explanation_form.cleaned_data['rating']
-
-            # save to db
-            rating = Result(user=request.user, explanation=explanation, value=rating)
-            rating.save()
-            return redirect('lti:return_outcome')
+        user_roles = request.session['LTI_LAUNCH']['roles']
+        if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
+            return redirect('quiz:question', question_id=answer.question.id)
 
         else:
-            return redirect('quiz:answer',answer_id=answer.id)
+            # process student rating for explanation
+            rate_explanation_form = RateExplanationForm(request.POST)
+
+            rating = rate_explanation_form.save(commit=False)
+            rating.variable_id = Variable.objects.get(name='version_rating').id
+            rating.user = request.user
+            rating.save()
+
+            #TODO determine grading policy
+            score = 1
+
+            return redirect('lti:return_outcome',score=score)
+
+        # else:
+        #     return redirect('quiz:answer',answer_id=answer.id)
 
 def placeholder(request):
     return render(request, 'quiz/placeholder.html')

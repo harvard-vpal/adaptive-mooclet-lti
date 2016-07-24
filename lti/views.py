@@ -150,12 +150,10 @@ def return_launch_url(request, quiz_id):
     )
 
 
-def return_outcome(request):
+def return_outcome(request, score=1.0):
     '''
     Return grade / outcome data back to the LMS via LTI Outcome Service protocol
     '''
-    # TODO replace this default value if we have an actual grade
-    score = 1.0
 
     # send the outcome data
     outcome = OutcomeRequest(

@@ -1,20 +1,10 @@
 [
   {
-    "model": "engine.variable",
-    "pk": 1,
-    "fields": {
-      "name": "weight",
-      "description": "Version weight for weighted random policy",
-      "is_user_variable": false,
-      "content_type": ["engine", "version"]
-    }
-  },
-  {
     "model": "engine.policy",
     "pk": 1,
     "fields": {
       "name": "weighted_random",
-      "variables": [1]
+      "variables": [4]
     }
   },
   {

@@ -99,16 +99,16 @@ class CollaboratorForm(forms.ModelForm):
 			'user': forms.NumberInput(),
 		}
 
-class ValueForm(forms.ModelForm):
-	'''
-	enter variable value
-	'''
-	class Meta:
-		model = Value
-		fields = ['value', 'version']
-		widgets = {
-			'version':forms.HiddenInput(),
-		}
+# class ValueForm(forms.ModelForm):
+# 	'''
+# 	enter variable value
+# 	'''
+# 	class Meta:
+# 		model = Value
+# 		fields = ['value', 'version']
+# 		widgets = {
+# 			'version':forms.HiddenInput(),
+# 		}
 
 class VersionValueForm(forms.ModelForm):
 	'''

@@ -1,0 +1,42 @@
+[
+  {
+    "model": "engine.variable",
+    "pk": 1,
+    "fields": {
+      "name": "version_rating",
+      "description": "Rating for mooclet version",
+      "is_user_variable": true,
+      "content_type": ["engine", "version"]
+    }
+  },
+  {
+    "model": "engine.variable",
+    "pk": 2,
+    "fields": {
+      "name": "quiz_grade",
+      "description": "Grade for quiz",
+      "is_user_variable": true,
+      "content_type": ["engine", "quiz"]
+    }
+  },
+  {
+    "model": "engine.variable",
+    "pk": 3,
+    "fields": {
+      "name": "question_grade",
+      "description": "Grade for question",
+      "is_user_variable": true,
+      "content_type": ["engine", "question"]
+    }
+  },
+  {
+    "model": "engine.variable",
+    "pk": 4,
+    "fields": {
+      "name": "version_weight",
+      "description": "Version weight for weighted random policy",
+      "is_user_variable": false,
+      "content_type": ["engine", "version"]
+    }
+  }
+]
