@@ -14,10 +14,13 @@ def grade_passback(grade=None, request=None, user=None, quiz=None):
         # TODO get grade from value store, would require user/quiz in parameters
         pass
 
-    params = {}
     if request:
         if 'LTI_LAUNCH' in request:
             LTI_LAUNCH = request.session['LTI_LAUNCH']
+        else:
+            #TODO if no LTI_LAUNCH in request, do something useful
+            return None
+        
     elif user and quiz:
         quiz_lti_parameters = user.quizltiparameter_set.filter(quiz=quiz)
         if quiz_lti_parameters.exists():
@@ -44,6 +47,9 @@ def grade_passback(grade=None, request=None, user=None, quiz=None):
         #     'text':'complete'
         # }
     )
+    print 'GRADE PASSBACK'
+    print grade, LTI_LAUNCH
+    print outcome_response
 
     # TODO error detection on bad passback
     return outcome_response

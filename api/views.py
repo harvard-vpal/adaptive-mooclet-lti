@@ -155,23 +155,21 @@ def submit_quiz_grade(request):
         if param not in request.GET:
             return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
     grade = float(request.GET['grade'])
+    user_id = int(request.GET['user_id'])
+    user = User.objects.get(pk=user_id)
+    quiz_id = int(request.GET['quiz_id'])
+    quiz = Quiz.objects.get(pk=quiz_id)
 
     Grade = Variable.objects.get(name='quiz_grade')
-    params = {
-        'variable':Grade,
-        'user':request.GET['user_id'],
-        'object_id':request.GET['quiz_id'],
-    }
-    value = Value.objects.filter(**params).last()
-    if value:
-        value.value = grade
-        value.save()
-    else:
-        params['value'] = grade
-        value = Value(**params)
-        value.save()
+    value = Value(
+        variable=Grade,
+        user=user,
+        object_id=quiz_id,
+        value=grade
+    )
+    value.save()
 
-    grade_passback(grade, user=user_id, quiz=quiz_id)
+    grade_passback(grade, user=user, quiz=quiz)
 
     return JsonResponse({'message': 'Quiz grade successfully submitted'})
 

@@ -122,9 +122,8 @@ def launch(request,quiz_id):
 @require_http_methods(['POST'])
 def launch_resource_selection(request):
     '''
-    LTI launch from nav bar
-    Display all quizzes, with some management functions
-    Accessible via left navigation bar in canvas
+    LTI launch from assignment settings
+    Used when first creating a new LTI quiz assignment
     '''
     if 'ext_content_return_types' in request.POST:
         more_lti_params = {
