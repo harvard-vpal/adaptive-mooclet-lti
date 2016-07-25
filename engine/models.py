@@ -263,10 +263,10 @@ class QuizLtiParameters(models.Model):
     '''
     user = models.ForeignKey(User)
     quiz = models.ForeignKey(Quiz)
-    lis_outcome_service_url = models.CharField(max_length=200)
-    lis_result_sourcedid = models.CharField(max_length=100)
-    oauth_consumer_key = models.CharField(max_length=100)
-    lti_user_id = models.CharField(max_length=100)
+    lis_outcome_service_url = models.CharField(max_length=200,default='')
+    lis_result_sourcedid = models.CharField(max_length=100,default='')
+    oauth_consumer_key = models.CharField(max_length=100,default='')
+    lti_user_id = models.CharField(max_length=100,default='')
     #TODO canvas id
 
     class Meta:
