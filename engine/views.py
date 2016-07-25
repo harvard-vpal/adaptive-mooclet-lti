@@ -60,11 +60,11 @@ def quiz_display(request, quiz_id):
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     
     # redirect to an alternate view if the quiz is complete
-    grade_data = Variable.objects.get(name='quiz_grade').get_data({'quiz':quiz,'user':request.user})
-    if grade_data:
-        grade = grade_data.last().value
-        if grade == 1:
-            return redirect('quiz:complete')
+    # grade_data = Variable.objects.get(name='quiz_grade').get_data({'quiz':quiz,'user':request.user})
+    # if grade_data:
+    #     grade = grade_data.last().value
+    #     if grade == 1:
+    #         return redirect('quiz:complete')
 
     # check for external url
     external_url = quiz.getExternalUrl()
