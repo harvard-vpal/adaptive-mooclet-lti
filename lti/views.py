@@ -104,14 +104,14 @@ def launch(request,quiz_id):
     else:
 
         # save the student LTI parameters to db, needed for asynchronous grade passback
-        quiz_lti_parameters = QuizLtiParameters(
+        quiz_lti_parameters, created = QuizLtiParameters.objects.get_or_create(
             user=request.user,
             quiz=quiz,
-            lis_outcome_service_url=lis_outcome_service_url,
-            lis_result_sourcedid=lis_result_sourcedid,
-            oauth_consumer_key=oauth_consumer_key,
-            lti_user_id=request.POST.get('user_id','')
         )
+        quiz_lti_parameters.lis_outcome_service_url = lis_outcome_service_url
+        quiz_lti_parameters.lis_result_sourcedid = lis_result_sourcedid
+        quiz_lti_parameters.oauth_consumer_key = oauth_consumer_key
+        quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
         quiz_lti_parameters.save()
         
         return redirect('engine:quiz_display', quiz_id=quiz.id)
