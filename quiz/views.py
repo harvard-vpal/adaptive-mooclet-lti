@@ -89,7 +89,7 @@ def answer(request, answer_id):
             score = 1
 
             # grade passback to LMS
-            grade_passback(request,score)
+            grade_passback(score,request)
 
             return redirect('lti:return_to_LMS')
 

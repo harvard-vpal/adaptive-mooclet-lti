@@ -7,6 +7,7 @@ from engine import utils
 
 from rest_framework import viewsets
 from api.serializers import *
+from lti.utils import grade_passback
 
 ##########################
 ##### rest-framework #####
@@ -170,7 +171,7 @@ def submit_quiz_grade(request):
         value = Value(**params)
         value.save()
 
-
+    grade_passback(grade, user=user_id, quiz=quiz_id)
 
     return JsonResponse({'message': 'Quiz grade successfully submitted'})
 
