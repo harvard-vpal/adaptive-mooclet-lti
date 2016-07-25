@@ -10,7 +10,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 import policies
 # from django.db.models import Q
 
-# generalized mooclet models
+####################################
+#### Generalized mooclet models ####
+####################################
 
 # TODO: is this useful to have? leaving in for now
 class MoocletType(models.Model):
@@ -167,6 +169,10 @@ class Value(models.Model):
         return self.get_object_content('version')
 
 
+#################################
+#### Quiz application models ####
+#################################
+
 class Course(models.Model):
     context = models.CharField(max_length=100,default='')
     instance = models.CharField(max_length=200,default='')
@@ -174,17 +180,6 @@ class Course(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-class Collaborator(models.Model):
-    user = models.ForeignKey(User)
-    course = models.ForeignKey(Course)
-
-    def __unicode__(self):
-        return self.user.__unicode__()
-
-    class Meta:
-        unique_together = ('user', 'course',)
 
 
 class Quiz(models.Model):
@@ -249,11 +244,27 @@ class Answer(models.Model):
         return self.text
 
 
+class Collaborator(models.Model):
+    user = models.ForeignKey(User)
+    course = models.ForeignKey(Course)
+
+    def __unicode__(self):
+        return self.user.__unicode__()
+
+    class Meta:
+        unique_together = ('user', 'course',)
+
+
+########################################
+#### Specific mooclet version types ####
+########################################
+
 class Explanation(Version):
     text = models.TextField('explanation text')
 
     def __unicode__(self):
         return self.text
+
 
 
 # TODO replace with generic variable
