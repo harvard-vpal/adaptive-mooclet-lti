@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from engine.models import *
 from .forms import ChooseAnswerForm, RateExplanationForm
 from engine.utils import get_explanation_for_student
-
+from lti.utils import grade_passback
 
 # Create your views here.
 
@@ -88,7 +88,10 @@ def answer(request, answer_id):
             #TODO determine grading policy
             score = 1
 
-            return redirect('lti:return_outcome',score=score)
+            # grade passback to LMS
+            grade_passback(request,score)
+
+            return redirect('lti:return_to_LMS')
 
         # else:
         #     return redirect('quiz:answer',answer_id=answer.id)

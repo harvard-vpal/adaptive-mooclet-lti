@@ -171,6 +171,7 @@ def submit_quiz_grade(request):
         value.save()
 
 
+
     return JsonResponse({'message': 'Quiz grade successfully submitted'})
 
 # TODO generic function for submitting values

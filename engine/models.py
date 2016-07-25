@@ -255,6 +255,23 @@ class Collaborator(models.Model):
         unique_together = ('user', 'course',)
 
 
+# TODO does it make sense to move this to lti app models?
+class QuizLtiParameters(models.Model):
+    '''
+    Used to store outcome service url for a particular user and quiz
+    Enables asynchronous or API-triggered grade passback
+    '''
+    user = models.ForeignKey(User)
+    quiz = models.ForeignKey(Quiz)
+    lis_outcome_service_url = models.CharField(max_length=200)
+    lis_result_sourcedid = models.CharField(max_length=100)
+    oauth_consumer_key = models.CharField(max_length=100)
+    lti_user_id = models.CharField(max_length=100)
+
+    class Meta:
+        unique_together = ('user','quiz')
+
+
 ########################################
 #### Specific mooclet version types ####
 ########################################
