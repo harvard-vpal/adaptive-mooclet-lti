@@ -267,6 +267,7 @@ class QuizLtiParameters(models.Model):
     lis_result_sourcedid = models.CharField(max_length=100)
     oauth_consumer_key = models.CharField(max_length=100)
     lti_user_id = models.CharField(max_length=100)
+    #TODO canvas id
 
     class Meta:
         unique_together = ('user','quiz')
