@@ -36,7 +36,10 @@ def quiz_create_url(request):
         context = {'quiz_url_form':quiz_url_form}
         return render(request, 'engine/quiz_create_url.html',context)
     elif request.method == 'POST':
-        course, created = Course.objects.get_or_create(context=request.session['LTI_LAUNCH']['context_id'])
+        course, created = Course.objects.get_or_create(
+            context = request.session['LTI_LAUNCH']['context_id'],
+            name = request.session['LTI_LAUNCH']['context_title']
+        )
         if created:
             course.save()
         quiz_url_form = QuizUrlForm(request.POST)
