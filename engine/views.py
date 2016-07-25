@@ -124,7 +124,7 @@ def quiz_detail(request, quiz_id):
 
 def quiz_update(request, quiz_id):
     '''
-    displays some a form to collect question, answers and explanations
+    displays a form to collect question, answers and explanations
     '''
     quiz = Quiz.objects.get(pk=quiz_id)
 
@@ -320,13 +320,12 @@ def answer_list(request,question_id):
     }
     return render(request, 'engine/answer_list.html', context)
 
+
+# TODO separate view for creating mooclets?
 # def mooclet_create(request):
 #     if request.method == 'GET':
-
 #     elif request.method == 'POST':
     
-        
-
 
 def mooclet_detail(request,mooclet_id):
 

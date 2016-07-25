@@ -1,7 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from engine.models import *
 from .utils import get_modified_qsf
+from lti.utils import grade_passback
 
 # Create your views here.
 
@@ -35,3 +36,12 @@ def qsf_for_question(request, question_id):
     # TODO LATER upload multiple qsf for multiple questions in a quiz?
 
     return HttpResponse(question_qsf)
+
+
+def end_quiz(request, grade):
+    '''
+    Redirect here after survey (end of last survey in chain, if multiple questions) 
+    to do grade passback and return to LMS
+    '''
+    grade_passback(request, grade)
+    return redirect('lti:exit')
