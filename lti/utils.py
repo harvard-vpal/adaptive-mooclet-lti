@@ -1,5 +1,5 @@
 from dce_lti_py import OutcomeRequest
-
+from django.conf import settings
 
 def grade_passback(grade=None, request=None, user=None, quiz=None):
     '''
