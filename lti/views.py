@@ -93,7 +93,7 @@ def launch(request,quiz_id):
     request.session['LTI_LAUNCH'].update(more_lti_params)
 
     # determine whether to display in preview mode or quiz mode (does role check)
-    if display_preview(request, quiz):
+    if display_preview(request):
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:

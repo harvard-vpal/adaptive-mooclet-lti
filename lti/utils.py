@@ -1,12 +1,14 @@
 from dce_lti_py import OutcomeRequest
 from django.conf import settings
+from  engine.models import Quiz
 
 
-def display_preview(request,quiz):
+def display_preview(request):
     '''
     Checks whether to launch the LTI tool in preview mode or quiz mode
     Returns True for preview, False for quiz
     '''
+    quiz = Quiz.objects.get(id=request.session['quiz_id'])
     # LTI User role check
     user_roles = request.session['LTI_LAUNCH']['roles']
     if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
