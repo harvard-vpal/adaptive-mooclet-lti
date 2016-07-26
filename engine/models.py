@@ -88,7 +88,7 @@ class Policy(models.Model):
 class Variable(models.Model):
     name = models.CharField(max_length=100)
     is_user_variable = models.BooleanField(default=False)
-    content_type = models.ForeignKey(ContentType,null=True)
+    content_type = models.ForeignKey(ContentType,null=True) # Lets you reference a table.  e.g. if content_type = Version, it's associated with a Version. Can have multiple values associated with it.
     description = models.TextField(default='')
     # TODO variable type "classes"
     # policy_relevance = [vpal_researcher, harvard_researcher, course_team, external_researcher]
@@ -137,7 +137,7 @@ class Value(models.Model):
     '''
     user = models.ForeignKey(User,null=True,blank=True)
     variable = models.ForeignKey(Variable)
-    object_id = models.PositiveIntegerField(null=True)
+    object_id = models.PositiveIntegerField(null=True) # This can just be the integer primary key of the table specified in Variable as content_type
     value = models.FloatField()
     timestamp = models.DateTimeField(null=True,auto_now=True)
 
