@@ -7,6 +7,7 @@ from ims_lti_py.tool_config import ToolConfig
 from django.http import HttpResponse, HttpResponseRedirect
 import logging
 from engine.models import Quiz, QuizLtiParameters
+from utils import display_preview
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
@@ -91,19 +92,13 @@ def launch(request,quiz_id):
     }
     request.session['LTI_LAUNCH'].update(more_lti_params)
 
-
-    # LTI User role check
-    user_roles = request.session['LTI_LAUNCH']['roles']
-    if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
-        return redirect('engine:quiz_detail', quiz_id=quiz_id)
-
-    # collaborator check
-    if request.user.collaborator_set.filter(course=quiz.course).exists():
+    # determine whether to display in preview mode or quiz mode (does role check)
+    if display_preview(request, quiz_id):
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:
 
-        # save the student LTI parameters to db, needed for asynchronous grade passback
+        # save student LTI parameters to db, needed for asynchronous grade passback
         quiz_lti_parameters, created = QuizLtiParameters.objects.get_or_create(
             user=request.user,
             quiz=quiz,

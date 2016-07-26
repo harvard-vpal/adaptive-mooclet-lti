@@ -1,6 +1,24 @@
 from dce_lti_py import OutcomeRequest
 from django.conf import settings
 
+
+def display_preview(request,quiz_id):
+    '''
+    Checks whether to launch the LTI tool in preview mode or quiz mode
+    Returns True for preview, False for quiz
+    '''
+    # LTI User role check
+    user_roles = request.session['LTI_LAUNCH']['roles']
+    if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
+        return True
+
+    # collaborator check
+    if request.user.collaborator_set.filter(course=quiz.course).exists():
+        return True
+
+    return False
+
+
 def grade_passback(grade=None, request=None, user=None, quiz=None):
     '''
     Return grade / outcome data back to the LMS via LTI Outcome Service protocol

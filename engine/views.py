@@ -66,7 +66,7 @@ def quiz_display(request, quiz_id):
     #     if grade == 1:
     #         return redirect('quiz:complete')
 
-    # check for external url
+    # check for external url on quiz or first question of quiz
     external_url = quiz.getExternalUrl()
     if external_url:
         extra_params = {
