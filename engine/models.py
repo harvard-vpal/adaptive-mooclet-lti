@@ -10,7 +10,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 import policies
 # from django.db.models import Q
 
-# generalized mooclet models
+####################################
+#### Generalized mooclet models ####
+####################################
 
 # TODO: is this useful to have? leaving in for now
 class MoocletType(models.Model):
@@ -167,17 +169,17 @@ class Value(models.Model):
         return self.get_object_content('version')
 
 
+#################################
+#### Quiz application models ####
+#################################
+
 class Course(models.Model):
     context = models.CharField(max_length=100,default='')
     instance = models.CharField(max_length=200,default='')
-
-
-class Collaborator(models.Model):
-    user = models.ForeignKey(User)
-    course = models.ForeignKey(Course)
+    name = models.CharField(max_length=200,default='')
 
     def __unicode__(self):
-        return self.user.__unicode__()
+        return self.name
 
 
 class Quiz(models.Model):
@@ -242,11 +244,45 @@ class Answer(models.Model):
         return self.text
 
 
+class Collaborator(models.Model):
+    user = models.ForeignKey(User)
+    course = models.ForeignKey(Course)
+
+    def __unicode__(self):
+        return self.user.__unicode__()
+
+    class Meta:
+        unique_together = ('user', 'course',)
+
+
+# TODO does it make sense to move this to lti app models?
+class QuizLtiParameters(models.Model):
+    '''
+    Used to store outcome service url for a particular user and quiz
+    Enables asynchronous or API-triggered grade passback
+    '''
+    user = models.ForeignKey(User)
+    quiz = models.ForeignKey(Quiz)
+    lis_outcome_service_url = models.CharField(max_length=200,default='')
+    lis_result_sourcedid = models.CharField(max_length=100,default='')
+    oauth_consumer_key = models.CharField(max_length=100,default='')
+    lti_user_id = models.CharField(max_length=100,default='')
+    #TODO canvas id
+
+    class Meta:
+        unique_together = ('user','quiz')
+
+
+########################################
+#### Specific mooclet version types ####
+########################################
+
 class Explanation(Version):
     text = models.TextField('explanation text')
 
     def __unicode__(self):
         return self.text
+
 
 
 # TODO replace with generic variable

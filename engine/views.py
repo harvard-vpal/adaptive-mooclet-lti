@@ -17,8 +17,8 @@ def quiz_create_options(request):
 
 def quiz_create_blank(request):
     course, created = Course.objects.get_or_create(
-        context=request.session['LTI_LAUNCH']['context_id'],
-        name = request.session['LTI_LAUNCH']['context_title'],
+        context = request.session['LTI_LAUNCH']['context_id'],
+        name = request.session['LTI_LAUNCH']['context_title']
     )
     if created:
         course.save()
@@ -36,7 +36,10 @@ def quiz_create_url(request):
         context = {'quiz_url_form':quiz_url_form}
         return render(request, 'engine/quiz_create_url.html',context)
     elif request.method == 'POST':
-        course, created = Course.objects.get_or_create(context=request.session['LTI_LAUNCH']['context_id'])
+        course, created = Course.objects.get_or_create(
+            context = request.session['LTI_LAUNCH']['context_id'],
+            name = request.session['LTI_LAUNCH']['context_title']
+        )
         if created:
             course.save()
         quiz_url_form = QuizUrlForm(request.POST)
@@ -57,11 +60,11 @@ def quiz_display(request, quiz_id):
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     
     # redirect to an alternate view if the quiz is complete
-    grade_data = Variable.objects.get(name='quiz_grade').get_data({'quiz':quiz,'user':request.user})
-    if grade_data:
-        grade = grade_data.last().value
-        if grade == 1:
-            return redirect('quiz:complete')
+    # grade_data = Variable.objects.get(name='quiz_grade').get_data({'quiz':quiz,'user':request.user})
+    # if grade_data:
+    #     grade = grade_data.last().value
+    #     if grade == 1:
+    #         return redirect('quiz:complete')
 
     # check for external url
     external_url = quiz.getExternalUrl()
@@ -121,7 +124,7 @@ def quiz_detail(request, quiz_id):
 
 def quiz_update(request, quiz_id):
     '''
-    displays some a form to collect question, answers and explanations
+    displays a form to collect question, answers and explanations
     '''
     quiz = Quiz.objects.get(pk=quiz_id)
 
@@ -288,16 +291,16 @@ def collaborator_request(request):
 
 def collaborator_create(request, quiz_id):
     # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
-    if request.method=='GET':
-        pass
+
+    course = Quiz.objects.get(pk=quiz_id).course
 
     if request.method=='POST':
         collaborator_form = CollaboratorForm(request.POST)
-        collaborator = collaborator_form.save()
+        collaborator = collaborator_form.save(commit=False)
+        collaborator.course = course
+        collaborator.save()
 
-    collaborators = Collaborator.objects.all()
-    # filter by course?
-    # filter by mooclet?
+    collaborators = Collaborator.objects.filter(course=course)
 
     context = {
             'collaborator_form':CollaboratorForm(),
@@ -317,13 +320,12 @@ def answer_list(request,question_id):
     }
     return render(request, 'engine/answer_list.html', context)
 
+
+# TODO separate view for creating mooclets?
 # def mooclet_create(request):
 #     if request.method == 'GET':
-
 #     elif request.method == 'POST':
     
-        
-
 
 def mooclet_detail(request,mooclet_id):
 
