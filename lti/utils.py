@@ -2,7 +2,7 @@ from dce_lti_py import OutcomeRequest
 from django.conf import settings
 
 
-def display_preview(request,quiz_id):
+def display_preview(request,quiz):
     '''
     Checks whether to launch the LTI tool in preview mode or quiz mode
     Returns True for preview, False for quiz
@@ -30,7 +30,7 @@ def grade_passback(grade=None, request=None, user=None, quiz=None):
     '''
     if not grade:
         # TODO get grade from value store, would require user/quiz in parameters
-        pass
+        return None
 
     if request:
         if 'LTI_LAUNCH' in request:

@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from .forms import *
 from .utils import *
 from qualtrics.utils import provision_qualtrics_quiz
-
+from lti.utils import display_preview
 
 #### RESOURCE SELECTION ####
 
@@ -72,6 +72,7 @@ def quiz_display(request, quiz_id):
         extra_params = {
             # pass in django user_id as a GET parameter to survey
             'user_id':request.user.id,
+            'quizsource': 'preview' if display_preview() else 'student',
         }
         return redirect(external_url+'&'+urlencode(extra_params))
 
