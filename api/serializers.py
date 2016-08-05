@@ -24,9 +24,3 @@ class Explanation(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Explanation
 		fields = ('id', 'answer','text')
-
-
-class ResultSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = Result
-		fields = ('id', 'user','explanation','value')

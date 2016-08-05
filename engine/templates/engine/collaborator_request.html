@@ -5,18 +5,17 @@
 <div>
 
 	<h1> Collaborator access request </h1>
-	CONFIRM THE FOLLOWING INFO:
+	CONFIRM THE FOLLOWING INFORMATION IS CORRECT.
+	<p>Then, copy/paste this list of information and email it to joseph_jay_williams@harvard.edu with the Subject Line "Add Collaborator VPAL-R MOOClet". You'll receive a confirmation email, and then be able to suggest explanations for the Quiz.</p>
+
 	<ul>
 
 		<li>Class: {{request.session.LTI_LAUNCH.context_title}}</li>
 		<li>Researcher email: {{request.session.LTI_LAUNCH.lis_person_contact_email_primary}}</li>
 		<li>Researcher name: {{request.session.LTI_LAUNCH.lis_person_name_full}}</li>
+		<li>Collaborator id: {{request.user.id}}	</li>
 
 	</ul>
-
-	<p>Send this to the instructor:</p>
-	
-	<p>Collaborator id: {{request.user.id}}</p>
 
 
 </div>

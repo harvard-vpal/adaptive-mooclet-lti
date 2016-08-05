@@ -5,17 +5,15 @@
 
 <h1> Edit explanation </h1>
 
-<div backnav>
-<a href="{% url 'engine:explanation_list' quiz_id=request.session.quiz_id %}">Back to quiz explanations</a>
+<div class="nav">
+	<a href="{% url 'engine:explanation_list' quiz_id=request.session.quiz_id %}">Back to quiz explanations</a>
 </div>
 
 <div>
-	{# Answer: {{answer.text}} #}
-	
-<form method="post">
-	{{explanation_form.as_p}}
-    <input type="submit" value="Save" />
-</form>
+	<form method="post">
+		{{explanation_form.as_p}}
+	    <input type="submit" value="Save" />
+	</form>
 </div>
 
 {% endblock %}

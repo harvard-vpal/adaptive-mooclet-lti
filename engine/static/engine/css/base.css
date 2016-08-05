@@ -1,4 +1,29 @@
 /* engine base.css */
-/*body {
+body {
 	margin: 1em;
-}*/
+}
+
+div.nav {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+div.table {
+	display:table;
+}
+
+div.tr {
+	display:table-row;
+}
+
+span.td{
+	display:table-cell;
+}
+
+div.version-values-table {
+	margin: 2em 0em;
+}
+
+div.context {
+	margin: 1em 0em;
+}

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from engine.models import *
 from .forms import ChooseAnswerForm, RateExplanationForm
 from engine.utils import get_explanation_for_student
-
+from lti.utils import grade_passback
 
 # Create your views here.
 
@@ -15,7 +15,7 @@ def question(request, question_id):
 
         # just get first question in quiz for now
         question = Question.objects.get(pk=question_id)
-        answers = question.answer_set.all().order_by('order')
+        answers = question.answer_set.all().order_by('_order')
 
         # could simulate web service request to get: questions, answers
         # question_data = requests.get(reverse('adaptive_engine:get_question'),params={'id':question.id})
@@ -37,45 +37,70 @@ def question(request, question_id):
         if choose_answer_form.is_valid():
             answer = choose_answer_form.cleaned_data['answer']
 
-            selected_explanation = get_explanation_for_student(answer, request.user, 'random')
+            # TODO save selected answer and grade to database
 
             # redirect to explanation/rating view, for the selected explanation
-            return redirect('quiz:explanation',explanation_id=selected_explanation.id)
+            return redirect('quiz:answer',answer_id=answer.id)
 
 
-def explanation(request, explanation_id):
+def answer(request, answer_id):
     '''
-    self-hosted quiz: show explanation and let student rate the explanation
+    self-hosted quiz: show explanation for answer and let student rate the explanation
     '''
-    explanation = Explanation.objects.get(pk=explanation_id)
+    answer = Answer.objects.get(pk=answer_id)
+    mooclet = answer.mooclet
 
     if request.method =='GET':
-        rate_explanation_form = RateExplanationForm()
+
+        # get explanation mooclet version
+        mooclet_context = {
+            'user':request.user,
+            'mooclet':mooclet,
+        }
+        version = mooclet.get_version(mooclet_context)
+        explanation = version.explanation
+
+        rate_explanation_form = RateExplanationForm(initial={'object_id':version.id})
 
         context = {
+            'answer':answer,
             'explanation':explanation,
             'rate_explanation_form':rate_explanation_form
         }
 
-        return render(request, 'quiz/explanation.html', context)
+        return render(request, 'quiz/answer.html', context)
 
     elif request.method == 'POST':
-        print "posted to display_quiz_explanation"
-        # process student rating for explanation
-        rate_explanation_form = RateExplanationForm(request.POST)
 
-        if rate_explanation_form.is_valid():
-            rating = rate_explanation_form.cleaned_data['rating']
+        user_roles = request.session['LTI_LAUNCH']['roles']
+        if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
+            return redirect('quiz:question', question_id=answer.question.id)
 
-            # save to db
-            rating = Result(user=request.user, explanation=explanation, value=rating)
+        else:
+            # process student rating for explanation
+            rate_explanation_form = RateExplanationForm(request.POST)
 
+            rating = rate_explanation_form.save(commit=False)
+            rating.variable_id = Variable.objects.get(name='version_rating').id
+            rating.user = request.user
             rating.save()
-            
-            return redirect('lti:return_outcome')
 
+            #TODO determine grading policy
+            score = 1
+
+            # grade passback to LMS
+            grade_passback(score,request)
+
+            return redirect('lti:return_to_LMS')
+
+        # else:
+        #     return redirect('quiz:answer',answer_id=answer.id)
 
 def placeholder(request):
     return render(request, 'quiz/placeholder.html')
+
+def complete(request):
+    return render(request, 'quiz/complete.html')
+    
 
     

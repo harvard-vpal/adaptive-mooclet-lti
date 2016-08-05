@@ -3,25 +3,30 @@
 
 {% block body %}
 	<div>
-		<h1> Manage quiz view </h1>
+		<h1> Question Manager</h1>
+		
+		<p> Use this page to Create and Modify Question Text, Answers, Explanations. </p>
 		
 		<!-- create quiz option -->
-		<h2> Edit quiz and explanations </h2>
+		<!-- <h2> Edit quiz and explanations </h2> -->
 
+			<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Create/Edit Text of Question and Answer</a></p>
 
-			<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Create/Edit quiz</a></p>
-
-			<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk %}">Create/Edit explanations</a></p>
+			<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk %}">Create/Edit Alternative Versions of Explanation-MOOClets</a></p>
 
 			{# <p> <a href="#">Edit adaptive policy</a></p> #}
 
-			<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Add collaborator</a></p>
+			<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Invite Collaborators to suggest and edit Explanations.</a></p>
 
+			{% comment %}
+				
 			{% for question in quiz.question_set.all %}
-			<p> <a href="{% url 'engine:answer_list' question_id=question.pk %}">MOOClet list for question {{forloop.counter}} </a></p>
+			<p> <a href="{% url 'engine:answer_list' question_id=question.pk %}">See Explanation-MOOClets for answer choices  </a></p>
 			{% endfor %}
 
-		<h2> Quiz preview </h2>
+			{% endcomment %}
+
+		<h2> Student's View of Question</h2>
 
 			<!-- preview quiz -->
 			<iframe src="{% url 'engine:quiz_display' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>

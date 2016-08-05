@@ -6,7 +6,7 @@ from django.conf import settings
 from ims_lti_py.tool_config import ToolConfig
 from django.http import HttpResponse, HttpResponseRedirect
 import logging
-from engine.models import Quiz
+from engine.models import Quiz, QuizLtiParameters
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
@@ -68,28 +68,51 @@ def tool_config(request):
 def launch(request,quiz_id):
     '''
     Standard LTI launch
+    Additional storage of LTI parameters
     Checks if the LTI user is a student or instructor
-    If Student: display the quiz (specified by quiz_id)
-    If Instructor: display the management view associated with the quiz
+        If Student: display the quiz (specified by quiz_id)
+        If Instructor: display the management view associated with the quiz
     '''
 
-    # put more LTI params in the LTI launch session variable - needed when authenticating sent results back to canvas
-    more_lti_params = {
-        'lis_outcome_service_url': request.POST.get('lis_outcome_service_url', None),
-        'lis_result_sourcedid': request.POST.get('lis_result_sourcedid', None),
-        'oauth_consumer_key': request.POST.get('oauth_consumer_key', None),
-    }
-    request.session['LTI_LAUNCH'].update(more_lti_params)
+    # put quiz id in session variable, referenced by navigation links
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     request.session['quiz_id'] = quiz.pk
 
-    if 'Instructor' in request.session['LTI_LAUNCH']['roles']:
+    # put more LTI params in the LTI launch session variable - needed when authenticating sent results back to canvas
+    lis_outcome_service_url = request.POST.get('lis_outcome_service_url', '')
+    lis_result_sourcedid = request.POST.get('lis_result_sourcedid', '')
+    oauth_consumer_key = request.POST.get('oauth_consumer_key', '')
+
+
+    more_lti_params = {
+        'lis_outcome_service_url': lis_outcome_service_url,
+        'lis_result_sourcedid': lis_result_sourcedid,
+        'oauth_consumer_key': oauth_consumer_key,
+    }
+    request.session['LTI_LAUNCH'].update(more_lti_params)
+
+
+    # LTI User role check
+    user_roles = request.session['LTI_LAUNCH']['roles']
+    if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
-    # TODO researcher role check
+    # collaborator check
+    if request.user.collaborator_set.filter(course=quiz.course).exists():
+        return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:
-        # TODO store canvas user id and lti user id so that we can have a mapping?
+
+        # save the student LTI parameters to db, needed for asynchronous grade passback
+        quiz_lti_parameters, created = QuizLtiParameters.objects.get_or_create(
+            user=request.user,
+            quiz=quiz,
+        )
+        quiz_lti_parameters.lis_outcome_service_url = lis_outcome_service_url
+        quiz_lti_parameters.lis_result_sourcedid = lis_result_sourcedid
+        quiz_lti_parameters.oauth_consumer_key = oauth_consumer_key
+        quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
+        quiz_lti_parameters.save()
         
         return redirect('engine:quiz_display', quiz_id=quiz.id)
 
@@ -99,9 +122,8 @@ def launch(request,quiz_id):
 @require_http_methods(['POST'])
 def launch_resource_selection(request):
     '''
-    LTI launch from nav bar
-    Display all quizzes, with some management functions
-    Accessible via left navigation bar in canvas
+    LTI launch from assignment settings
+    Used when first creating a new LTI quiz assignment
     '''
     if 'ext_content_return_types' in request.POST:
         more_lti_params = {
@@ -147,38 +169,17 @@ def return_launch_url(request, quiz_id):
         )
     )
 
+#########################
+#### LTI session end ####
+#########################
 
-def return_outcome(request):
+def exit(request):
     '''
-    Return grade / outcome data back to the LMS via LTI Outcome Service protocol
+    Redirect back to LMS, using the launch_presentation_url LTI parameter
     '''
-    # TODO replace this default value if we have an actual grade
-    score = 1.0
-
-    # send the outcome data
-    outcome = OutcomeRequest(
-        {
-            # required for outcome reporting
-            'lis_outcome_service_url':request.session['LTI_LAUNCH'].get('lis_outcome_service_url'),
-            'lis_result_sourcedid':request.session['LTI_LAUNCH'].get('lis_result_sourcedid'),
-            'consumer_key': request.session['LTI_LAUNCH'].get('oauth_consumer_key'),
-            'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[request.session['LTI_LAUNCH'].get('oauth_consumer_key')],
-            'message_identifier': 'myMessage'
-        }
-    )
-    
-    outcome_response = outcome.post_replace_result(
-        score,
-        # result_data={
-        # #     # 'url':'placeholder'
-        #     'text':'complete'
-        # }
-    )
+    # TODO delete LTI session variables if useful
 
     return redirect(request.session['LTI_LAUNCH'].get('launch_presentation_return_url'))
-
-
-    
 
 
 

@@ -1,15 +1,13 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
-from collections import OrderedDict
 import json
-
-from engine.algorithms import computeExplanation_Thompson 
 from engine.models import *
 from engine import utils
 
 from rest_framework import viewsets
 from api.serializers import *
+from lti.utils import grade_passback
 
 ##########################
 ##### rest-framework #####
@@ -43,7 +41,7 @@ def get_question(request):
     if 'id' not in request.GET:
         return HttpResponse('question_id not found in GET parameters')
     question = get_object_or_404(Question, pk=request.GET['id'])
-    answers = question.answer_set.order_by('order')
+    answers = question.answer_set.order_by('_order')
 
     num_answers = len(answers)
 
@@ -100,13 +98,17 @@ def get_explanation_for_student(request):
     # still need to validate such that order is unique within answer_set, in the meantime use this
     # answer = get_list_or_404(Answer, question=question, order=answer_choice)[0]
     # also answer_choice is 1-indexed
-    answer = question.answer_set.order_by('order')[answer_choice-1]
+    answer = question.answer_set.order_by('_order')[answer_choice-1]
+    mooclet = answer.mooclet
+    
+    mooclet_context = {'mooclet': mooclet}
 
-    # placeholder student for now, still need to determine what kind of user_id to use (internal django, lti id, etc)
-    user = User.objects.first()
-    # student = get_object_or_404(User, id=request.GET['user_id'])
+    if 'user' in request.GET:
+        user = get_object_or_404(User, id=request.GET['user'])
+        mooclet_context['user'] = user
 
-    explanation = utils.get_explanation_for_student(answer, user)
+    version = mooclet.get_version(mooclet_context)
+    explanation = version.explanation
 
     return JsonResponse({
         'id':explanation.id,
@@ -129,12 +131,13 @@ def submit_result_of_explanation(request):
     if 'value' not in request.GET:
         return HttpResponse('value not found in GET parameters')
     
-    value = (float(request.GET['value']) - 1.0) / 6.0
+    # value = (float(request.GET['value']) - 1.0) / 6.0
 
-    result = Result(
-        user_id=request.GET['user_id'],
-        explanation_id=request.GET['explanation_id'],
-        value=value
+
+    result = Value(
+        user = request.GET['user_id'],
+        explanation = request.GET['explanation_id'],
+        value = request.GET['value']
     )
     result.save()
     return JsonResponse({ "result_id": result.id })
@@ -142,12 +145,36 @@ def submit_result_of_explanation(request):
 
 def submit_quiz_grade(request):
     '''
-    Submits a quiz grade and triggers grade passback to the LMS
+    Submits a quiz grade to app db
 
     INPUT (via GET params): user_id, quiz_id, grade
+    OUTPUT: confirmation message
     '''
-    return JsonResponse({'message': 'not implemented'})
+    required_get_params = ['user_id', 'quiz_id', 'grade']
+    for param in required_get_params:
+        if param not in request.GET:
+            return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
+    grade = float(request.GET['grade'])
+    user_id = int(request.GET['user_id'])
+    user = User.objects.get(pk=user_id)
+    quiz_id = int(request.GET['quiz_id'])
+    quiz = Quiz.objects.get(pk=quiz_id)
 
+    Grade = Variable.objects.get(name='quiz_grade')
+    value = Value(
+        variable=Grade,
+        user=user,
+        object_id=quiz_id,
+        value=grade
+    )
+    value.save()
+
+    grade_passback(grade, user=user, quiz=quiz)
+
+    return JsonResponse({'message': 'Quiz grade successfully submitted'})
+
+# TODO generic function for submitting values
+# def submit_value()
 
 
 

@@ -55,9 +55,12 @@ target/
 
 .idea/
 .vagrant/
-# deploy secure.py on EB, but remove from git
-#secure.py
+
 *.sqlite3
 http_static/
 
+######### deploy to eb ############
+
+# secure.py
+# secure.config
 

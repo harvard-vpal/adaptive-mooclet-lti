@@ -1,5 +1,5 @@
 from .algorithms import computeExplanation_Thompson
-from .models import Explanation, Result
+from .models import Explanation
 import random
 
 
@@ -7,23 +7,23 @@ def get_explanation_for_student(answer, user, method=None):
     if not method:
         method = 'random'
         
-    explanations = answer.explanation_set.all()
+    explanations = answer.mooclet.version_set.all()
 
-    if method == 'thompson':
+    # if method == 'thompson':
 
-        allExplanations = []
-        allResultsForExplanations = []
-        for explanation in explanations:
-            someResults = []
-            for result in explanation.result_set.all():
-                someResults.append(result.value)
-            allResultsForExplanations.append(someResults)
-            allExplanations.append(explanation)
-        student_id = 'placeholder'
-        selectedExplanation, exp_value = computeExplanation_Thompson(student_id, allExplanations, allResultsForExplanations)
-        return selectedExplanation
+    #     allExplanations = []
+    #     allResultsForExplanations = []
+    #     for explanation in explanations:
+    #         someResults = []
+    #         for result in explanation.result_set.all():
+    #             someResults.append(result.value)
+    #         allResultsForExplanations.append(someResults)
+    #         allExplanations.append(explanation)
+    #     student_id = 'placeholder'
+    #     selectedExplanation, exp_value = computeExplanation_Thompson(student_id, allExplanations, allResultsForExplanations)
+    #     return selectedExplanation
 
-    elif method == 'random':
+    if method == 'random':
         return random.choice(explanations)
 
     else:

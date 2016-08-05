@@ -53,7 +53,19 @@ class ExplanationForm(forms.ModelForm):
 		widgets = {
 			'text': forms.Textarea(attrs={'rows':3}),
 		}
-		
+
+class ExplanationModifyForm(forms.ModelForm):
+	'''
+	Modify explanation
+	'''
+	delete = forms.BooleanField(required=False)
+	class Meta:
+		model = Explanation
+		fields = ['text']
+		widgets = {
+			'text': forms.Textarea(attrs={'rows':3}),
+		}
+
 class ExplanationParameters(forms.ModelForm):
 	'''
 	This will be a table for each explanation, whose
@@ -90,10 +102,24 @@ class CollaboratorForm(forms.ModelForm):
 			'user': 'Collaborator ID',
 		}
 
-class MoocletVersionVariableValueForm(forms.ModelForm):
+# class ValueForm(forms.ModelForm):
+# 	'''
+# 	enter variable value
+# 	'''
+# 	class Meta:
+# 		model = Value
+# 		fields = ['value', 'version']
+# 		widgets = {
+# 			'version':forms.HiddenInput(),
+# 		}
+
+class VersionValueForm(forms.ModelForm):
 	'''
-	enter mooclet version variable value
+	Form for entering value associated with a mooclet version, and variable type
 	'''
+	value = forms.FloatField(label='')
 	class Meta:
-		model = MoocletVersionVariableValue
+		model=Value
 		fields = ['value']
+
+# form class representing a row of values for a version?	
