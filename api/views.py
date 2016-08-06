@@ -178,7 +178,11 @@ def submit_value(request):
     """
     Submit a generic variable value to app db
     input: variable, value, user, [object_id, version, mooclet, quiz, course]
+    output: success message
     """
+    token = "jjw"
+    if 'token' not in request.GET or request.GET['token'] != token:
+        return JsonResponse({'message':'Required parameter token not found or incorrect'})
     if 'user_id' not in request.GET:
         return JsonResponse({'message':'Required parameter user_id not found in GET params'})
 
@@ -186,11 +190,11 @@ def submit_value(request):
     user = User.objects.get(pk=user_id)
     content_type = None
     object_id = None
-    #if content_type in request, must also be an object_id
+    
     if 'content_type' in request.GET:
-        if 'object_id' not in request.GET:
-            return JsonResponse({'message':'Parameter object_id required with content_type in GET params'})
         content_type = ContentType.objects.get( model=request.GET['content_type'])
+    #we may want to not allow object_id without a content_type   
+    if 'object_id' in request.GET:
         object_id = int(request.GET['object_id'])
 
 
