@@ -174,7 +174,65 @@ def submit_quiz_grade(request):
     return JsonResponse({'message': 'Quiz grade successfully submitted'})
 
 # TODO generic function for submitting values
-# def submit_value()
+def submit_value(request):
+    """
+    Submit a generic variable value to app db
+    input: variable, value, user, [object_id, version, mooclet, quiz, course]
+    """
+    if 'user_id' not in request.GET:
+        return JsonResponse({'message':'Required parameter user_id not found in GET params'})
+
+    user_id = int(request.GET['user_id'])
+    user = User.objects.get(pk=user_id)
+    content_type = None
+    object_id = None
+    #if content_type in request, must also be an object_id
+    if 'content_type' in request.GET:
+        if 'object_id' not in request.GET:
+            return JsonResponse({'message':'Parameter object_id required with content_type in GET params'})
+        content_type = ContentType.objects.get( model=request.GET['content_type'])
+        object_id = int(request.GET['object_id'])
+
+
+    for param in request.GET:
+        if param not in ['user_id', 'content_type', 'object_id']:
+            #skip text variables since they aren't implemented
+            try:
+                variable_value = float(request.GET[param])
+            except ValueError:
+                break
+            variable, created = Variable.objects.get_or_create(name=param, content_type=content_type, is_user_variable=True)
+            value = Value(
+                variable=variable,
+                user=user,
+                object_id=object_id,
+                value=variable_value
+            )
+            value.save()
+
+    return JsonResponse({'message': 'user variables successfully submitted'})
+
+# def submit_user_variables(request):
+#      '''
+#     Submits a set of user variables to app db
+
+#     INPUT (via GET params): user_id, quiz_id, variables
+#     OUTPUT: confirmation message
+#     '''
+
+#     required_get_params = ['user_id', 'quiz_id']
+#     for param in required_get_params:
+#         if param not in request.GET:
+#             return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
+
+#     user_id = int(request.GET['user_id'])
+#     user = User.objects.get(pk=user_id)
+#     quiz_id = int(request.GET['quiz_id'])
+#     quiz = Quiz.objects.get(pk=quiz_id)
+
+#     for param, value in request.GET:
+#         if param not in required_get_params:
+
 
 
 
