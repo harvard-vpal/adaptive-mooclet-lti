@@ -180,6 +180,7 @@ def submit_value(request):
     input: variable, value, user, [object_id, version, mooclet, quiz, course]
     output: success message
     """
+    reserved_params = ['token', 'user_id', 'content_type', 'object_id']
     token = "jjw"
     if 'token' not in request.GET or request.GET['token'] != token:
         return JsonResponse({'message':'Required parameter token not found or incorrect'})
@@ -199,7 +200,7 @@ def submit_value(request):
 
 
     for param in request.GET:
-        if param not in ['user_id', 'content_type', 'object_id']:
+        if param not in reserved_params:
             #skip text variables since they aren't implemented
             try:
                 variable_value = float(request.GET[param])
@@ -214,7 +215,7 @@ def submit_value(request):
             )
             value.save()
 
-    return JsonResponse({'message': 'user variables successfully submitted'})
+    return JsonResponse({'message': 'User variables successfully submitted'})
 
 # def submit_user_variables(request):
 #      '''

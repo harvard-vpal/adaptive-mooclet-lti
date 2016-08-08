@@ -373,4 +373,21 @@ def mooclet_detail(request,mooclet_id):
         # TODO figure out which form corresponds to which value/explanation/variable
         pass
 
+def version_probabilities(request, mooclet_id):
+    mooclet = Mooclet.objects.get(pk=mooclet_id)
+    versions = mooclet.version_set.all()
+    mooclet_context = {'mooclet': mooclet}
+    #create a dict to count the number of times each version is picked
+    version_counts = {unicode(version): 0 for version in versions}
+    print version_counts
+    #get versions 100 times and keep track of how often each is picked
+    for i in range(1, 100):
+        version = mooclet.get_version(mooclet_context)
+        version = unicode(version)
+        print version
+        version_counts[version] = version_counts[version] + 1
+    versions = version_counts.keys()
+    probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+    context = {'version_probabilities': zip(versions, probabilities)}
+    return render(request, 'engine/version_probabilities.html', context)
 

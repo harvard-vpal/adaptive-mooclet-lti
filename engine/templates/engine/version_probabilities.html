@@ -1,6 +1,15 @@
-<h1>Version Probabilities</h1>
-{% for version in versions %}
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+{% load custom_tags %}
 
-    Probability = {{ iloc probabilities forloop.counter0 }}
+{% block body %}
+
+<h1>Version Probabilities</h1>
+<div>
+{% for version, probability in version_probabilities %}
+    Probability of {{ version }} = {{ probability }} <br>
 
 {% endfor %}
+</div>
+
+{% endblock %}
