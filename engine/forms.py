@@ -98,6 +98,9 @@ class CollaboratorForm(forms.ModelForm):
 		widgets = {
 			'user': forms.NumberInput(),
 		}
+		labels = {
+			'user': 'Collaborator ID',
+		}
 
 # class ValueForm(forms.ModelForm):
 # 	'''

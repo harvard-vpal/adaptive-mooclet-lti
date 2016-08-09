@@ -2,6 +2,7 @@
 {% load staticfiles %}
 
 {% block body %}
+
 	<h1> Modify/Add Versions of Explanations to be randomly shown after each Answer</h1>
 
 	<div class="nav">
@@ -12,6 +13,7 @@
 		{% for answer in answers %}
 
 			<p>{{answer.text}}</p>
+			<a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}"
 
 			<ul>
 			{% for version in answer.mooclet.version_set.all %}
