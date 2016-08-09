@@ -2,22 +2,18 @@
 {% load staticfiles %}
 
 {% block body %}
-<<<<<<< HEAD
-	<h1> Create/modify quiz </h1>
-	<div>
-		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to manage quiz</a>
-=======
+
 	<h1> Modify/Add Versions of Explanations to be randomly shown after each Answer</h1>
 
 	<div class="nav">
 		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to Question Manager</a>
->>>>>>> b3a94ea34daf08afd673752de05b06993759e176
 	</div>
 
 	<div>	
 		{% for answer in answers %}
 
 			<p>{{answer.text}}</p>
+			<a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}"
 
 			<ul>
 			{% for version in answer.mooclet.version_set.all %}
