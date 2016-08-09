@@ -19,14 +19,15 @@
 			No mooclet context provided
 		{% endif %}
 	</div>
+	<h2> Instructor Variables for MOOClet </h2>
 	<div class="version-values-table">
 		<form method="post">
 		<div class="table">
 
 			<div class="tr">
 				<span class="td">Version</span>
-				{% for variable in variables %}
-					<span class="td"> {{variable.name}} </span>
+				{% for instructor_variable in instructor_variables %}
+					<span class="td"> {{instructor_variable.name}} </span>
 				{% endfor %}
 			</div>
 
@@ -35,7 +36,7 @@
 				<div class="tr">
 				<span class="td"> {{version}} </span>
 
-				{% for variable in variables %}
+				{% for instructor_variable in instructor_variables %}
 					{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
 						<span class="td">{% iloc value_formgroups m n %}</span>
 					{% endwith %}
@@ -45,7 +46,50 @@
 			
 		</table>
 		<input type="submit" value="Save">
+
+
+
 		
 	</div>
+
+	<h2> Student Variables for MOOClet </h2>
+	<div class="student-version-values-table">
+		<div class="table">
+
+			<div class="tr">
+				<span class="td">Version</span>
+				{% for user_variable in user_variables %}
+					<span class="td"> {{user_variable.name}} </span>
+				{% endfor %}
+			</div>
+
+			
+			{% for version in versions %}
+				<div class="tr">
+				<span class="td"> {{version}} </span>
+
+				{% for user_variable in user_variables %}
+					{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
+						<span class="td">{% iloc value_tables m n %}</span>
+					{% endwith %}
+				{% endfor %}
+				</div>
+			{% endfor %}
+			
+		</table>
+		
+
+
+
+		
+	</div>
+</div>
+
+
+<div>
+	{% for version, probability in version_probabilities %}
+    	Probability of {{ version }} = {{ probability }} <br>
+
+	{% endfor %}
 </div>
 {% endblock %}

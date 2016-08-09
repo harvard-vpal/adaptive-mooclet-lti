@@ -332,7 +332,17 @@ def mooclet_detail(request,mooclet_id):
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
-    variables = mooclet.policy.variables.filter(content_type=Version_ct).all()
+    instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct, is_user_variable=False).all()
+    user_variables = mooclet.policy.variables.filter(content_type=Version_ct, is_user_variable=True).all()
+    #group the variables by if they are user variables
+    # instructor_variables = []
+    # for variable in variables:
+    #     if not variable.is_user_variable:
+    #         instructor_variables.append(variable)
+    # user_variables = []
+    # for variable in variables:
+    #     if variable.is_user_variable:
+    #         instructor_variables.append(variable)
 
     # page used to display variables that are version-specific
     if request.method == 'GET':
@@ -347,24 +357,55 @@ def mooclet_detail(request,mooclet_id):
 
         # create m x n array of forms, where m (rows) is the number of versions and n (cols) is the number of variables
         formgroups = []
+        tablegroups = []
         for version in versions:
             forms = []
-            for variable in variables:
-                value = Value.objects.filter(object_id=version.id, variable=variable).last()              
+            for variable in instructor_variables:
+                value = Value.objects.filter(object_id=version.id, variable=variable).last()
+
+                                  
                 # TODO set auto_id to label forms in form parameters?
                 if value:
                     form = VersionValueForm(instance=value)
                 else:
                     form = VersionValueForm()
-
-                forms.append(form)
+                forms.append(form)      
             formgroups.append(forms)
+
+
+            tablerow = []
+            for variable in user_variables:
+                value = Value.objects.filter(object_id=version.id, variable=variable).last().value
+                if value:
+                    cell = value
+                else:
+                 cell = None
+                tablerow.append(cell)
+            tablegroups.append(tablerow)
+
+        #simulate policy and provide approximate likelihood
+        mooclet_context = {'mooclet': mooclet}
+        #create a dict to count the number of times each version is picked
+        version_counts = {unicode(version): 0 for version in versions}
+        #print version_counts
+        #get versions 100 times and keep track of how often each is picked
+        for i in range(1, 100):
+            version = mooclet.get_version(mooclet_context)
+            version = unicode(version)
+            #print version
+            version_counts[version] = version_counts[version] + 1
+        versions = version_counts.keys()
+        probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+        probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
 
         context = {
             'value_formgroups':formgroups,
+            'value_tables':tablegroups,
             'answer':answer,
-            'variables':variables,
+            'user_variables':user_variables,
+            'instructor_variables':instructor_variables,
             'versions':versions,
+            'version_probabilities': zip(versions, probabilities),
         }
         return render(request, 'engine/mooclet_detail.html',context)
 
@@ -388,6 +429,7 @@ def version_probabilities(request, mooclet_id):
         version_counts[version] = version_counts[version] + 1
     versions = version_counts.keys()
     probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+    probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
     context = {'version_probabilities': zip(versions, probabilities)}
     return render(request, 'engine/version_probabilities.html', context)
 
