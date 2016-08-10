@@ -89,8 +89,8 @@ def launch_sandbox(request):
     '''
     non-lti launch that redirects user to a shared default sandbox quiz (instructor view)
     '''
-    quiz = Quiz.objects.get(pk=1)
-    request.session['quiz_id'] = quiz.pk
+    quiz_id = 1
+    request.session['quiz_id'] = quiz_id
     return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
 
@@ -310,16 +310,18 @@ def collaborator_create(request, quiz_id):
     return render(request, 'engine/collaborator_create.html',context)
 
 
-def answer_list(request,question_id):
-    question = get_object_or_404(Question, pk=question_id)
-    answers = question.answer_set.order_by('_order')
+def quiz_mooclets(request,quiz_id):
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    questions = quiz.question_set.all()
+    answers = [[question.answer_set.order_by('_order')] for question in questions]
     # mooclets = [answer.mooclet for answer in answers]
     context = {
+        'quiz':quiz,
         'question':question, 
-        'answers':answers, 
+        'answers':answers, # 2d array of question answers
         # 'mooclets':mooclets,
     }
-    return render(request, 'engine/answer_list.html', context)
+    return render(request, 'engine/quiz_mooclets.html', context)
 
 
 # TODO separate view for creating mooclets?

@@ -18,13 +18,12 @@
 
 			<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Invite Collaborators to suggest and edit Explanations.</a></p>
 
-			{% comment %}
-				
-			{% for question in quiz.question_set.all %}
-			<p> <a href="{% url 'engine:answer_list' question_id=question.pk %}">See Explanation-MOOClets for answer choices  </a></p>
-			{% endfor %}
 
-			{% endcomment %}
+				
+			<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See associated Explanation-MOOClets for this quiz </a></p>
+
+
+
 
 		<h2> Student's View of Question</h2>
 

@@ -6,7 +6,7 @@
 <h1> Interact with MOOClet </h1>
 
 <div class="nav">
-	<a href="{% url 'engine:answer_list' question_id=answer.question.pk %}">Back to MOOClet list</a>
+	<a href="{% url 'engine:quiz_mooclets' quiz_id=answer.question.quiz.pk %}">Back to MOOClet list</a>
 </div>
 
 <div>

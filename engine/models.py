@@ -217,6 +217,13 @@ class Quiz(models.Model):
                 return first_question.url
         return None
 
+    def get_mooclets(self):
+        '''
+        Get all associated mooclets for this quiz
+        '''
+        # explanation mooclets
+        return [answer.mooclet for answer in self.answer_set.all()]
+
 
 class Question(models.Model):
     name = models.CharField('question name', max_length=100)
@@ -235,7 +242,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question)
     text = models.TextField('answer text',default='')
     correct = models.BooleanField()
-    mooclet = models.ForeignKey(Mooclet,null=True)
+    mooclet = models.ForeignKey(Mooclet,null=True) # explanation mooclet
 
     class Meta:
         order_with_respect_to = 'question'
