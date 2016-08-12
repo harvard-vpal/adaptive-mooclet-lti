@@ -22,6 +22,7 @@ urlpatterns = [
     # "interact with mooclet"
     url(r'^mooclet_detail/(?P<mooclet_id>[0-9]+)$', views.mooclet_detail, name='mooclet_detail'),
     url(r'^version_probabilities/(?P<mooclet_id>[0-9]+)$', views.version_probabilities, name='version_probabilities'),
+    url(r'^mooclet_version_variables_modify/(?P<mooclet_id>[0-9]+)$', views.mooclet_version_variables_modify, name='mooclet_version_variables_modify'),
 
     url(r'^collaborator_request', views.collaborator_request, name='collaborator_request'),
     url(r'^collaborator_create/(?P<quiz_id>[0-9]+)$', views.collaborator_create, name='collaborator_create'),

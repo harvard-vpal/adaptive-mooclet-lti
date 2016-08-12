@@ -3,10 +3,10 @@
 {% load custom_tags %}
 
 {% block body %}
-<h1> Interact with MOOClet </h1>
+<h1> Change policy variable values associated with MOOClet versions </h1>
 
 <div class="nav">
-	<a href="{% url 'engine:quiz_mooclets' quiz_id=answer.question.quiz.pk %}">Back to MOOClet list</a>
+	<a href="{% url 'engine:mooclet_detail' mooclet_id=mooclet.pk %}?answer_id={{request.session.answer_id}}">Back to MOOClet detail</a>
 </div>
 
 <div>
@@ -19,12 +19,6 @@
 			No mooclet context provided
 		{% endif %}
 	</div>
-
-	<h2> Links </h2>
-	<ul>
-	<li> <a href="{% url 'engine:mooclet_version_variables_modify' mooclet_id=answer.question.quiz.pk %}">Modify variables associated with versions and policies</a></li>
-	</ul>
-
 	<h2> Instructor Variables for MOOClet </h2>
 	<div class="version-values-table">
 		<form method="post">
@@ -53,49 +47,9 @@
 		</table>
 		<input type="submit" value="Save">
 
-
-
 		
 	</div>
 
-	<h2> Student Variables for MOOClet </h2>
-	<div class="student-version-values-table">
-		<div class="table">
-
-			<div class="tr">
-				<span class="td">Version</span>
-				{% for user_variable in user_variables %}
-					<span class="td"> {{user_variable.name}} </span>
-				{% endfor %}
-			</div>
-
-			
-			{% for version in versions %}
-				<div class="tr">
-				<span class="td"> {{version}} </span>
-
-				{% for user_variable in user_variables %}
-					{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
-						<span class="td">{% iloc value_tables m n %}</span>
-					{% endwith %}
-				{% endfor %}
-				</div>
-			{% endfor %}
-			
-		</table>
-		
-
-
-
-		
-	</div>
 </div>
 
-
-<div>
-	{% for version, probability in version_probabilities %}
-    	Probability of {{ version }} = {{ probability }} <br>
-
-	{% endfor %}
-</div>
 {% endblock %}

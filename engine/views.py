@@ -354,7 +354,7 @@ def mooclet_detail(request,mooclet_id):
         answer = None
         if 'answer_id' in request.GET:
             answer = get_object_or_404(Answer, id=request.GET['answer_id'])
-
+            request.session['answer_id'] = answer.pk
 
         # explanations = [version.explanation for version in mooclet.version_set.all()]
 
@@ -416,6 +416,69 @@ def mooclet_detail(request,mooclet_id):
 
         # TODO figure out which form corresponds to which value/explanation/variable
         pass
+
+def mooclet_version_variables_modify(request, mooclet_id):
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+    versions = mooclet.version_set.all()
+    Version_ct = ContentType.objects.get_for_model(Version)
+    instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct, is_user_variable=False).all()
+
+    if request.method == 'GET':
+
+        # should recieve answer_id as GET parameter, if we are navigating from an answer context
+        answer = None
+        if 'answer_id' in request.GET:
+            answer = get_object_or_404(Answer, id=request.GET['answer_id'])
+
+
+        # explanations = [version.explanation for version in mooclet.version_set.all()]
+
+        # create m x n array of forms, where m (rows) is the number of versions and n (cols) is the number of variables
+        formgroups = []
+        tablegroups = []
+        for version in versions:
+            forms = []
+            for variable in instructor_variables:
+                value = Value.objects.filter(object_id=version.pk, variable=variable).last()
+
+                                  
+                # form for version with id = m and variable with id = n has prefix "m_n"
+                prefix = "{}_{}".format(version.pk,variable.pk)
+                if value:
+                    form = VersionValueForm(instance=value, prefix=prefix)
+                else:
+                    form = VersionValueForm(prefix=prefix)
+                forms.append(form)      
+            formgroups.append(forms)
+
+       
+        context = {
+            'mooclet':mooclet,
+            'value_formgroups':formgroups,
+            # 'value_tables':tablegroups,
+            'answer':answer,
+            # 'user_variables':user_variables,
+            'instructor_variables':instructor_variables,
+            'versions':versions,
+        }
+        return render(request, 'engine/mooclet_version_variables_modify.html',context)
+
+    elif request.method == 'POST':
+
+        for version in versions:
+            for variable in instructor_variables:
+                value = Value.objects.filter(object_id=version.pk, variable=variable).last()
+                # form for version with id = m and variable with id = n has prefix "m_n"
+                prefix = "{}_{}".format(version.pk,variable.pk)
+                form = VersionValueForm(request.POST, instance=value, prefix=prefix)
+                
+                value = form.save()
+                # print 'value for version {} and variable {} = {}'.format(version.pk,variable.pk,value.value)
+
+        return redirect('engine:mooclet_version_variables_modify',mooclet_id=mooclet.pk)
+
+
+
 
 def version_probabilities(request, mooclet_id):
     mooclet = Mooclet.objects.get(pk=mooclet_id)
