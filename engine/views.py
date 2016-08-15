@@ -417,7 +417,8 @@ def mooclet_detail(request,mooclet_id):
         # TODO figure out which form corresponds to which value/explanation/variable
         pass
 
-def mooclet_version_variables_modify(request, mooclet_id):
+
+def mooclet_modify_version_values(request, mooclet_id):
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
@@ -461,7 +462,7 @@ def mooclet_version_variables_modify(request, mooclet_id):
             'instructor_variables':instructor_variables,
             'versions':versions,
         }
-        return render(request, 'engine/mooclet_version_variables_modify.html',context)
+        return render(request, 'engine/mooclet_modify_version_values.html',context)
 
     elif request.method == 'POST':
 
@@ -476,8 +477,6 @@ def mooclet_version_variables_modify(request, mooclet_id):
                 # print 'value for version {} and variable {} = {}'.format(version.pk,variable.pk,value.value)
 
         return redirect('engine:mooclet_version_variables_modify',mooclet_id=mooclet.pk)
-
-
 
 
 def version_probabilities(request, mooclet_id):
