@@ -17,11 +17,15 @@ urlpatterns = [
     url(r'^explanation_create/(?P<mooclet_id>[0-9]+)$', views.explanation_create, name='explanation_create'),
     url(r'^explanation_modify/(?P<explanation_id>[0-9]+)$', views.explanation_modify, name='explanation_modify'),
 
-    # "list mooclets"
+    # "list mooclets for a quiz"
     url(r'^quiz_mooclets/(?P<quiz_id>[0-9]+)$', views.quiz_mooclets, name='quiz_mooclets'),
+    
     # "interact with mooclet"
     url(r'^mooclet_detail/(?P<mooclet_id>[0-9]+)$', views.mooclet_detail, name='mooclet_detail'),
-    url(r'^version_probabilities/(?P<mooclet_id>[0-9]+)$', views.version_probabilities, name='version_probabilities'),
+    url(r'^mooclet_simulate_probabilities/(?P<mooclet_id>[0-9]+)$', views.mooclet_simulate_probabilities, name='mooclet_simulate_probabilities'),
+    url(r'^mooclet_modify_version_values/(?P<mooclet_id>[0-9]+)$', views.mooclet_modify_version_values, name='mooclet_modify_version_values'),
+
+
 
     url(r'^collaborator_request', views.collaborator_request, name='collaborator_request'),
     url(r'^collaborator_create/(?P<quiz_id>[0-9]+)$', views.collaborator_create, name='collaborator_create'),

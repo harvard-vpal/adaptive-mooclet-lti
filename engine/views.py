@@ -354,7 +354,7 @@ def mooclet_detail(request,mooclet_id):
         answer = None
         if 'answer_id' in request.GET:
             answer = get_object_or_404(Answer, id=request.GET['answer_id'])
-
+            request.session['answer_id'] = answer.pk
 
         # explanations = [version.explanation for version in mooclet.version_set.all()]
 
@@ -386,20 +386,20 @@ def mooclet_detail(request,mooclet_id):
                 tablerow.append(cell)
             tablegroups.append(tablerow)
 
-        #simulate policy and provide approximate likelihood
-        mooclet_context = {'mooclet': mooclet}
-        #create a dict to count the number of times each version is picked
-        version_counts = {unicode(version): 0 for version in versions}
-        #print version_counts
-        #get versions 100 times and keep track of how often each is picked
-        for i in range(1, 100):
-            version = mooclet.get_version(mooclet_context)
-            version = unicode(version)
-            #print version
-            version_counts[version] = version_counts[version] + 1
-        versions = version_counts.keys()
-        probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
-        probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
+        # #simulate policy and provide approximate likelihood
+        # mooclet_context = {'mooclet': mooclet}
+        # #create a dict to count the number of times each version is picked
+        # version_counts = {unicode(version): 0 for version in versions}
+        # #print version_counts
+        # #get versions 100 times and keep track of how often each is picked
+        # for i in range(1, 100):
+        #     version = mooclet.get_version(mooclet_context)
+        #     version = unicode(version)
+        #     #print version
+        #     version_counts[version] = version_counts[version] + 1
+        # versions = version_counts.keys()
+        # probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+        # probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
 
         context = {
             'value_formgroups':formgroups,
@@ -408,7 +408,7 @@ def mooclet_detail(request,mooclet_id):
             'user_variables':user_variables,
             'instructor_variables':instructor_variables,
             'versions':versions,
-            'version_probabilities': zip(versions, probabilities),
+            # 'version_probabilities': zip(versions, probabilities),
         }
         return render(request, 'engine/mooclet_detail.html',context)
 
@@ -417,7 +417,69 @@ def mooclet_detail(request,mooclet_id):
         # TODO figure out which form corresponds to which value/explanation/variable
         pass
 
-def version_probabilities(request, mooclet_id):
+
+def mooclet_modify_version_values(request, mooclet_id):
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+    versions = mooclet.version_set.all()
+    Version_ct = ContentType.objects.get_for_model(Version)
+    instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct, is_user_variable=False).all()
+
+    if request.method == 'GET':
+
+        # should recieve answer_id as GET parameter, if we are navigating from an answer context
+        answer = None
+        if 'answer_id' in request.GET:
+            answer = get_object_or_404(Answer, id=request.GET['answer_id'])
+
+
+        # explanations = [version.explanation for version in mooclet.version_set.all()]
+
+        # create m x n array of forms, where m (rows) is the number of versions and n (cols) is the number of variables
+        formgroups = []
+        tablegroups = []
+        for version in versions:
+            forms = []
+            for variable in instructor_variables:
+                value = Value.objects.filter(object_id=version.pk, variable=variable).last()
+
+                                  
+                # form for version with id = m and variable with id = n has prefix "m_n"
+                prefix = "{}_{}".format(version.pk,variable.pk)
+                if value:
+                    form = VersionValueForm(instance=value, prefix=prefix)
+                else:
+                    form = VersionValueForm(prefix=prefix)
+                forms.append(form)      
+            formgroups.append(forms)
+
+       
+        context = {
+            'mooclet':mooclet,
+            'value_formgroups':formgroups,
+            # 'value_tables':tablegroups,
+            'answer':answer,
+            # 'user_variables':user_variables,
+            'instructor_variables':instructor_variables,
+            'versions':versions,
+        }
+        return render(request, 'engine/mooclet_modify_version_values.html',context)
+
+    elif request.method == 'POST':
+
+        for version in versions:
+            for variable in instructor_variables:
+                value = Value.objects.filter(object_id=version.pk, variable=variable).last()
+                # form for version with id = m and variable with id = n has prefix "m_n"
+                prefix = "{}_{}".format(version.pk,variable.pk)
+                form = VersionValueForm(request.POST, instance=value, prefix=prefix)
+                
+                value = form.save()
+                # print 'value for version {} and variable {} = {}'.format(version.pk,variable.pk,value.value)
+
+        return redirect('engine:mooclet_version_variables_modify',mooclet_id=mooclet.pk)
+
+
+def mooclet_simulate_probabilities(request, mooclet_id):
     mooclet = Mooclet.objects.get(pk=mooclet_id)
     versions = mooclet.version_set.all()
     mooclet_context = {'mooclet': mooclet}
@@ -434,5 +496,8 @@ def version_probabilities(request, mooclet_id):
     probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
     probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
     context = {'version_probabilities': zip(versions, probabilities)}
-    return render(request, 'engine/version_probabilities.html', context)
+    return render(request, 'engine/mooclet_simulate_probabilities.html', context)
+
+
+    
 
