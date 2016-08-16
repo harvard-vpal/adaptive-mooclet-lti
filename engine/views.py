@@ -408,6 +408,7 @@ def mooclet_detail(request,mooclet_id):
             'user_variables':user_variables,
             'instructor_variables':instructor_variables,
             'versions':versions,
+            'mooclet':mooclet,
             # 'version_probabilities': zip(versions, probabilities),
         }
         return render(request, 'engine/mooclet_detail.html',context)

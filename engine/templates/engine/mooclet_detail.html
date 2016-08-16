@@ -7,6 +7,7 @@
 
 <div class="nav">
 	<a href="{% url 'engine:quiz_mooclets' quiz_id=answer.question.quiz.pk %}">Back to MOOClet list</a>
+
 </div>
 
 <div>
@@ -20,10 +21,25 @@
 		{% endif %}
 	</div>
 
+	<h2>MOOClet properties</h2>
+	<p>Name: {{mooclet.name}}</p>
+	<p>Policy: {{mooclet.policy.name}}</p>
+	<p>Versions:</p>
+	<ul>
+	{% for version in mooclet.version_set.all %}
+		<li>Version: {{version}}</li>
+	{% endfor %}
+	</ul>
+
 	<h2> Links </h2>
 	<ul>
-	<li> <a href="{% url 'engine:mooclet_modify_version_values' mooclet_id=answer.question.quiz.pk %}">Modify variables associated with versions and policies</a></li>
+	<li><a href="{% url 'engine:mooclet_simulate_probabilities' mooclet_id=mooclet.pk %}">Simulate version probabilities</a></li>
+	<li><a href="#"> TODO: student variable results</a></li>
+	<li><a href="{% url 'engine:mooclet_modify_version_values' mooclet_id=mooclet.pk%}">Modify variables associated with versions and policies</a></li>
+	<li><a href="#"> TODO: define new display variable tranformations</a></li>
+
 	</ul>
+
 
 	<h2> Instructor Variables for MOOClet </h2>
 	<div class="version-values-table">

@@ -51,7 +51,10 @@ class Version(models.Model):
         order_with_respect_to = 'mooclet'
 
     def __unicode__(self):
-        return "Version: {}".format(self.id)
+        try:
+            return getattr(self, 'explanation').__unicode__()
+        except:
+            return "Version: {}".format(self.name)
 
 
 class Policy(models.Model):
