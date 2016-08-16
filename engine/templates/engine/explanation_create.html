@@ -1,23 +1,22 @@
 {% extends "engine/base.html" %}
 {% load staticfiles %}
 
+
+{% block title %}
+Create explanation
+{% endblock title %}
+
+{% block nav %}
+{% include "engine/nav_back_to_explanations.html" %}
+{% endblock nav %}
+
 {% block body %}
-
-<h1> Create explanation </h1>
-
-<div class="nav">
-<a href="{% url 'engine:explanation_list' quiz_id=request.session.quiz_id %}">Back to quiz explanations</a>
-</div>
-
-<br>
-
-<div>
 
 <form method="post">
     {{ explanation_form.as_p }}
     <input type="submit" value="Save" />
 </form>
-</div>
+
 
 {% endblock %}
 

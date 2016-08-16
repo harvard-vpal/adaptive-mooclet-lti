@@ -2,14 +2,20 @@
 {% load staticfiles %}
 {% load custom_tags %}
 
+{% block title %}
+Version Probabilities
+{% endblock title %}
+
+{% block nav %}
+{% include "engine/nav_back_to_mooclet.html" %}
+{% endblock nav %}
+
 {% block body %}
 
-<h1>Version Probabilities</h1>
-<div>
+<ul>
 {% for version, probability in version_probabilities %}
-    Probability of {{ version }} = {{ probability }} <br>
-
+    <li>Probability of {{ version }} = {{ probability }}</li>
 {% endfor %}
-</div>
+</ul>
 
 {% endblock %}

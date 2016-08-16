@@ -1,30 +1,30 @@
 {% extends "engine/base.html" %}
 {% load staticfiles %}
 
+{% block title %}
+Modify/Add Versions of Explanations to be randomly shown after each Answer
+{% endblock title %}
+
+{% block nav %}
+{% include "engine/nav_back_to_quiz.html" %}
+{% endblock nav %}
+
 {% block body %}
 
-	<h1> Modify/Add Versions of Explanations to be randomly shown after each Answer</h1>
+{% for answer in answers %}
 
-	<div class="nav">
-		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to Question Manager</a>
-	</div>
+	<p>{{answer.text}}</p>
+	<a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}"
 
-	<div>	
-		{% for answer in answers %}
+	<ul>
+	{% for version in answer.mooclet.version_set.all %}
 
-			<p>{{answer.text}}</p>
-			<a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}"
+		<li><a href="{% url 'engine:explanation_modify' explanation_id=version.explanation.pk %}">{{version.explanation.text}}</a></li>
 
-			<ul>
-			{% for version in answer.mooclet.version_set.all %}
+	{% endfor %}
+	<li><a href="{% url 'engine:explanation_create' mooclet_id=answer.mooclet.pk %}">Add a new explanation</a></li>
+	</ul>
+	
+{% endfor %}
 
-				<li><a href="{% url 'engine:explanation_modify' explanation_id=version.explanation.pk %}">{{version.explanation.text}}</a></li>
-
-			{% endfor %}
-			<li><a href="{% url 'engine:explanation_create' mooclet_id=answer.mooclet.pk %}">Add a new explanation</a></li>
-			</ul>
-			
-			
-		{% endfor %}
-	</div>
 {% endblock %}

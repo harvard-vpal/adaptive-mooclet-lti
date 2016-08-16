@@ -1,15 +1,16 @@
 {% extends "engine/base.html" %}
 {% load staticfiles %}
 
+{% block title %}
+Create/Modify Question Text &amp; Answers
+{% endblock title %}
+
+{% block nav %}
+{% include "engine/nav_back_to_quiz.html" %}	
+{% endblock nav %}
+
 {% block body %}
-	
-<h1> Create/Modify Question Text &amp; Answers</h1>
 
-<div class="nav">
-	<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id%}">Back to Question Manager</a>
-</div>
-
-<div>
 <form method="post">
 	<h3>Quiz Name</h3>
 	{{quiz_form.as_p}}

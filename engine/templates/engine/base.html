@@ -21,12 +21,23 @@
 </head>
 
 <body>
-	{% block nav_quiz_detail %}
-		
-	{% endblock nav_quiz_detail %}
 
+	<h1>
+	{% block title %}
+	{% endblock title %}
+	</h1>
+
+	<div class="nav">
+	{% block nav %}
+	{% endblock nav %}
+	</div>
+
+	<div class="body">
 	{% block body %}
 	{% endblock %}
+	</div>
+
+
 </body>
 
 </html>

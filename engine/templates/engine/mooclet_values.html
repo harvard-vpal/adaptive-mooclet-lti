@@ -1,0 +1,40 @@
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+{% load custom_tags %}
+
+{% block title %}
+Student Variables for MOOClet
+{% endblock title %}
+
+{% block nav %}
+{% include "engine/nav_back_to_mooclet.html" %}
+{% endblock nav %}
+
+{% block body %}
+
+<h2> Student Variables for MOOClet </h2>
+<div class="student-version-values-table">
+	<div class="table">
+
+		<div class="tr">
+			<span class="td">Version</span>
+			{% for user_variable in user_variables %}
+				<span class="td"> {{user_variable.name}} </span>
+			{% endfor %}
+		</div>
+		
+		{% for version in versions %}
+			<div class="tr">
+			<span class="td"> {{version}} </span>
+
+			{% for user_variable in user_variables %}
+				{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
+					<span class="td">{% iloc value_tables m n %}</span>
+				{% endwith %}
+			{% endfor %}
+			</div>
+		{% endfor %}
+	</div>
+</div>
+
+{% endblock body %}

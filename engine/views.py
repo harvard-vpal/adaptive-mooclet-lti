@@ -477,7 +477,7 @@ def mooclet_modify_version_values(request, mooclet_id):
                 value = form.save()
                 # print 'value for version {} and variable {} = {}'.format(version.pk,variable.pk,value.value)
 
-        return redirect('engine:mooclet_version_variables_modify',mooclet_id=mooclet.pk)
+        return redirect('engine:mooclet_modify_version_values',mooclet_id=mooclet.pk)
 
 
 def mooclet_simulate_probabilities(request, mooclet_id):
@@ -496,7 +496,10 @@ def mooclet_simulate_probabilities(request, mooclet_id):
     versions = version_counts.keys()
     probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
     probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
-    context = {'version_probabilities': zip(versions, probabilities)}
+    context = {
+        'version_probabilities': zip(versions, probabilities),
+        'mooclet': mooclet,
+    }
     return render(request, 'engine/mooclet_simulate_probabilities.html', context)
 
 
