@@ -378,11 +378,11 @@ def mooclet_detail(request,mooclet_id):
 
             tablerow = []
             for variable in user_variables:
-                value = Value.objects.filter(object_id=version.id, variable=variable).last().value
+                value = Value.objects.filter(object_id=version.id, variable=variable).last()#.value
                 if value:
-                    cell = value
+                    cell = value.value
                 else:
-                 cell = None
+                    cell = None
                 tablerow.append(cell)
             tablegroups.append(tablerow)
 
