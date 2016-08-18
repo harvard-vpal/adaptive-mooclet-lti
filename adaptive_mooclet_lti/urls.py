@@ -1,11 +1,11 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-import adaptive_mooclet_lti.views
+from . import views
 
 urlpatterns = [
 	
-    url(r'^$', adaptive_mooclet_lti.views.home, name='home'),
-    url(r'^auth_error/', adaptive_mooclet_lti.views.lti_auth_error, name='lti_auth_error'),
+    url(r'^$', views.home, name='home'),
+    url(r'^auth_error/', views.lti_auth_error, name='lti_auth_error'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^lti/', include('lti.urls', namespace="lti")),
     url(r'^quiz/', include('quiz.urls', namespace="quiz")),
@@ -13,5 +13,4 @@ urlpatterns = [
     url(r'^engine/', include('engine.urls', namespace="engine")),
     url(r'^api/', include('api.urls', namespace="api")),
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
 ]
