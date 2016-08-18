@@ -38,5 +38,15 @@
       "is_user_variable": false,
       "content_type": ["engine", "version"]
     }
+  },
+  {
+    "model": "engine.variable",
+    "pk": 5,
+    "fields": {
+      "name": "version_rating_confidence",
+      "description": "Confidence of rating",
+      "is_user_variable": true,
+      "content_type": ["engine", "version"]
+    }
   }
 ]
