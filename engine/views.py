@@ -423,7 +423,7 @@ def mooclet_modify_version_values(request, mooclet_id):
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
-    instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct, is_user_variable=False).all()
+    instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct).all()
 
     if request.method == 'GET':
 
@@ -441,15 +441,16 @@ def mooclet_modify_version_values(request, mooclet_id):
         for version in versions:
             forms = []
             for variable in instructor_variables:
-                value = Value.objects.filter(object_id=version.pk, variable=variable).last()
-
-                                  
+                user = request.user if variable.is_user_variable else None
+                value = Value.objects.filter(object_id=version.pk, variable=variable, user=user).last()
+                                                  
                 # form for version with id = m and variable with id = n has prefix "m_n"
                 prefix = "{}_{}".format(version.pk,variable.pk)
                 if value:
                     form = VersionValueForm(instance=value, prefix=prefix)
                 else:
                     form = VersionValueForm(prefix=prefix)
+                # form = VersionValueForm(instance=value, prefix=prefix)
                 forms.append(form)      
             formgroups.append(forms)
 
@@ -469,12 +470,21 @@ def mooclet_modify_version_values(request, mooclet_id):
 
         for version in versions:
             for variable in instructor_variables:
-                value = Value.objects.filter(object_id=version.pk, variable=variable).last()
+                user = request.user if variable.is_user_variable else None
+                value = Value.objects.filter(object_id=version.pk, variable=variable, user=user).last()
+                if not value:
+                    value = Value(object_id=version.pk, variable=variable, user=user)
+
                 # form for version with id = m and variable with id = n has prefix "m_n"
                 prefix = "{}_{}".format(version.pk,variable.pk)
+
                 form = VersionValueForm(request.POST, instance=value, prefix=prefix)
                 
-                value = form.save()
+                value = form.save(commit = False)
+                print value
+                print value.id
+                print value.value
+                value = value.save()
                 # print 'value for version {} and variable {} = {}'.format(version.pk,variable.pk,value.value)
 
         return redirect('engine:mooclet_modify_version_values',mooclet_id=mooclet.pk)
