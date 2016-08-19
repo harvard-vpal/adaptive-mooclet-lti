@@ -360,7 +360,6 @@ def mooclet_detail(request,mooclet_id):
 
         # create m x n array of forms, where m (rows) is the number of versions and n (cols) is the number of variables
         formgroups = []
-        tablegroups = []
         for version in versions:
             forms = []
             for variable in instructor_variables:
@@ -375,35 +374,11 @@ def mooclet_detail(request,mooclet_id):
                 forms.append(form)      
             formgroups.append(forms)
 
-
-            tablerow = []
-            for variable in user_variables:
-                value = Value.objects.filter(object_id=version.id, variable=variable).last()#.value
-                if value:
-                    cell = value.value
-                else:
-                    cell = None
-                tablerow.append(cell)
-            tablegroups.append(tablerow)
-
-        # #simulate policy and provide approximate likelihood
-        # mooclet_context = {'mooclet': mooclet}
-        # #create a dict to count the number of times each version is picked
-        # version_counts = {unicode(version): 0 for version in versions}
-        # #print version_counts
-        # #get versions 100 times and keep track of how often each is picked
-        # for i in range(1, 100):
-        #     version = mooclet.get_version(mooclet_context)
-        #     version = unicode(version)
-        #     #print version
-        #     version_counts[version] = version_counts[version] + 1
-        # versions = version_counts.keys()
-        # probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
-        # probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
+        
 
         context = {
             'value_formgroups':formgroups,
-            'value_tables':tablegroups,
+            # 'value_tables':tablegroups,
             'answer':answer,
             'user_variables':user_variables,
             'instructor_variables':instructor_variables,
@@ -437,7 +412,7 @@ def mooclet_modify_version_values(request, mooclet_id):
 
         # create m x n array of forms, where m (rows) is the number of versions and n (cols) is the number of variables
         formgroups = []
-        tablegroups = []
+        # tablegroups = []
         for version in versions:
             forms = []
             for variable in instructor_variables:
@@ -491,6 +466,7 @@ def mooclet_modify_version_values(request, mooclet_id):
 
 
 def mooclet_simulate_probabilities(request, mooclet_id):
+    # #simulate policy and provide approximate likelihood
     mooclet = Mooclet.objects.get(pk=mooclet_id)
     versions = mooclet.version_set.all()
     mooclet_context = {'mooclet': mooclet}
@@ -512,6 +488,26 @@ def mooclet_simulate_probabilities(request, mooclet_id):
     }
     return render(request, 'engine/mooclet_simulate_probabilities.html', context)
 
-
+def mooclet_list_values(request, mooclet_id):
+    mooclet = Mooclet.objects.get(pk=mooclet_id)
+    data = []
+    for variable in mooclet.policy.variables.all():
+        data.append(variable.get_data({'mooclet':mooclet}))
+    # tablegroups = []
+    # for version in versions:
+    #     tablerow = []
+    #     for variable in user_variables:
+    #         value = Value.objects.filter(object_id=version.id, variable=variable).last()#.value
+    #         if value:
+    #             cell = value.value
+    #         else:
+    #             cell = None
+    #         tablerow.append(cell)
+    #     tablegroups.append(tablerow)
+    context = {
+        'mooclet':mooclet,
+        'data':data
+    }
+    return render(request, 'engine/mooclet_list_values',context)
     
 

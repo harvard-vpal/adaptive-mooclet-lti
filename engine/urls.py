@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^mooclet_detail/(?P<mooclet_id>[0-9]+)$', views.mooclet_detail, name='mooclet_detail'),
     url(r'^mooclet_simulate_probabilities/(?P<mooclet_id>[0-9]+)$', views.mooclet_simulate_probabilities, name='mooclet_simulate_probabilities'),
     url(r'^mooclet_modify_version_values/(?P<mooclet_id>[0-9]+)$', views.mooclet_modify_version_values, name='mooclet_modify_version_values'),
-
+    url(r'^mooclet_list_values/(?P<mooclet_id>[0-9]+)$', views.mooclet_list_values, name='mooclet_list_values'),
 
 
     url(r'^collaborator_request', views.collaborator_request, name='collaborator_request'),
