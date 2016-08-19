@@ -96,7 +96,8 @@ TEMPLATES = [{
             'django.contrib.auth.context_processors.auth',
 
             # access the request inside django template
-            'django.core.context_processors.request',
+            'django.template.context_processors.request',
+            # 'django.template.context_processors.debug',
 
             # enable django messages
             'django.contrib.messages.context_processors.messages',
