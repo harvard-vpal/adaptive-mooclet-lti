@@ -12,6 +12,27 @@ Student Variables for MOOClet
 
 {% block body %}
 
+<table>
+<tr>
+	<th>Variable</th>
+	<th>Value</th>
+	<th>Object type</th>
+	<th>Object id</th>
+	<th>User</th>
+</tr>
+{% for value in values %}
+	<tr>
+	<td>{{value.variable.name}}</td>
+	<td>{{value.value}}</td>
+	<td>{{value.object_name}}</td>
+	<td>{{value.object_id}}</td>
+	<td>{{value.user.pk}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+{% comment %}
+
 <h2> Student Variables for MOOClet </h2>
 <div class="student-version-values-table">
 	<div class="table">
@@ -36,5 +57,7 @@ Student Variables for MOOClet
 		{% endfor %}
 	</div>
 </div>
+
+{% endcomment %}
 
 {% endblock body %}

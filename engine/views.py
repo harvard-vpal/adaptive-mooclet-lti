@@ -490,9 +490,10 @@ def mooclet_simulate_probabilities(request, mooclet_id):
 
 def mooclet_list_values(request, mooclet_id):
     mooclet = Mooclet.objects.get(pk=mooclet_id)
-    data = []
+    values = []
     for variable in mooclet.policy.variables.all():
-        data.append(variable.get_data({'mooclet':mooclet}))
+        for value in variable.get_data({'mooclet':mooclet}):
+            values.append(value)
     # tablegroups = []
     # for version in versions:
     #     tablerow = []
@@ -506,8 +507,8 @@ def mooclet_list_values(request, mooclet_id):
     #     tablegroups.append(tablerow)
     context = {
         'mooclet':mooclet,
-        'data':data
+        'values':values
     }
-    return render(request, 'engine/mooclet_list_values',context)
+    return render(request, 'engine/mooclet_list_values.html',context)
     
 
