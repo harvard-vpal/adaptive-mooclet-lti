@@ -100,13 +100,18 @@ class Variable(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def object_name(self):
+        return self.content_type.__unicode__()
+
+
     def get_data(self,context=None):
         '''
         return relevant value objects for the variable type
         '''
         # context is a dictionary that contains model objects user, course, quiz, mooclet, version
         if context:
-            ct_name = self.content_type.__unicode__() # str: 'course','user','mooclet', or 'version'
+            ct_name = self.object_name # str: 'course','user','mooclet', or 'version'
 
             query = {}
             # if user variable and user info in context, filter by user
@@ -114,7 +119,7 @@ class Variable(models.Model):
                 query['user'] = context['user']
 
             # if context is at the mooclet-level but variable is version-related, pass related version ids to the query
-            if 'versions' in context and ct_name=='version':
+            if 'mooclet' in context and ct_name=='version':
                 query['object_id__in'] = context['mooclet'].version_set.values_list('id',flat=True)
             else:
                 query['object_id'] = context[ct_name].id # pk of related content object instance
@@ -154,6 +159,10 @@ class Value(models.Model):
             return None
         return ct.get_object_for_this_type(pk=self.object_id)
 
+    @property
+    def object_name(self):
+        return self.variable.content_type.__unicode__()
+
     # enables use of "value.course", etc. syntax
     @property
     def course(self):
@@ -170,6 +179,7 @@ class Value(models.Model):
     @property
     def version(self):
         return self.get_object_content('version')
+
 
 
 #################################
@@ -252,6 +262,14 @@ class Answer(models.Model):
 
     def __unicode__(self):
         return self.text
+
+
+class Response(models.Model):
+    user = models.ForeignKey(User)
+    answer = models.ForeignKey(Answer)
+    grade = models.FloatField()
+    timestamp = models.DateTimeField(null=True,auto_now=True)
+
 
 
 class Collaborator(models.Model):
