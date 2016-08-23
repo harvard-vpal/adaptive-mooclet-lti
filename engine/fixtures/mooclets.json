@@ -4,7 +4,8 @@
     "pk": 1,
     "fields": {
       "name": "Default mooclet",
-      "policy": 2
+      "policy": 2,
+      "type": "explanation"
     }
   },
   {

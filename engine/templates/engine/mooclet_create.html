@@ -1,0 +1,26 @@
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+Create New Mooclet
+{% endblock title %}
+
+{% block nav %}
+{% include "engine/nav_back_to_url.html" %}	
+{% endblock nav %}
+
+{% block body %}
+
+<h2>subtitle</h2>
+
+<form method="post">
+
+	{{mooclet_form}}
+
+	<input type="hidden" value="{{url}}" />
+
+	<input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
+

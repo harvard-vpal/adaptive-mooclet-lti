@@ -3,7 +3,7 @@
 {% load custom_tags %}
 
 {% block title %}
-Interact with MOOClet
+Interact with Explanation-MOOClet
 {% endblock title %}
 
 {% block nav %}
@@ -14,7 +14,7 @@ Interact with MOOClet
 {% block body %}
 
 <div class="section-context">
-	{% if mooclet.type == "explanation" %}
+	{% if answer %}
 		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
 		Answer text: {{answer.text}}
 	{% else %}
@@ -25,13 +25,8 @@ Interact with MOOClet
 <div class="section-mooclet">
 	<h2>MOOClet properties</h2>
 	<p>Name: {{mooclet.name}}</p>
-	<p>Type: {{mooclet.type}}</p>
 	<p>Policy: {{mooclet.policy.name}}</p>
-
-</div>
-
-<div>
-	<h2>Versions:</h2>
+	<p>Versions:</p>
 	<ul>
 	{% for version in mooclet.version_set.all %}
 		<li>Version: {{version}}</li>
@@ -48,6 +43,7 @@ Interact with MOOClet
 	{% comment %}
 	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
 	{% endcomment %}
+	
 
 	</ul>
 </div>

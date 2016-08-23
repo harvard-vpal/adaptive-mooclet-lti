@@ -1,0 +1,30 @@
+{% extends "engine/base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+Modify Question Text &amp; Answers
+{% endblock title %}
+
+{% block nav %}
+{% include "engine/nav_back_to_question.html" %}	
+{% endblock nav %}
+
+{% block body %}
+
+<form method="post">
+	<h3>Question Name</h3>
+
+	{{question_form.as_p}}
+
+	{{ answer_formset.management_form}}
+	{% for answer_form in answer_formset %}
+		<h4> Answer choice {{forloop.counter}}: </h4>
+		{{answer_form.as_p}}
+		
+	{% endfor %}
+
+	<input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
+

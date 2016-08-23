@@ -2,29 +2,25 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from qualtrics.models import Template
-# from ordered_model.models import OrderedModel
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 import policies
-# from django.db.models import Q
 
 ####################################
 #### Generalized mooclet models ####
 ####################################
 
-# TODO: is this useful to have? leaving in for now
-class MoocletType(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __unicode__(self):
-        return self.name
-
 
 class Mooclet(models.Model):
     name = models.CharField(max_length=100,default='')
     policy = models.ForeignKey('Policy',blank=True,null=True)
+    type_choices = (
+        ('explanation', 'explanation'),
+        ('next_question', 'next_question'),
+    )
+    type = models.CharField(max_length=100,choices=type_choices)
 
     def __unicode__(self):
         return "Mooclet: {}".format(self.id)
@@ -46,7 +42,7 @@ class Version(models.Model):
     Mooclet version
     '''
     mooclet = models.ForeignKey(Mooclet)
-    #
+
     class Meta:
         order_with_respect_to = 'mooclet'
 
@@ -104,14 +100,13 @@ class Variable(models.Model):
     def object_name(self):
         return self.content_type.__unicode__()
 
-
     def get_data(self,context=None):
         '''
         return relevant value objects for the variable type
         '''
         # context is a dictionary that contains model objects user, course, quiz, mooclet, version
         if context:
-            ct_name = self.object_name # str: 'course','user','mooclet', or 'version'
+            related_object = self.object_name # str: 'course','user','mooclet', or 'version'
 
             query = {}
             # if user variable and user info in context, filter by user
@@ -119,10 +114,10 @@ class Variable(models.Model):
                 query['user'] = context['user']
 
             # if context is at the mooclet-level but variable is version-related, pass related version ids to the query
-            if 'mooclet' in context and ct_name=='version':
+            if 'mooclet' in context and related_object=='version':
                 query['object_id__in'] = context['mooclet'].version_set.values_list('id',flat=True)
             else:
-                query['object_id'] = context[ct_name].id # pk of related content object instance
+                query['object_id'] = context[related_object].id # pk of related content object instance
             return self.value_set.filter(**query)
         else:
             return self.value_set.all()
@@ -181,7 +176,6 @@ class Value(models.Model):
         return self.get_object_content('version')
 
 
-
 #################################
 #### Quiz application models ####
 #################################
@@ -202,6 +196,7 @@ class Quiz(models.Model):
     url = models.URLField(default='',blank=True)
     # context = models.CharField(max_length=100,default='')
     course = models.ForeignKey(Course, blank=True,null=True)
+    mooclet_next_question = models.ForeignKey(Mooclet,null=True)
 
     class Meta:
         verbose_name_plural = 'quizzes'
@@ -235,17 +230,21 @@ class Quiz(models.Model):
         Get all associated mooclets for this quiz
         '''
         # explanation mooclets
-        return [answer.mooclet for answer in self.answer_set.all()]
+        explanations = [answer.mooclet_explanation for answer in self.answer_set.all()]
+        next_question = self.mooclet_next_question
+        mooclets = {
+            'explanations': explanations,
+            'next_question': next_question,
+        }
+        return mooclets
 
 
-class Question(models.Model):
+class Question(Version):
     name = models.CharField('question name', max_length=100)
-    quiz = models.ForeignKey(Quiz)
+    quiz = models.ManyToManyField(Quiz)
     text = models.TextField('question text')
     # template = models.ForeignKey(Template)
     url = models.URLField(default='',blank=True)
-    class Meta:
-        order_with_respect_to = 'quiz'
     
     def __unicode__(self):
         return self.text
@@ -255,10 +254,17 @@ class Answer(models.Model):
     question = models.ForeignKey(Question)
     text = models.TextField('answer text',default='')
     correct = models.BooleanField()
-    mooclet = models.ForeignKey(Mooclet,null=True) # explanation mooclet
+    mooclet_explanation = models.ForeignKey(Mooclet,null=True) # explanation mooclet
 
     class Meta:
         order_with_respect_to = 'question'
+
+    def __unicode__(self):
+        return self.text
+
+
+class Explanation(Version):
+    text = models.TextField('explanation text')
 
     def __unicode__(self):
         return self.text
@@ -269,7 +275,6 @@ class Response(models.Model):
     answer = models.ForeignKey(Answer)
     grade = models.FloatField()
     timestamp = models.DateTimeField(null=True,auto_now=True)
-
 
 
 class Collaborator(models.Model):
@@ -283,33 +288,11 @@ class Collaborator(models.Model):
         unique_together = ('user', 'course',)
 
 
-# TODO does it make sense to move this to lti app models?
-class QuizLtiParameters(models.Model):
-    '''
-    Used to store outcome service url for a particular user and quiz
-    Enables asynchronous or API-triggered grade passback
-    '''
-    user = models.ForeignKey(User)
-    quiz = models.ForeignKey(Quiz)
-    lis_outcome_service_url = models.CharField(max_length=200,default='')
-    lis_result_sourcedid = models.CharField(max_length=100,default='')
-    oauth_consumer_key = models.CharField(max_length=100,default='')
-    lti_user_id = models.CharField(max_length=100,default='')
-    #TODO canvas id
-
-    class Meta:
-        unique_together = ('user','quiz')
-
-
 ########################################
 #### Specific mooclet version types ####
 ########################################
 
-class Explanation(Version):
-    text = models.TextField('explanation text')
 
-    def __unicode__(self):
-        return self.text
 
 
 

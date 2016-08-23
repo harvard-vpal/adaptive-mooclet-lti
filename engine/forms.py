@@ -122,4 +122,13 @@ class VersionValueForm(forms.ModelForm):
 		model=Value
 		fields = ['value']
 
-# form class representing a row of values for a version?	
+# form class representing a row of values for a version?
+
+class MoocletForm(forms.ModelForm):
+	'''
+	Form for creating mooclet
+	'''
+	class Meta:
+		model = Mooclet
+		fields = ['name','policy','type']
+

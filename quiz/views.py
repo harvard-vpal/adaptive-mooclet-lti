@@ -36,7 +36,18 @@ def question(request, question_id):
         if choose_answer_form.is_valid():
             answer = choose_answer_form.cleaned_data['answer']
 
-            # TODO save selected answer and grade to database
+            if answer.correct:
+                grade = 1
+            else:
+                grade = 0
+
+            # Save selected answer and grade to database
+            response = Response(
+                user=request.user,
+                answer=answer,
+                grade=grade,
+            )
+            response.save()
 
             # redirect to explanation/rating view, for the selected explanation
             return redirect('quiz:answer',answer_id=answer.id)
@@ -84,8 +95,8 @@ def answer(request, answer_id):
             rating.user = request.user
             rating.save()
 
-            #TODO determine grading policy
-            score = 1
+            # get response
+            Response.objects.filter(user=request.user,answer=answer).last()
 
             # grade passback to LMS
             grade_passback(score,request)

@@ -2,8 +2,13 @@
 {% load staticfiles %}
 {% load custom_tags %}
 
+{% block head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"/>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js" type="text/javascript"></script>
+{% endblock head %}
+
 {% block title %}
-Student Variables for MOOClet
+Variables for MOOClet
 {% endblock title %}
 
 {% block nav %}
@@ -12,7 +17,8 @@ Student Variables for MOOClet
 
 {% block body %}
 
-<table>
+<table id="myTable">
+<thead>
 <tr>
 	<th>Variable</th>
 	<th>Value</th>
@@ -20,15 +26,19 @@ Student Variables for MOOClet
 	<th>Object id</th>
 	<th>User</th>
 </tr>
+</thead>
+
+<tbody>
 {% for value in values %}
 	<tr>
 	<td>{{value.variable.name}}</td>
 	<td>{{value.value}}</td>
 	<td>{{value.object_name}}</td>
 	<td>{{value.object_id}}</td>
-	<td>{{value.user.pk}}</td>
+	<td>{{value.user}}</td>
 	</tr>
 {% endfor %}
+</tbody>
 </table>
 
 {% comment %}
@@ -61,3 +71,12 @@ Student Variables for MOOClet
 {% endcomment %}
 
 {% endblock body %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#myTable').DataTable();
+});
+</script>
+{% endblock footer %}
+

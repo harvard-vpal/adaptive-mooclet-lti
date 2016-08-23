@@ -3,7 +3,7 @@
 {% load custom_tags %}
 
 {% block title %}
-Version Probabilities
+Simulated Version Probabilities
 {% endblock title %}
 
 {% block nav %}
@@ -12,9 +12,10 @@ Version Probabilities
 
 {% block body %}
 
+<p> Number of iterations: {{num_iterations}}</p>
 <ul>
 {% for version, probability in version_probabilities %}
-    <li>Probability of {{ version }} = {{ probability }}</li>
+    <li>Probability of Version: {{ version }} = {{ probability }}</li>
 {% endfor %}
 </ul>
 

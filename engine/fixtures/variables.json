@@ -13,39 +13,19 @@
     "model": "engine.variable",
     "pk": 2,
     "fields": {
-      "name": "quiz_grade",
-      "description": "Grade for quiz",
+      "name": "version_rating_confidence",
+      "description": "Confidence of rating",
       "is_user_variable": true,
-      "content_type": ["engine", "quiz"]
+      "content_type": ["engine", "version"]
     }
   },
   {
     "model": "engine.variable",
     "pk": 3,
     "fields": {
-      "name": "question_grade",
-      "description": "Grade for question",
-      "is_user_variable": true,
-      "content_type": ["engine", "question"]
-    }
-  },
-  {
-    "model": "engine.variable",
-    "pk": 4,
-    "fields": {
       "name": "version_weight",
       "description": "Version weight for weighted random policy",
       "is_user_variable": false,
-      "content_type": ["engine", "version"]
-    }
-  },
-  {
-    "model": "engine.variable",
-    "pk": 5,
-    "fields": {
-      "name": "version_rating_confidence",
-      "description": "Confidence of rating",
-      "is_user_variable": true,
       "content_type": ["engine", "version"]
     }
   }

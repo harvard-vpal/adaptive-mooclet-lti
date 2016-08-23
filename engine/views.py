@@ -9,6 +9,8 @@ from .forms import *
 from .utils import *
 from qualtrics.utils import provision_qualtrics_quiz
 from lti.utils import display_preview
+# from django.views import View
+
 
 #### RESOURCE SELECTION ####
 
@@ -94,40 +96,52 @@ def launch_sandbox(request):
     return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
 
-def launch_sandbox_quiz(request):
-    '''
-    convenience view/url for launching sandbox quiz (student view)
-    '''
-    return redirect('engine:quiz_display', quiz_id=1)
-
-
 #### QUIZ MANAGEMENT ####
 
 def quiz_detail(request, quiz_id):
     '''
     Quiz management home for instructors
     '''
-    quiz = Quiz.objects.get(pk=quiz_id)
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
     context = {'quiz':quiz}
 
     return render(request, 'engine/quiz_detail.html', context)
 
-# def manage_quiz(request, quiz_id):
-#     '''
-#     Teacher view for a quiz
-#     '''
-#     quiz = Quiz.objects.get(pk=quiz_id)
-#     context = {
-#         'quiz': quiz,
-#     }
-#     return render(request, 'engine/manage_quiz.html',context)
+
+def collaborator_request(request):
+    # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
+    # display session data, researcher sends their user id to instructor
+    # TODO optional instructor could create a passcode that might be required to access this view
+    # show additional info to confirm session data is correct
+
+    return render(request, 'engine/collaborator_request.html')
+
+
+def collaborator_create(request, quiz_id):
+    # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
+
+    course = Quiz.objects.get(pk=quiz_id).course
+
+    if request.method=='POST':
+        collaborator_form = CollaboratorForm(request.POST)
+        collaborator = collaborator_form.save(commit=False)
+        collaborator.course = course
+        collaborator.save()
+
+    collaborators = Collaborator.objects.filter(course=course)
+
+    context = {
+            'collaborator_form':CollaboratorForm(),
+            'collaborators': collaborators
+        }
+    return render(request, 'engine/collaborator_create.html',context)
 
 
 def quiz_update(request, quiz_id):
     '''
     displays a form to collect question, answers and explanations
     '''
-    quiz = Quiz.objects.get(pk=quiz_id)
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
 
     # get existing or initialize question object
     if quiz.question_set.all().exists():
@@ -222,19 +236,44 @@ def quiz_update(request, quiz_id):
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
 
-def explanation_list(request, quiz_id):
+def answer_detail(request, quiz_id, answer_id):
+    '''
+    Answer home page; can add explanation mooclets here
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    answer = get_object_or_404(Answer, pk=answer_id)
+    question = answer.question
+    context = {
+        'quiz': quiz,
+        'question': question,
+        'answer': answer,
+    }
+    return render(request, 'engine/answer_detail.html', context)
+
+def answer_create(request, quiz_id, answer_id):
+    pass
+
+def answer_modify(request, quiz_id, answer_id):
+    pass
+
+
+def explanation_list(request, quiz_id, question_id):
     '''
     list explanations for a single question (multiple choices)
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     question = quiz.question_set.first()
     answers = question.answer_set.order_by('_order')
-    context = {'answers':answers, 'quiz':quiz}
+    context = {
+        'quiz':quiz,
+        'question':question,
+        'answers':answers, 
+    }
 
     return render(request, 'engine/explanation_list.html', context)
 
 
-def explanation_create(request, mooclet_id):
+def explanation_create(request, quiz_id, question_id, mooclet_id):
     '''
     create new explanation version
     '''
@@ -255,7 +294,7 @@ def explanation_create(request, mooclet_id):
         return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
 
-def explanation_modify(request, explanation_id):
+def explanation_modify(request, quiz_id, question_id, explanation_id):
     '''
     modify an explanation version
     '''
@@ -281,36 +320,43 @@ def explanation_modify(request, explanation_id):
         return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
 
-def collaborator_request(request):
-    # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
-    # display session data, researcher sends their user id to instructor
-    # TODO optional instructor could create a passcode that might be required to access this view
-    # show additional info to confirm session data is correct
-
-    return render(request, 'engine/collaborator_request.html')
-
-
-def collaborator_create(request, quiz_id):
-    # TODO could add confirmation mechanism: after entering id, user info is given to confirm the user
-
-    course = Quiz.objects.get(pk=quiz_id).course
-
-    if request.method=='POST':
-        collaborator_form = CollaboratorForm(request.POST)
-        collaborator = collaborator_form.save(commit=False)
-        collaborator.course = course
-        collaborator.save()
-
-    collaborators = Collaborator.objects.filter(course=course)
-
+def question_detail(request, quiz_id, question_id):
+    '''
+    question home page
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=question_id)
     context = {
-            'collaborator_form':CollaboratorForm(),
-            'collaborators': collaborators
-        }
-    return render(request, 'engine/collaborator_create.html',context)
+        'quiz':quiz,
+        'question':question,
+    }
+    return render(request, 'engine/question_detail.html', context)
+
+
+def question_create(request, quiz_id, question_id):
+    '''
+    create a new question
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=answer_id)
+    context = {'question':question}
+    return render(request, 'engine/question_create.html', context)
+
+
+def question_modify(request, quiz_id, question_id):
+    '''
+    modify an existing question
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=answer_id)
+    context = {'question':question}
+    return render(request, 'engine/question_modify.html', context)
 
 
 def quiz_mooclets(request,quiz_id):
+    '''
+    list all mooclets (can be multiple types) for a quiz
+    '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     questions = quiz.question_set.all()
     answers = [[question.answer_set.order_by('_order')] for question in questions]
@@ -324,14 +370,13 @@ def quiz_mooclets(request,quiz_id):
     return render(request, 'engine/quiz_mooclets.html', context)
 
 
-# TODO separate view for creating mooclets?
-# def mooclet_create(request):
-#     if request.method == 'GET':
-#     elif request.method == 'POST':
     
 
-def mooclet_detail(request,mooclet_id):
-
+def mooclet_detail(request,quiz_id,mooclet_id):
+    '''
+    mooclet home page
+    '''
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
@@ -377,21 +422,65 @@ def mooclet_detail(request,mooclet_id):
         
 
         context = {
+            'quiz':quiz,
+            'mooclet':mooclet,
+            'versions':versions,
             'value_formgroups':formgroups,
             # 'value_tables':tablegroups,
-            'answer':answer,
+            
             'user_variables':user_variables,
             'instructor_variables':instructor_variables,
-            'versions':versions,
-            'mooclet':mooclet,
+
             # 'version_probabilities': zip(versions, probabilities),
         }
+
+        if mooclet.type == 'explanation':
+            context['answer'] = answer
+
+
         return render(request, 'engine/mooclet_detail.html',context)
 
     elif request.method == 'POST':
 
         # TODO figure out which form corresponds to which value/explanation/variable
         pass
+
+def mooclet_create(request,quiz_id):
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    if request.method=='GET':
+
+        url = request.GET['next']
+        context = {
+            'quiz':quiz,
+            'url':url,
+        }
+        return render(request, 'engine/mooclet_create.html',context)
+    elif request.method=='POST':
+        pass
+
+def mooclet_create(request, quiz_id):
+    '''
+    create a new mooclet
+    '''
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+
+    if request.method == 'GET':
+        url = request.GET['next']
+        mooclet_form = MoocletForm()
+
+        context = {
+            quiz:'quiz',
+            url:'url',
+        }
+
+        return render(request, 'engine/mooclet_create.html', context)
+
+
+    elif request.method == 'POST':
+        mooclet_form = MoocletForm(request.POST)
+        mooclet = mooclet_form.save()
+        url = request.POST['next']
+        return redirect(url)
 
 
 def mooclet_modify_version_values(request, mooclet_id):
@@ -456,56 +545,51 @@ def mooclet_modify_version_values(request, mooclet_id):
                 form = VersionValueForm(request.POST, instance=value, prefix=prefix)
                 
                 value = form.save(commit = False)
-                print value
-                print value.id
-                print value.value
                 value = value.save()
                 # print 'value for version {} and variable {} = {}'.format(version.pk,variable.pk,value.value)
 
         return redirect('engine:mooclet_modify_version_values',mooclet_id=mooclet.pk)
 
 
-def mooclet_simulate_probabilities(request, mooclet_id):
+def mooclet_simulate_probabilities(request, quiz_id, mooclet_id):
     # #simulate policy and provide approximate likelihood
-    mooclet = Mooclet.objects.get(pk=mooclet_id)
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     versions = mooclet.version_set.all()
     mooclet_context = {'mooclet': mooclet}
+    #TODO indicate N
     #create a dict to count the number of times each version is picked
     version_counts = {unicode(version): 0 for version in versions}
-    print version_counts
+
     #get versions 100 times and keep track of how often each is picked
-    for i in range(1, 100):
+    num_iterations = 100
+    for i in range(1, num_iterations):
         version = mooclet.get_version(mooclet_context)
         version = unicode(version)
-        print version
         version_counts[version] = version_counts[version] + 1
     versions = version_counts.keys()
     probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
     probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
     context = {
-        'version_probabilities': zip(versions, probabilities),
+        'quiz': quiz,
         'mooclet': mooclet,
+        'num_iterations': num_iterations,
+        'version_probabilities': zip(versions, probabilities),
     }
     return render(request, 'engine/mooclet_simulate_probabilities.html', context)
 
-def mooclet_list_values(request, mooclet_id):
-    mooclet = Mooclet.objects.get(pk=mooclet_id)
+
+def mooclet_list_values(request, quiz_id, mooclet_id):
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     values = []
-    for variable in mooclet.policy.variables.all():
-        for value in variable.get_data({'mooclet':mooclet}):
+    # for variable in mooclet.policy.variables.all():
+    for variable in Variable.objects.all():
+        for value in variable.get_data({'quiz':quiz, 'mooclet':mooclet}):
             values.append(value)
-    # tablegroups = []
-    # for version in versions:
-    #     tablerow = []
-    #     for variable in user_variables:
-    #         value = Value.objects.filter(object_id=version.id, variable=variable).last()#.value
-    #         if value:
-    #             cell = value.value
-    #         else:
-    #             cell = None
-    #         tablerow.append(cell)
-    #     tablegroups.append(tablerow)
+
     context = {
+        'quiz':quiz,
         'mooclet':mooclet,
         'values':values
     }
