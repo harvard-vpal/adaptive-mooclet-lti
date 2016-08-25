@@ -102,7 +102,7 @@ class Variable(models.Model):
     # policy_relevance2 = [student_judgements, instructor_judgements]
 
     def __unicode__(self):
-        return self.display_name
+        return self.display_name or self.name
 
     @property
     def object_name(self):
