@@ -1,13 +1,15 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_mooclet.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
 Modify/Add Versions of Explanations to be randomly shown after each Answer
 {% endblock title %}
 
-{% block nav %}
-{% include "engine/nav_back_to_quiz.html" %}
-{% endblock nav %}
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Explanation list" ""%}
+{% endblock breadcrumbs %}
 
 {% block body %}
 

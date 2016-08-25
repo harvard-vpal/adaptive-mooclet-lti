@@ -3,18 +3,19 @@
 {% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
-Modify Question Text &amp; Answers
+Create/Modify Question Text &amp; Answers
 {% endblock title %}
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Modify Question" "" %}
+	{% breadcrumb "Quiz update" "" %}
 {% endblock breadcrumbs %}
 
 {% block body %}
 
 <form method="post">
-	<h3>Question Name</h3>
+	<h3>Quiz Name</h3>
+	{{quiz_form.as_p}}
 
 	{{question_form.as_p}}
 
@@ -29,4 +30,3 @@ Modify Question Text &amp; Answers
 </form>
 
 {% endblock %}
-

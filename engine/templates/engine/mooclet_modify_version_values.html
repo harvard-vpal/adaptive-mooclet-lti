@@ -1,14 +1,16 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_mooclet.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 {% load custom_tags %}
 
 {% block title %}
 Change policy variable values associated with MOOClet versions
 {% endblock title %}
 
-{% block nav %}
-{% include "engine/nav_back_to_mooclet.html" %}
-{% endblock nav %}
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Modify version values" "" %}
+{% endblock breadcrumbs %}
 
 {% block body %}
 	

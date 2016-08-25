@@ -139,6 +139,16 @@ def collaborator_create(request, quiz_id):
 
 def quiz_update(request, quiz_id):
     '''
+    Modify quiz info (name)
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    if request.method == 'GET':
+        # set initial value for use_qualtrics checkbox
+        use_qualtrics = True
+        quiz_form = QuizForm(instance=quiz, initial={'use_qualtrics':use_qualtrics})
+
+def old_quiz_update(request, quiz_id):
+    '''
     displays a form to collect question, answers and explanations
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
@@ -236,13 +246,14 @@ def quiz_update(request, quiz_id):
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
 
-def answer_detail(request, quiz_id, answer_id):
+def answer_detail(request, quiz_id, question_id, answer_id):
     '''
     Answer home page; can add explanation mooclets here
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=question_id)
     answer = get_object_or_404(Answer, pk=answer_id)
-    question = answer.question
+
     context = {
         'quiz': quiz,
         'question': question,
@@ -250,11 +261,48 @@ def answer_detail(request, quiz_id, answer_id):
     }
     return render(request, 'engine/answer_detail.html', context)
 
-def answer_create(request, quiz_id, answer_id):
-    pass
+def answer_create(request, quiz_id, question_id):
+    '''
+    create explanations for a single question
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=question_id)
 
-def answer_modify(request, quiz_id, answer_id):
-    pass
+    if request.method == 'GET':
+        answer_form = AnswerForm()
+        context = {
+            'quiz': quiz,
+            'question': question,
+            'answer_form': answer_form,
+        }
+        return render(request, 'engine/answer_create.html', context)
+
+
+    elif request.method == 'POST':
+        answer_form = AnswerForm(requset.POST)
+        answer = answer_form.save()
+        return redirect('engine:question_detail', quiz_id=quiz.pk, question_id=question.pk)
+
+
+def answer_modify(request, quiz_id, question_id, answer_id):
+    '''
+    modify text of answer 
+    '''
+    quiz = get_object_or_404(Answer, pk=quiz_id)
+    question = get_object_or_404(Answer, pk=question_id)
+    answer = get_object_or_404(Answer, pk=answer_id)
+    if request.method == 'GET':
+        answer_form = AnswerForm(instance=answer)
+        context = {
+            'quiz': quiz,
+            'question': question,
+            'answer': answer,
+            'answer_form': answer_form,
+        }
+        return render(request, 'engine/answer_modify.html', context)
+
+    elif request.method == 'POST':
+        pass
 
 
 def explanation_list(request, quiz_id, question_id):
@@ -333,13 +381,16 @@ def question_detail(request, quiz_id, question_id):
     return render(request, 'engine/question_detail.html', context)
 
 
-def question_create(request, quiz_id, question_id):
+def question_results(request, quiz_id, question_id):
+    return HttpResponse('TBD')
+
+
+def question_create(request, quiz_id):
     '''
     create a new question
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
-    question = get_object_or_404(Question, pk=answer_id)
-    context = {'question':question}
+    context = {'quiz':quiz}
     return render(request, 'engine/question_create.html', context)
 
 
@@ -370,18 +421,26 @@ def quiz_mooclets(request,quiz_id):
     return render(request, 'engine/quiz_mooclets.html', context)
 
 
-    
-
 def mooclet_detail(request,quiz_id,mooclet_id):
     '''
     mooclet home page
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+
+    # look up mooclet type and identify associated parent object
+
+    # object class that the mooclet is attached to
+    parent_content_type = mooclet.type.content_type 
+    # content type name tells us name of get param to expect
+    parent_content_id = int(request.GET[parent_content_type.name])
+    parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=parent_content_id) 
+
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
     instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct, is_user_variable=False).all()
     user_variables = mooclet.policy.variables.filter(content_type=Version_ct, is_user_variable=True).all()
+    
     #group the variables by if they are user variables
     # instructor_variables = []
     # for variable in variables:
@@ -409,7 +468,6 @@ def mooclet_detail(request,quiz_id,mooclet_id):
             forms = []
             for variable in instructor_variables:
                 value = Value.objects.filter(object_id=version.id, variable=variable).last()
-
                                   
                 # TODO set auto_id to label forms in form parameters?
                 if value:
@@ -434,9 +492,11 @@ def mooclet_detail(request,quiz_id,mooclet_id):
             # 'version_probabilities': zip(versions, probabilities),
         }
 
-        if mooclet.type == 'explanation':
-            context['answer'] = answer
+        # add mooclet context
+        context[parent_content_type.name] = parent_content
 
+        # if mooclet.type == 'explanation':
+        #     context['answer'] = answer
 
         return render(request, 'engine/mooclet_detail.html',context)
 
@@ -445,18 +505,6 @@ def mooclet_detail(request,quiz_id,mooclet_id):
         # TODO figure out which form corresponds to which value/explanation/variable
         pass
 
-def mooclet_create(request,quiz_id):
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    if request.method=='GET':
-
-        url = request.GET['next']
-        context = {
-            'quiz':quiz,
-            'url':url,
-        }
-        return render(request, 'engine/mooclet_create.html',context)
-    elif request.method=='POST':
-        pass
 
 def mooclet_create(request, quiz_id):
     '''
@@ -465,26 +513,40 @@ def mooclet_create(request, quiz_id):
     quiz = get_object_or_404(Quiz,pk=quiz_id)
 
     if request.method == 'GET':
-        url = request.GET['next']
-        mooclet_form = MoocletForm()
 
+        # look up mooclet type and identify associated parent object
+        mooclet_type = get_object_or_404(MoocletType, name=request.GET['type'])
+
+
+        # object class that the mooclet is attached to
+        parent_content_type = mooclet.content_type 
+        # content type name tells us name of get param to expect
+        parent_content_id = request.GET[parent_content.name]
+        parent_content = ContentType.get_object_for_this_type(pk=parent_content_id) 
+
+
+        mooclet_form = MoocletForm(initial={'type':mooclet_type})
         context = {
-            quiz:'quiz',
-            url:'url',
+            'quiz':quiz,
+            'mooclet_form':mooclet_form,
         }
-
         return render(request, 'engine/mooclet_create.html', context)
-
 
     elif request.method == 'POST':
         mooclet_form = MoocletForm(request.POST)
         mooclet = mooclet_form.save()
-        url = request.POST['next']
-        return redirect(url)
+        prev_url = request.POST['prev']
+        return redirect(prev_url)
 
 
-def mooclet_modify_version_values(request, mooclet_id):
+def mooclet_modify_version_values(request, **kwargs):
+
+    mooclet_id = kwargs['mooclet_id']
+    quiz_id = kwargs['quiz_id']
+
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
     instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct).all()
@@ -520,6 +582,7 @@ def mooclet_modify_version_values(request, mooclet_id):
 
        
         context = {
+            'quiz':quiz,
             'mooclet':mooclet,
             'value_formgroups':formgroups,
             # 'value_tables':tablegroups,
@@ -528,6 +591,12 @@ def mooclet_modify_version_values(request, mooclet_id):
             'instructor_variables':instructor_variables,
             'versions':versions,
         }
+
+        if 'question' in kwargs:
+            content['question'] = get_object_or_404(Question,pk=kwargs['question'])
+        if 'answer' in kwargs:
+            content['answer'] = get_object_or_404(Answer,pk=kwargs['answer'])
+
         return render(request, 'engine/mooclet_modify_version_values.html',context)
 
     elif request.method == 'POST':

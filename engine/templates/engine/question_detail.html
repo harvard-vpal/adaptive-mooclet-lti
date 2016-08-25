@@ -1,14 +1,16 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_question.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
 Question Manager
 {% endblock title %}
 
-
+{% comment %}
 {% block nav %}
-{% include "engine/nav_back_to_quiz.html" %}
+{% include "engine/nav_back_to_quiz.html" %}	
 {% endblock nav %}
+{% endcomment %}
 
 {% block body %}
 
@@ -20,20 +22,23 @@ Question Manager
 	<p> Question: {{question.text}}</p>
 	<ul>
 	{% for answer in question.answer_set.all %}
-		<li><a href="{% url 'engine:answer_detail' quiz_id=quiz.pk answer_id=answer.pk %}">Answer: {{answer}}</a></li>
+		<li><a href="{% url 'engine:answer_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk %}">Answer: {{answer}}</a></li>
 	{% endfor %}
-	<li><i><a href="{% url 'engine:answer_create' quiz_id=quiz.pk%} ">Create new answer</a></i></li>
+	<li><i><a href="{% url 'engine:answer_create' quiz_id=quiz.pk question_id=question.pk%} ">Create new answer</a></i></li>
 	</ul>
 </div>
 
+{% comment %}
 <div class="section">
 <h2> Manage question </h2>
 	<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Create/Edit Text of Question and Answer</a></p>
-</div>
+</div>	
+{% endcomment %}
+
 
 <div class="section">
 <h2> Results and Analytics </h2>
-
+<a href="{% url 'engine:question_results' quiz_id=quiz.pk question_id=question.pk %}">View question-level results</a>
 
 
 	{# <p> <a href="#">Edit adaptive policy</a></p> #}

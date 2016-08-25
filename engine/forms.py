@@ -17,7 +17,7 @@ class QuizForm(forms.ModelForm):
 	use_qualtrics = forms.BooleanField(required=False, label="Keep checked as default (use Qualtrics template)")
 	class Meta:
 		model = Quiz
-		fields = ['name']
+		fields = ['name', 'url']
 
 class QuestionForm(forms.ModelForm):
 	'''
@@ -40,7 +40,7 @@ class AnswerForm(forms.ModelForm):
 		model = Answer
 		fields = ['text', 'correct']
 		widgets = {
-			'text': forms.widgets.TextInput,
+			'text': forms.Textarea(attrs={'rows':3}),
 		}
 
 class ExplanationForm(forms.ModelForm):

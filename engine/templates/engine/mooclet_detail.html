@@ -1,15 +1,11 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_mooclet.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 {% load custom_tags %}
 
 {% block title %}
 Interact with MOOClet
 {% endblock title %}
-
-{% block nav %}
-{% include "engine/nav_back_to_quiz.html" %}
-{% endblock nav %}
-
 
 {% block body %}
 
@@ -48,6 +44,15 @@ Interact with MOOClet
 	{% comment %}
 	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
 	{% endcomment %}
+
+	{% if mooclet.type == "explanation" %}
+		
+		<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk question_id=answer.question.pk %}">Create/Edit Alternative Versions of Explanation-MOOClets</a></p>
+
+		<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See associated Explanation-MOOClets for this question </a></p>
+	
+
+	{% endif %}
 
 	</ul>
 </div>

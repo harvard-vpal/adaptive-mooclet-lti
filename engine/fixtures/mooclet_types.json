@@ -1,0 +1,20 @@
+[
+  {
+    "model": "engine.mooclettype",
+    "pk": 1,
+    "fields": {
+      "name": "explanation",
+      "display_name": "Explanation-MOOClet",
+      "content_type": ["engine", "answer"]
+    }
+  },
+  {
+    "model": "engine.mooclettype",
+    "pk": 2,
+    "fields": {
+      "name": "next_question",
+      "display_name": "NextQuestion-MOOClet",
+      "content_type": ["engine", "quiz"]
+    }
+  }
+]

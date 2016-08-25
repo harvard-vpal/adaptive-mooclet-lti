@@ -1,14 +1,16 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_mooclet.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 {% load custom_tags %}
 
 {% block title %}
 Simulated Version Probabilities
 {% endblock title %}
 
-{% block nav %}
-{% include "engine/nav_back_to_mooclet.html" %}
-{% endblock nav %}
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Simulate version probabilities" "" %}
+{% endblock breadcrumbs %}
 
 {% block body %}
 

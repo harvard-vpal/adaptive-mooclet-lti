@@ -1,14 +1,16 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_answer.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 
 
 {% block title %}
 Create explanation
 {% endblock title %}
 
-{% block nav %}
-{% include "engine/nav_back_to_explanations.html" %}
-{% endblock nav %}
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Create explanation" "engine:create_explanation" %}
+{% endblock breadcrumbs %}
 
 {% block body %}
 

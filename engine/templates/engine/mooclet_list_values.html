@@ -1,5 +1,6 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_mooclet.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 {% load custom_tags %}
 
 {% block head %}
@@ -11,9 +12,10 @@
 Variables for MOOClet
 {% endblock title %}
 
-{% block nav %}
-{% include "engine/nav_back_to_mooclet.html" %}
-{% endblock nav %}
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Values" "engine:mooclet_list_values" quiz.pk mooclet.pk %}
+{% endblock breadcrumbs %}
 
 {% block body %}
 

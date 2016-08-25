@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'ordered_model',
     'bootstrap3',
+    'django_bootstrap_breadcrumbs',
     # 'crispy_forms',
 
     ## core functions

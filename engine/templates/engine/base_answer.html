@@ -1,0 +1,8 @@
+{% extends "engine/base_question.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
+{% endblock breadcrumbs %}

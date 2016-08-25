@@ -1,12 +1,10 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_quiz.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
 Quiz Manager
 {% endblock title %}
-
-{% block nav %}
-{% endblock nav %}
 
 {% block body %}
 
@@ -16,11 +14,11 @@ Quiz Manager
 <!-- create quiz option -->
 <!-- <h2> Edit quiz and explanations </h2> -->
 
-	<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Edit Question ordering</a></p>
-
-	{# <p> <a href="#">Edit adaptive policy</a></p> #}
-		
-	<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See all associated adaptive components for this quiz </a></p>
+	<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Edit Quiz info</a></p>
+	
+	{% comment %}
+	<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See all associated adaptive components for this quiz </a></p>	
+	{% endcomment %}
 
 	<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Invite Collaborators to suggest and edit adaptive quiz components.</a></p>
 
@@ -39,9 +37,9 @@ Quiz Manager
 <div class"section">
 <h2> Adaptive components </h2>
 	{% if answer.mooclet_next_question %}
-		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk mooclet_id=answer.mooclet_question_order.pk %}">Question sequencing MOOClet</a>
+		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk mooclet_id=answer.mooclet_next_question.pk %}">Question sequencing MOOClet</a>
 	{% else %}
-		<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk %}?next={% url 'engine:quiz_detail' quiz_id=quiz.pk %}">Add a question ordering MOOClet</a>
+		<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk %}?type=explanation&quiz_id={{quiz.pk}}">Add a question ordering MOOClet</a>
 	{% endif %}
 </div>
 

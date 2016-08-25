@@ -12,15 +12,22 @@ import policies
 #### Generalized mooclet models ####
 ####################################
 
+class MoocletType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    display_name = models.CharField(max_length=200)
+    content_type = models.ForeignKey(ContentType,null=True)
+
+    def __unicode__(self):
+        return self.display_name
 
 class Mooclet(models.Model):
     name = models.CharField(max_length=100,default='')
+    type = models.ForeignKey(MoocletType, null=True)
     policy = models.ForeignKey('Policy',blank=True,null=True)
     type_choices = (
         ('explanation', 'explanation'),
         ('next_question', 'next_question'),
     )
-    type = models.CharField(max_length=100,choices=type_choices)
 
     def __unicode__(self):
         return "Mooclet: {}".format(self.id)
@@ -87,7 +94,7 @@ class Policy(models.Model):
 class Variable(models.Model):
     name = models.CharField(max_length=100)
     is_user_variable = models.BooleanField(default=False)
-    content_type = models.ForeignKey(ContentType,null=True) # Lets you reference a table.  e.g. if content_type = Version, it's associated with a Version. Can have multiple values associated with it.
+    content_type = models.ForeignKey(ContentType,null=True) # Lets you reference a table. e.g. if content_type = Version, it's associated with a Version. Can have multiple values associated with it.
     description = models.TextField(default='')
     # TODO variable type "classes"
     # policy_relevance = [vpal_researcher, harvard_researcher, course_team, external_researcher]
@@ -254,7 +261,7 @@ class Answer(models.Model):
     question = models.ForeignKey(Question)
     text = models.TextField('answer text',default='')
     correct = models.BooleanField()
-    mooclet_explanation = models.ForeignKey(Mooclet,null=True) # explanation mooclet
+    mooclet_explanation = models.ForeignKey(Mooclet,blank=True,null=True) # explanation mooclet
 
     class Meta:
         order_with_respect_to = 'question'

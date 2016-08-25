@@ -1,22 +1,24 @@
-{% extends "engine/base_mooclet.html" %}
+{% extends "engine/base_question.html" %}
 {% load staticfiles %}
 {% load django_bootstrap_breadcrumbs %}
 
+
 {% block title %}
-Edit explanation
+Create answer
 {% endblock title %}
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Modify Explanation" "" %}
+	{% breadcrumb "Create answer" "" %}
 {% endblock breadcrumbs %}
 
 {% block body %}
 
 <form method="post">
-	{{explanation_form.as_p}}
+    {{ answer_form.as_p }}
     <input type="submit" value="Save" />
 </form>
+
 
 {% endblock %}
 

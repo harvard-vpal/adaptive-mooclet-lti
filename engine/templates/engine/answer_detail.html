@@ -1,21 +1,14 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_answer.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
 Answer Manager
 {% endblock title %}
 
-{% block nav %}
-{% include "engine/nav_back_to_question.html" %}
-{% endblock nav %}
-
 {% block body %}
 
 <p> Use this page to Manage Answer. </p>
-
-
-<div class="section-links">
-
 
 <div class="section-summary">
 	<h2> Answer properties </h2>
@@ -23,34 +16,21 @@ Answer Manager
 	<p> Answer text: {{answer.text}}</p>
 </div>
 
+<div class="section-links">
+	<h2> Manage answer </h2>
+	<p> <a href="{% url 'engine:answer_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk %}">Edit Text of Answer</a></p>
+</div>
+
 <div class="section">
 <h2> Adaptive components </h2>
 	{% if answer.mooclet_explanation %}
-		<p><a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk mooclet_id=answer.mooclet_explanation.pk %}?next={% url 'engine:answer_detail' quiz_id=quiz.pk answer_id=answer.pk %}">Explanation MOOClet</a><p>
+		<p><a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk mooclet_id=answer.mooclet_explanation.pk %}?type=explanation&answer={{answer.pk}}">Manage explanation MOOClet</a><p>
+
 	{% else %}
-		<p><a href="{% url 'engine:mooclet_create' %}?next={% url 'engine:answer_detail' quiz_id=quiz.pk answer_id=answer.pk %}">Add explanation mooclet to answer</a><p>
+		<p><a href="{% url 'engine:mooclet_create' %}?type=explanation&answer={{answer.pk}}">Add explanation mooclet to answer</a><p>
 	{% endif %}
 
-		<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk question_id=question.pk %}">Create/Edit Alternative Versions of Explanation-MOOClets</a></p>
-
-	<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See associated Explanation-MOOClets for this question </a></p>
-	
-
 </div>
-
-<!-- create quiz option -->
-<h2> Links </h2>
-
-	<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Edit Text of Answer</a></p>
-
-	<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk question_id=question.pk %}">Edit Alternative Versions of Explanation-MOOClets</a></p>
-
-	<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See associated Explanation-MOOClets for this question </a></p>
-
-	{# <p> <a href="#">Edit adaptive policy</a></p> #}
-</div>
-
-
 
 {% comment %}
 <div>
