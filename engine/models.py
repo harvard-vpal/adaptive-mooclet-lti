@@ -152,6 +152,9 @@ class Value(models.Model):
     value = models.FloatField()
     timestamp = models.DateTimeField(null=True,auto_now=True)
 
+    def __unicode__(self):
+        return "{}={}, {}={}".format(self.variable.name, self.value, self.variable.content_type.name ,self.object_id) 
+
     def get_object_content(self,content_object_name):
         '''
         retrieve the related content object associated with the Value
