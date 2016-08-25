@@ -715,7 +715,7 @@ def mooclet_list_values(request, **kwargs):
     values = []
     # for variable in mooclet.policy.variables.all():
     for variable in Variable.objects.all():
-        for value in variable.get_data({'quiz':quiz, 'mooclet':mooclet}):
+        for value in variable.get_data({'quiz':quiz, 'answer':answer, 'mooclet':mooclet}):
             values.append(value)
 
     context = {
