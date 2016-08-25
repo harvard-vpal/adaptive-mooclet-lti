@@ -741,7 +741,7 @@ def mooclet_results(request, **kwargs):
     for version in versions:
         version_values = []
         for variable in variables:
-            value = variable.get_data({'quiz':quiz, 'mooclet':mooclet}).last()
+            value = variable.get_data({'quiz':quiz, 'version':version }).last()
             if value:
                 version_values.append(value.value)
             else:
