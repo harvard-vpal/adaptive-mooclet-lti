@@ -17,5 +17,5 @@ def weighted_random(variables,context):
 	weights = [weight.value for weight in weight_data]
 	return choice(versions, p=weights)
 
-def thompson_sampling(data):
-	pass
+def thompson_sampling_placeholder(variables,context):
+	return choice(context['mooclet'].version_set.all())
