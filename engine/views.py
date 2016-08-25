@@ -73,6 +73,7 @@ def launch(request, quiz_id):
     if external_url:
         extra_params = {
             # pass in django user_id as a GET parameter to survey
+            'quiz_id':quiz_id,
             'user_id':request.user.id,
             'quizsource': 'preview' if display_preview(request) else 'student',
         }
