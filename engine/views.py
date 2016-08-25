@@ -421,7 +421,7 @@ def question_results(request, quiz_id, question_id):
         'variables': variables,
         'values_matrix':values_matrix,
     }
-    return render(request, 'engine/mooclet_results.html',context)
+    return render(request, 'engine/quiz_results.html',context)
 
 
 

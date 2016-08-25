@@ -1,4 +1,4 @@
-{% extends "engine/base_mooclet.html" %}
+{% extends "engine/base_question.html" %}
 {% load staticfiles %}
 {% load django_bootstrap_breadcrumbs %}
 {% load custom_tags %}
@@ -9,12 +9,12 @@
 {% endblock head %}
 
 {% block title %}
-MOOClet results
+Quiz results
 {% endblock title %}
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Version results" "" %}
+	{% breadcrumb "Quiz results" "" %}
 {% endblock breadcrumbs %}
 
 {% block body %}
@@ -22,7 +22,7 @@ MOOClet results
 <table id="myTable">
 <thead>
 <tr>
-	<th>Version</th>
+	<th>Answer</th>
 	{% for variable in variables %}
 		<th> {{variable.name}} </th>
 	{% endfor %}
@@ -30,7 +30,7 @@ MOOClet results
 </thead>
 
 <tbody>
-{% for version in versions %}
+{% for answer in answers %}
 	<tr>
 	<td>{{version}}
 	{% for variable in variables %}
