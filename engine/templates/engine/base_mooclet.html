@@ -11,7 +11,7 @@
 	{% breadcrumb "Question" "engine:question_detail" quiz.pk question.pk %}
 {% endif %}
 {% if answer %}
-	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk %}
+	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
 {% endif %}
 
 {% breadcrumb mooclet.type.display_name "engine:mooclet_detail" quiz.pk question.pk answer.pk mooclet.pk %}
