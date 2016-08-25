@@ -394,7 +394,35 @@ def question_detail(request, quiz_id, question_id):
 
 
 def question_results(request, quiz_id, question_id):
-    return HttpResponse('TBD')
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    question = get_object_or_404(Question,pk=question_id)
+
+    answers = question.answer_set.all()
+
+    # determine appropriate variables
+    variables = [v for v in Variable.objects.all() if v.content_type.name == 'answer']
+
+    values_matrix = []
+    # for variable in mooclet.policy.variables.all():
+    for answer in answers:
+        answer_values = []
+        for variable in variables:
+            value = variable.get_data({'quiz':quiz, 'question':question}).last()
+            if value:
+                answer_values.append(value.value)
+            else:
+                answer_values.append('n/a')
+        values_matrix.append(answer_values)
+
+    context = {
+        'quiz':quiz,
+        'question':question,
+        'answers':answers,
+        'variables': variables,
+        'values_matrix':values_matrix,
+    }
+    return render(request, 'engine/mooclet_results.html',context)
+
 
 
 def question_create(request, quiz_id):

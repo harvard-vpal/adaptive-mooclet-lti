@@ -39,7 +39,8 @@ Quiz Manager
 	{% if answer.mooclet_next_question %}
 		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk mooclet_id=answer.mooclet_next_question.pk %}">Question sequencing MOOClet</a>
 	{% else %}
-		<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk %}?type=next_question&quiz={{quiz.pk}}">Add a question ordering MOOClet</a>
+		{#<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk %}?type=next_question&quiz={{quiz.pk}}">Add a question ordering MOOClet</a>#}
+		<a href="#">Add a question ordering MOOClet</a>
 	{% endif %}
 </div>
 
