@@ -407,7 +407,7 @@ def question_results(request, quiz_id, question_id):
     for answer in answers:
         answer_values = []
         for variable in variables:
-            value = variable.get_data({'quiz':quiz, 'question':question}).last()
+            value = variable.get_data({'quiz':quiz, 'question':question, 'answer': answer}).last()
             if value:
                 answer_values.append(value.value)
             else:
