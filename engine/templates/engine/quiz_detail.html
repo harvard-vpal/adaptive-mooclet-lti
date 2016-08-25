@@ -14,7 +14,7 @@ Quiz Manager
 <!-- create quiz option -->
 <!-- <h2> Edit quiz and explanations </h2> -->
 
-	<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Edit Quiz info</a></p>
+	<p> <a href="{% url 'engine:quiz_modify' quiz_id=quiz.pk %}">Edit Quiz info</a></p>
 	
 	{% comment %}
 	<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See all associated adaptive components for this quiz </a></p>	
@@ -39,7 +39,7 @@ Quiz Manager
 	{% if answer.mooclet_next_question %}
 		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk mooclet_id=answer.mooclet_next_question.pk %}">Question sequencing MOOClet</a>
 	{% else %}
-		<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk %}?type=explanation&quiz_id={{quiz.pk}}">Add a question ordering MOOClet</a>
+		<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk %}?type=next_question&quiz={{quiz.pk}}">Add a question ordering MOOClet</a>
 	{% endif %}
 </div>
 
@@ -56,7 +56,7 @@ Quiz Manager
 <h2> Student's View of Question</h2>
 
 	<!-- preview quiz -->
-	<iframe src="{% url 'engine:quiz_display' quiz_id=quiz.pk %}" height='400px' width='80%'>
+	<iframe src="{% url 'engine:launch' quiz_id=quiz.pk %}" height='400px' width='80%'>
 </div>
 
 

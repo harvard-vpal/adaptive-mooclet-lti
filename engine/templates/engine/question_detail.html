@@ -31,7 +31,7 @@ Question Manager
 {% comment %}
 <div class="section">
 <h2> Manage question </h2>
-	<p> <a href="{% url 'engine:quiz_update' quiz_id=quiz.pk %}">Create/Edit Text of Question and Answer</a></p>
+	<p> <a href="{% url 'engine:quiz_modify' quiz_id=quiz.pk %}">Create/Edit Text of Question and Answer</a></p>
 </div>	
 {% endcomment %}
 
@@ -51,7 +51,7 @@ Question Manager
 	<h2> Student's View of Question</h2>
 
 	<!-- preview quiz -->
-	<iframe src="{% url 'engine:quiz_display' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
+	<iframe src="{% url 'engine:launch' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
 </div>
 {% endcomment %}
 

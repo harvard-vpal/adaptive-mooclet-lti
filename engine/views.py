@@ -55,7 +55,7 @@ def quiz_create_url(request):
 
 #### UTILITY VIEWS ####
 
-def quiz_display(request, quiz_id):
+def launch(request, quiz_id):
     '''
     Redirect to proper mode of displaying quiz, based on urls present in quiz model fields
     '''
@@ -137,7 +137,7 @@ def collaborator_create(request, quiz_id):
     return render(request, 'engine/collaborator_create.html',context)
 
 
-def quiz_update(request, quiz_id):
+def quiz_modify(request, quiz_id):
     '''
     Modify quiz info (name)
     '''
@@ -146,8 +146,19 @@ def quiz_update(request, quiz_id):
         # set initial value for use_qualtrics checkbox
         use_qualtrics = True
         quiz_form = QuizForm(instance=quiz, initial={'use_qualtrics':use_qualtrics})
+        context = {
+            'quiz':quiz,
+            'quiz_form': quiz_form,
+        } 
 
-def old_quiz_update(request, quiz_id):
+        return render(request, 'engine/quiz_modify.html',context)
+    elif request.method == 'POST':
+        quiz_form = QuizForm(request.POST)
+        quiz = quiz_form.save()
+        return redirect('engine:quiz_detail', quiz_id=quiz_id)
+
+
+def old_quiz_modify(request, quiz_id):
     '''
     displays a form to collect question, answers and explanations
     '''
@@ -188,7 +199,7 @@ def old_quiz_update(request, quiz_id):
             # 'answer_formgroups':answer_formgroups,
         }
 
-        return render(request, 'engine/quiz_update.html', context)
+        return render(request, 'engine/quiz_modify.html', context)
 
     # handle form submission/processing
     elif request.method == 'POST':
@@ -506,23 +517,23 @@ def mooclet_detail(request,quiz_id,mooclet_id):
         pass
 
 
-def mooclet_create(request, quiz_id):
+def mooclet_create(request, **kwargs):
     '''
     create a new mooclet
     '''
-    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+
 
     if request.method == 'GET':
 
         # look up mooclet type and identify associated parent object
         mooclet_type = get_object_or_404(MoocletType, name=request.GET['type'])
 
-
         # object class that the mooclet is attached to
-        parent_content_type = mooclet.content_type 
+        parent_content_type = mooclet_type.content_type
         # content type name tells us name of get param to expect
-        parent_content_id = request.GET[parent_content.name]
-        parent_content = ContentType.get_object_for_this_type(pk=parent_content_id) 
+        parent_content_id = request.GET[parent_content_type.name]
+        parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=parent_content_id) 
 
 
         mooclet_form = MoocletForm(initial={'type':mooclet_type})
@@ -530,6 +541,10 @@ def mooclet_create(request, quiz_id):
             'quiz':quiz,
             'mooclet_form':mooclet_form,
         }
+        if 'question' in kwargs:
+            content['question'] = get_object_or_404(Question,pk=kwargs['question'])
+        if 'answer' in kwargs:
+            content['answer'] = get_object_or_404(Answer,pk=kwargs['answer'])
         return render(request, 'engine/mooclet_create.html', context)
 
     elif request.method == 'POST':

@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.conf.urls import url, include
 from django.contrib import admin
 from . import views
 
@@ -10,8 +10,7 @@ urlpatterns = [
     url(r'^lti/', include('lti.urls', namespace="lti")),
     url(r'^quiz/', include('quiz.urls', namespace="quiz")),
     url(r'^qualtrics/', include('qualtrics.urls', namespace="qualtrics")),
-    # url(r'^engine/', include('engine.urls', namespace="engine")),
+    url(r'^engine/', include('engine.urls', namespace="engine")),
     url(r'^api/', include('api.urls', namespace="api")),
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^engine/(?P<quiz_id>[0-9]+)/', include('engine.urls', namespace="engine")),
 ]

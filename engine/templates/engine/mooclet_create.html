@@ -8,11 +8,6 @@ Create New Mooclet
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	
-{% if mooclet.type == "explanation" %}
-	{% breadcrumb "Question" "engine:question_detail" question.pk %}
-	{% breadcrumb "Answer" "engine:answer_detail" answer.pk %}
-{% endif %}
 
 {% breadcrumb "Create Mooclet" "engine:create_mooclet" %}
 
@@ -24,13 +19,9 @@ Create New Mooclet
 {% endblock nav %}
 {% endcomment %}
 
-{% block breadcrumbs %}
-	
-{% endblock breadcrumbs %}
-
 {% block body %}
 
-<h2>subtitle</h2>
+
 
 <form method="post">
 

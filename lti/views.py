@@ -110,7 +110,7 @@ def launch(request,quiz_id):
         quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
         quiz_lti_parameters.save()
         
-        return redirect('engine:quiz_display', quiz_id=quiz.id)
+        return redirect('engine:launch', quiz_id=quiz.id)
 
 
 

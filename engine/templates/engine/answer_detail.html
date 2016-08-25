@@ -18,7 +18,7 @@ Answer Manager
 
 <div class="section-links">
 	<h2> Manage answer </h2>
-	<p> <a href="{% url 'engine:answer_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk %}">Edit Text of Answer</a></p>
+	<p> <a href="{% url 'engine:answer_modify' question_id=question.pk answer_id=answer.pk quiz_id=quiz.pk %}">Edit Text of Answer</a></p>
 </div>
 
 <div class="section">
@@ -37,7 +37,7 @@ Answer Manager
 	<h2> Student's View of Question</h2>
 
 	<!-- preview quiz -->
-	<iframe src="{% url 'engine:quiz_display' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
+	<iframe src="{% url 'engine:launch' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
 </div>
 {% endcomment %}
 
