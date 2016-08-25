@@ -43,7 +43,7 @@ def question(request, question_id):
 
             # Save selected answer and grade to database
             response = Response(
-                user=request.user,
+                user=request.user.pk,
                 answer=answer,
                 grade=grade,
             )
@@ -58,7 +58,7 @@ def answer(request, answer_id):
     self-hosted quiz: show explanation for answer and let student rate the explanation
     '''
     answer = Answer.objects.get(pk=answer_id)
-    mooclet = answer.mooclet
+    mooclet = answer.mooclet_explanation
 
     if request.method =='GET':
 
