@@ -38,9 +38,10 @@ Interact with MOOClet
 <div class="section-links">
 	<h2> Links </h2>
 	<ul>
-	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk mooclet_id=mooclet.pk %}">Simulate version probabilities</a></li>
-	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk mooclet_id=mooclet.pk %}"> Student variable results</a></li>
-	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk mooclet_id=mooclet.pk%}">Modify variables associated with versions and policies</a></li>
+	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Simulate version probabilities</a></li>
+	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View all mooclet data</a></li>
+	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View version results</a></li>
+	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Modify variables associated with versions and policies</a></li>
 	{% comment %}
 	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
 	{% endcomment %}

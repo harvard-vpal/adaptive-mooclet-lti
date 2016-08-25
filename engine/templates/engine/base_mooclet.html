@@ -5,7 +5,7 @@
 {% block breadcrumbs %}
 
 {% if quiz %}
-	{% breadcrumb "Quiz" "engine:quiz_detail" quiz.pk question.pk %}
+	{% breadcrumb "Quiz" "engine:quiz_detail" quiz.pk %}
 {% endif %}
 {% if question %}
 	{% breadcrumb "Question" "engine:question_detail" quiz.pk question.pk %}

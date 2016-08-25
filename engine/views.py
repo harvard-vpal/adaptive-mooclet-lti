@@ -433,20 +433,24 @@ def quiz_mooclets(request,quiz_id):
     return render(request, 'engine/quiz_mooclets.html', context)
 
 
-def mooclet_detail(request,quiz_id,mooclet_id):
+def mooclet_detail(request, **kwargs):
     '''
     mooclet home page
     '''
-    quiz = get_object_or_404(Quiz,pk=quiz_id)
-    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+    mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
+
+    question = get_object_or_404(Question,pk=kwargs['question_id'])
+    answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
 
     # look up mooclet type and identify associated parent object
 
     # object class that the mooclet is attached to
-    parent_content_type = mooclet.type.content_type 
+    parent_content_type = mooclet.type.content_type
     # content type name tells us name of get param to expect
-    parent_content_id = int(request.GET[parent_content_type.name])
-    parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=parent_content_id) 
+    # parent_content_id = int(request.GET[parent_content_type.name])
+    # parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=parent_content_id) 
+    parent_content = answer
 
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
@@ -467,27 +471,26 @@ def mooclet_detail(request,quiz_id,mooclet_id):
     if request.method == 'GET':
 
         # should recieve answer_id as GET parameter, if we are navigating from an answer context
-        answer = None
-        if 'answer_id' in request.GET:
-            answer = get_object_or_404(Answer, id=request.GET['answer_id'])
+        if 'answer_id' in kwargs:
+            answer = get_object_or_404(Answer, id=kwargs['answer_id'])
             request.session['answer_id'] = answer.pk
 
         # explanations = [version.explanation for version in mooclet.version_set.all()]
 
         # create m x n array of forms, where m (rows) is the number of versions and n (cols) is the number of variables
-        formgroups = []
-        for version in versions:
-            forms = []
-            for variable in instructor_variables:
-                value = Value.objects.filter(object_id=version.id, variable=variable).last()
+        # formgroups = []
+        # for version in versions:
+        #     forms = []
+        #     for variable in instructor_variables:
+        #         value = Value.objects.filter(object_id=version.id, variable=variable).last()
                                   
-                # TODO set auto_id to label forms in form parameters?
-                if value:
-                    form = VersionValueForm(instance=value)
-                else:
-                    form = VersionValueForm()
-                forms.append(form)      
-            formgroups.append(forms)
+        #         # TODO set auto_id to label forms in form parameters?
+        #         if value:
+        #             form = VersionValueForm(instance=value)
+        #         else:
+        #             form = VersionValueForm()
+        #         forms.append(form)      
+        #     formgroups.append(forms)
 
         
 
@@ -495,20 +498,25 @@ def mooclet_detail(request,quiz_id,mooclet_id):
             'quiz':quiz,
             'mooclet':mooclet,
             'versions':versions,
-            'value_formgroups':formgroups,
+
+            'answer':answer,
+            'question':question,
+
+            # 'value_formgroups':formgroups,
             # 'value_tables':tablegroups,
             
-            'user_variables':user_variables,
-            'instructor_variables':instructor_variables,
+            # 'user_variables':user_variables,
+            # 'instructor_variables':instructor_variables,
 
             # 'version_probabilities': zip(versions, probabilities),
         }
 
         # add mooclet context
-        context[parent_content_type.name] = parent_content
+        # context[parent_content_type.name] = parent_content
 
         # if mooclet.type == 'explanation':
         #     context['answer'] = answer
+
 
         return render(request, 'engine/mooclet_detail.html',context)
 
@@ -543,9 +551,9 @@ def mooclet_create(request, **kwargs):
             'mooclet_form':mooclet_form,
         }
         if 'question' in kwargs:
-            content['question'] = get_object_or_404(Question,pk=kwargs['question'])
+            content['question'] = get_object_or_404(Question,pk=kwargs['question_id'])
         if 'answer' in kwargs:
-            content['answer'] = get_object_or_404(Answer,pk=kwargs['answer'])
+            content['answer'] = get_object_or_404(Answer,pk=kwargs['answer_id'])
         return render(request, 'engine/mooclet_create.html', context)
 
     elif request.method == 'POST':
@@ -562,6 +570,8 @@ def mooclet_modify_version_values(request, **kwargs):
 
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
     quiz = get_object_or_404(Quiz,pk=quiz_id)
+    question = get_object_or_404(Question,pk=kwargs['question_id'])
+    answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
     
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
@@ -570,9 +580,9 @@ def mooclet_modify_version_values(request, **kwargs):
     if request.method == 'GET':
 
         # should recieve answer_id as GET parameter, if we are navigating from an answer context
-        answer = None
-        if 'answer_id' in request.GET:
-            answer = get_object_or_404(Answer, id=request.GET['answer_id'])
+        # answer = None
+        # if 'answer_id' in request.GET:
+        #     answer = get_object_or_404(Answer, id=request.GET['answer_id'])
 
 
         # explanations = [version.explanation for version in mooclet.version_set.all()]
@@ -602,16 +612,17 @@ def mooclet_modify_version_values(request, **kwargs):
             'mooclet':mooclet,
             'value_formgroups':formgroups,
             # 'value_tables':tablegroups,
+            'question':question,
             'answer':answer,
             # 'user_variables':user_variables,
             'instructor_variables':instructor_variables,
             'versions':versions,
         }
 
-        if 'question' in kwargs:
-            content['question'] = get_object_or_404(Question,pk=kwargs['question'])
-        if 'answer' in kwargs:
-            content['answer'] = get_object_or_404(Answer,pk=kwargs['answer'])
+        # if 'question' in kwargs:
+        #     content['question'] = get_object_or_404(Question,pk=kwargs['question'])
+        # if 'answer' in kwargs:
+        #     content['answer'] = get_object_or_404(Answer,pk=kwargs['answer'])
 
         return render(request, 'engine/mooclet_modify_version_values.html',context)
 
@@ -636,10 +647,12 @@ def mooclet_modify_version_values(request, **kwargs):
         return redirect('engine:mooclet_modify_version_values',mooclet_id=mooclet.pk)
 
 
-def mooclet_simulate_probabilities(request, quiz_id, mooclet_id):
+def mooclet_simulate_probabilities(request, **kwargs):
     # #simulate policy and provide approximate likelihood
-    quiz = get_object_or_404(Quiz,pk=quiz_id)
-    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+    mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+    question = get_object_or_404(Question,pk=kwargs['question_id'])
+    answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
     versions = mooclet.version_set.all()
     mooclet_context = {'mooclet': mooclet}
     #TODO indicate N
@@ -658,15 +671,17 @@ def mooclet_simulate_probabilities(request, quiz_id, mooclet_id):
     context = {
         'quiz': quiz,
         'mooclet': mooclet,
+        'question':question,
+        'answer':answer,
         'num_iterations': num_iterations,
         'version_probabilities': zip(versions, probabilities),
     }
     return render(request, 'engine/mooclet_simulate_probabilities.html', context)
 
 
-def mooclet_list_values(request, quiz_id, mooclet_id):
-    quiz = get_object_or_404(Quiz,pk=quiz_id)
-    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+def mooclet_list_values(request, **kwargs):
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+    mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
     values = []
     # for variable in mooclet.policy.variables.all():
     for variable in Variable.objects.all():
@@ -676,8 +691,39 @@ def mooclet_list_values(request, quiz_id, mooclet_id):
     context = {
         'quiz':quiz,
         'mooclet':mooclet,
+        'question':question,
+        'answer':answer,
         'values':values
     }
     return render(request, 'engine/mooclet_list_values.html',context)
-    
+
+def mooclet_results(request, **kwargs):
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+    mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
+
+    # determine appropriate variables
+    variables = [v for v in Variable.objects.all() if v.content_type.name == 'version']
+    versions = mooclet.version_set.all()
+    values_matrix = []
+    # for variable in mooclet.policy.variables.all():
+    for version in versions:
+        version_values = []
+        for variable in variables:
+            value = variable.get_data({'quiz':quiz, 'mooclet':mooclet}).last()
+            if value:
+                version_values.append(value.value)
+            else:
+                version_values.append('n/a')
+        values_matrix.append(version_values)
+
+    context = {
+        'quiz':quiz,
+        'mooclet':mooclet,
+        'question':question,
+        'answer':answer,
+        'versions': versions,
+        'variables': variables,
+        'values_matrix':values_matrix,
+    }
+    return render(request, 'engine/mooclet_results.html',context)
 
