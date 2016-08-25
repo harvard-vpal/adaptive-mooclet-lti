@@ -43,7 +43,7 @@ def question(request, question_id):
 
             # Save selected answer and grade to database
             response = Response(
-                user=request.user.pk,
+                user=request.user,
                 answer=answer,
                 grade=grade,
             )
