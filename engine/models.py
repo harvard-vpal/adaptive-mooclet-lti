@@ -93,6 +93,7 @@ class Policy(models.Model):
 
 class Variable(models.Model):
     name = models.CharField(max_length=100)
+    display_name = models.CharField(max_length=200,default='')
     is_user_variable = models.BooleanField(default=False)
     content_type = models.ForeignKey(ContentType,null=True) # Lets you reference a table. e.g. if content_type = Version, it's associated with a Version. Can have multiple values associated with it.
     description = models.TextField(default='')
@@ -101,7 +102,7 @@ class Variable(models.Model):
     # policy_relevance2 = [student_judgements, instructor_judgements]
 
     def __unicode__(self):
-        return self.name
+        return self.display_name
 
     @property
     def object_name(self):
