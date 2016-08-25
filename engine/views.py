@@ -682,6 +682,8 @@ def mooclet_simulate_probabilities(request, **kwargs):
 def mooclet_list_values(request, **kwargs):
     quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
     mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
+    question = get_object_or_404(Question,pk=kwargs['question_id'])
+    answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
     values = []
     # for variable in mooclet.policy.variables.all():
     for variable in Variable.objects.all():
@@ -698,8 +700,10 @@ def mooclet_list_values(request, **kwargs):
     return render(request, 'engine/mooclet_list_values.html',context)
 
 def mooclet_results(request, **kwargs):
-    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
     mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+    question = get_object_or_404(Question,pk=kwargs['question_id'])
+    answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
 
     # determine appropriate variables
     variables = [v for v in Variable.objects.all() if v.content_type.name == 'version']
