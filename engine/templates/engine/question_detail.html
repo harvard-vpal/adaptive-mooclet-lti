@@ -28,13 +28,10 @@ Question Manager
 	</ul>
 </div>
 
-{% comment %}
 <div class="section">
 <h2> Manage question </h2>
-	<p> <a href="{% url 'engine:quiz_modify' quiz_id=quiz.pk %}">Create/Edit Text of Question and Answer</a></p>
+	<p> <a href="{% url 'engine:question_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question text</a></p>
 </div>	
-{% endcomment %}
-
 
 <div class="section">
 <h2> Results and Analytics </h2>

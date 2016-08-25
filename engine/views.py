@@ -439,8 +439,13 @@ def question_modify(request, quiz_id, question_id):
     modify an existing question
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
-    question = get_object_or_404(Question, pk=answer_id)
-    context = {'question':question}
+    question = get_object_or_404(Question, pk=question_id)
+    question_form = QuestionForm(instance=question)
+    context = {
+        'quiz':quiz,
+        'question':question,
+        'question_form': question_form,
+    }
     return render(request, 'engine/question_modify.html', context)
 
 
