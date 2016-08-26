@@ -27,7 +27,7 @@ Answer Manager
 		<p><a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}?type=explanation&answer={{answer.pk}}">Manage explanation MOOClet</a><p>
 
 	{% else %}
-		<p><a href="{% url 'engine:mooclet_create' %}?type=explanation&answer={{answer.pk}}">Add explanation mooclet to answer</a><p>
+		<p><a href="{% url 'engine:mooclet_explanation_create' %}&answer={{answer.pk}}">Add explanation mooclet to answer</a><p>
 	{% endif %}
 
 </div>

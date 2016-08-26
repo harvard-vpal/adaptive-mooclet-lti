@@ -30,8 +30,9 @@ Interact with MOOClet
 	<h2>Versions:</h2>
 	<ul>
 	{% for version in mooclet.version_set.all %}
-		<li>Version: {{version}}</li>
+		<li><a href="{% url 'engine:version_modify' version_id=version.pk %}">Version: {{version}}</a></li>
 	{% endfor %}
+	<li><i>Add new version</i></li>
 	</ul>
 </div>
 

@@ -14,11 +14,13 @@ urlpatterns = [
     # collaborator-related
     url(r'^collaborator_request$', views.collaborator_request, name='collaborator_request'),
     url(r'^collaborator_create$', views.collaborator_create, name='collaborator_create'),
- 
-    # url(r'^mooclet/create$', views.mooclet_create, name='mooclet_create'),
-    # url(r'^mooclet/(?P<mooclet_id>[0-9]+)/', include('engine.urls_mooclet')),
-    
+
     url(r'^question/create$', views.question_create, name='question_create'),
     url(r'^question/(?P<question_id>[0-9]+)/', include('engine.urls_question')),
+
+    url(r'^mooclet/create/(?P<type>\w+)$', views.mooclet_create, name='mooclet_create'),
+    # url(r'^mooclet/create/(?P<type>\w+)/(?P<parent_id>[0-9]+)$', views.mooclet_create, name='mooclet_create'),
+    url(r'^mooclet/(?P<mooclet_id>[0-9]+)/', include('engine.urls_mooclet')),
+
 
 ]

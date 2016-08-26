@@ -563,20 +563,25 @@ def mooclet_create(request, **kwargs):
     '''
     create a new mooclet
     '''
-    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
 
+
+    if 'answer_id' in kwargs:
+        answer = get_object_or_404(Answer,pk=kwargs['answer'])
+    if 'question_id' in kwargs:
+        question = get_object_or_404(Question,pk=kwargs['question'])
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+    # mooclet_type = get_object_or_404(Type,pk=kwargs['type'])
 
     if request.method == 'GET':
 
         # look up mooclet type and identify associated parent object
-        mooclet_type = get_object_or_404(MoocletType, name=request.GET['type'])
+        mooclet_type = get_object_or_404(MoocletType, name=kwargs['type'])
 
         # object class that the mooclet is attached to
         parent_content_type = mooclet_type.content_type
         # content type name tells us name of get param to expect
         parent_content_id = request.GET[parent_content_type.name]
         parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=parent_content_id) 
-
 
         mooclet_form = MoocletForm(initial={'type':mooclet_type})
         context = {
@@ -764,3 +769,34 @@ def mooclet_results(request, **kwargs):
     }
     return render(request, 'engine/mooclet_results.html',context)
 
+def version_modify(request, quiz_id, version_id):
+    '''
+    modify text of answer 
+    '''
+    quiz = get_object_or_404(Answer, pk=quiz_id)
+    version = get_object_or_404(Version, pk=version_id)
+    mooclet = version.mooclet
+
+    # content_type for model that the mooclet is attached to
+    parent_content_type = mooclet.type.content_type
+    # parent object instance
+    parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=parent_content_id) 
+
+    if parent_content_type.name == 'question':
+        question = parent_content
+    elif parent_content_type.name == 'answer':
+        answer = parent_content
+        question = answer.question
+
+    if request.method == 'GET':
+        version_form = VersionForm(instance=version)
+        context = {
+            'quiz': quiz,
+            'question': question,
+            'answer': answer,
+            'version_form': version_form,
+        }
+        return render(request, 'engine/answer_modify.html', context)
+
+    elif request.method == 'POST':
+        pass
