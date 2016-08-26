@@ -682,7 +682,7 @@ def mooclet_modify_version_values(request, **kwargs):
                 value = value.save()
                 # print 'value for version {} and variable {} = {}'.format(version.pk,variable.pk,value.value)
 
-        return redirect('engine:mooclet_modify_version_values',mooclet_id=mooclet.pk)
+        return redirect('engine:mooclet_modify_version_values',quiz_id=quiz.pk, question_id=question.pk, answer_id=answer.pk, mooclet_id=mooclet.pk)
 
 
 def mooclet_simulate_probabilities(request, **kwargs):
