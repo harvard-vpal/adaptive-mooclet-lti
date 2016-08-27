@@ -92,23 +92,23 @@ def launch(request,quiz_id):
     }
     request.session['LTI_LAUNCH'].update(more_lti_params)
 
+     # save student LTI parameters to db, needed for asynchronous grade passback
+    quiz_lti_parameters, created = QuizLtiParameters.objects.get_or_create(
+            user=request.user,
+            quiz=quiz,
+    )
+    quiz_lti_parameters.lis_outcome_service_url = lis_outcome_service_url
+    quiz_lti_parameters.lis_result_sourcedid = lis_result_sourcedid
+    quiz_lti_parameters.oauth_consumer_key = oauth_consumer_key
+    quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
+    quiz_lti_parameters.lis_person_sourcedid = request.POST.get('lis_person_sourcedid','')
+    quiz_lti_parameters.save()
+
     # determine whether to display in preview mode or quiz mode (does role check)
     if display_preview(request):
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:
-
-        # save student LTI parameters to db, needed for asynchronous grade passback
-        quiz_lti_parameters, created = QuizLtiParameters.objects.get_or_create(
-            user=request.user,
-            quiz=quiz,
-        )
-        quiz_lti_parameters.lis_outcome_service_url = lis_outcome_service_url
-        quiz_lti_parameters.lis_result_sourcedid = lis_result_sourcedid
-        quiz_lti_parameters.oauth_consumer_key = oauth_consumer_key
-        quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
-        quiz_lti_parameters.save()
-        
         return redirect('engine:quiz_display', quiz_id=quiz.id)
 
 
