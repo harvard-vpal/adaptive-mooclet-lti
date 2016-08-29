@@ -15,7 +15,8 @@ urlpatterns = [
 
     # url(r'^version/(?P<version_id>[0-9]+)/', include('engine.urls_version')),
 
-
+    # TODO version-type specific
+    # TOOD explanation create/edit
 
     # # explanation-mooclet specific
     # url(r'^(?P<quiz_id>[0-9]+)/question/(?P<question_id>[0-9]+)/answer/(?P<answer_id>[0-9]+)/explanation_mooclet/explanation_list$', views.explanation_list, name='explanation_list'),

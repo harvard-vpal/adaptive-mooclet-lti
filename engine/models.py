@@ -16,6 +16,8 @@ class MoocletType(models.Model):
     name = models.CharField(max_length=100, unique=True)
     display_name = models.CharField(max_length=200)
     content_type = models.ForeignKey(ContentType,null=True)
+    # TODO parent content
+    # TODO child content
 
     def __unicode__(self):
         return self.display_name
@@ -206,6 +208,7 @@ class Quiz(models.Model):
     # url of a custom qualtrics survey
     url = models.URLField(default='',blank=True)
     # context = models.CharField(max_length=100,default='')
+    # TODO consider removing course field
     course = models.ForeignKey(Course, blank=True,null=True)
     mooclet_next_question = models.ForeignKey(Mooclet,null=True)
 
