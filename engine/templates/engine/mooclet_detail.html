@@ -30,9 +30,9 @@ Interact with MOOClet
 	<h2>Versions:</h2>
 	<ul>
 	{% for version in mooclet.version_set.all %}
-		<li><a href="{% url 'engine:version_modify' version_id=version.pk %}">Version: {{version}}</a></li>
+		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version}}</a></li>
 	{% endfor %}
-	<li><i>Add new version</i></li>
+	<li><i><a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Add new version</a></i></li>
 	</ul>
 </div>
 
@@ -49,11 +49,8 @@ Interact with MOOClet
 
 	{% if mooclet.type == "explanation" %}
 		
-		<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk question_id=answer.question.pk %}">Create/Edit Alternative Versions of Explanation-MOOClets</a></p>
-
-		<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See associated Explanation-MOOClets for this question </a></p>
+		<p> <a href="{% url 'engine:explanation_list' quiz_id=quiz.pk question_id=answer.question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Create/Edit Alternative Versions of Explanation-MOOClets</a></p>
 	
-
 	{% endif %}
 
 	</ul>

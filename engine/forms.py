@@ -132,3 +132,14 @@ class MoocletForm(forms.ModelForm):
 		model = Mooclet
 		fields = ['name','policy','type']
 
+
+# class VersionForm(forms.ModelForm):
+# 	'''
+# 	Create/modify new version
+# 	'''
+# 	class Meta:
+# 		model = Version
+# 		fields = ['text']
+# 		widgets = {
+# 			'text': forms.Textarea(attrs={'rows':3}),
+# 		}

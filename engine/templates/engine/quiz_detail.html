@@ -28,7 +28,7 @@ Quiz Manager
 <h2> Manage quiz questions </h2>
 <ul>
 {% for question in quiz.question_set.all %}
-	<li><a href="{% url 'engine:question_detail' quiz_id=quiz.pk  question_id=question.pk %}">{{question}}</a></li>
+	<li><a href="{% url 'engine:question_detail' quiz_id=quiz.pk question_id=question.pk %}">{{question}}</a></li>
 {% endfor %}
 	<li><i><a href="{% url 'engine:question_create' quiz_id=quiz.pk%} ">Create new question</a></i></li>
 </ul>
@@ -39,8 +39,7 @@ Quiz Manager
 	{% if answer.mooclet_next_question %}
 		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk mooclet_id=answer.mooclet_next_question.pk %}">Question sequencing MOOClet</a>
 	{% else %}
-		<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk type=next_question parent_id=quiz.pk %}">Add a question ordering MOOClet</a>
-		<a href="#">Add a question ordering MOOClet</a>
+		<a href="{% url 'engine:mooclet_create' quiz_id=quiz.pk type='next_question' %}">Add a question ordering MOOClet</a>
 	{% endif %}
 </div>
 

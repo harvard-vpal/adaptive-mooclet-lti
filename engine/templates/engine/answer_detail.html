@@ -24,10 +24,10 @@ Answer Manager
 <div class="section">
 <h2> Adaptive components </h2>
 	{% if answer.mooclet_explanation %}
-		<p><a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}?type=explanation&answer={{answer.pk}}">Manage explanation MOOClet</a><p>
+		<p><a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet_explanation.pk quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk%}">Manage explanation MOOClet</a><p>
 
 	{% else %}
-		<p><a href="{% url 'engine:mooclet_explanation_create' %}&answer={{answer.pk}}">Add explanation mooclet to answer</a><p>
+		<p><a href="{% url 'engine:mooclet_create' type='explanation' %}">Add explanation mooclet to answer</a><p>
 	{% endif %}
 
 </div>
