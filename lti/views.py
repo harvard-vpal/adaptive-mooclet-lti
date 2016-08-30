@@ -109,7 +109,29 @@ def launch(request,quiz_id):
         quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
         quiz_lti_parameters.save()
         
-        return redirect('engine:quiz_display', quiz_id=quiz.id)
+
+        external_url = quiz.getExternalUrl()
+        # if external url, use it to display content
+        if external_url:
+            extra_params = {
+                # pass in django user_id as a GET parameter to survey
+                'quiz_id':quiz_id,
+                'user_id':request.user.id,
+                'quizsource': 'preview' if display_preview(quiz_id, request) else 'student',
+            }
+            params_append_char = '&' if '?' in external_url else '?'
+            return redirect(external_url+ params_append_char + urlencode(extra_params))
+
+        # otherwise use django quiz app
+        else:
+            if quiz.question_set.all().exists():
+                question = quiz.question_set.first()
+                return redirect('quiz:question',question_id=question.id)
+            else:
+                return redirect('quiz:placeholder')
+            
+
+
 
 
 

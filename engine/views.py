@@ -52,7 +52,7 @@ def quiz_create_url(request):
 
 
 #### UTILITY VIEWS ####
-
+# not used anymore after safari LTI params issue
 def quiz_display(request, quiz_id):
     '''
     Redirect to proper mode of displaying quiz, based on urls present in quiz model fields
