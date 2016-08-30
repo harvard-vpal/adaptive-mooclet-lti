@@ -73,9 +73,10 @@ def quiz_display(request, quiz_id):
             # pass in django user_id as a GET parameter to survey
             'quiz_id':quiz_id,
             'user_id':request.user.id,
-            'quizsource': 'preview' if display_preview(request) else 'student',
+            'quizsource': 'preview' if display_preview(quiz_id, request) else 'student',
         }
-        return redirect(external_url+'&'+urlencode(extra_params))
+        params_append_char = '&' if '?' in external_url else '?'
+        return redirect(external_url+ params_append_char + urlencode(extra_params))
 
     # otherwise use django quiz app
     else:

@@ -3,17 +3,18 @@ from django.conf import settings
 from  engine.models import Quiz
 
 
-def display_preview(request):
+def display_preview(quiz_id, request):
     '''
     Checks whether to launch the LTI tool in preview mode or quiz mode
     Returns True for preview, False for quiz
     '''
-    quiz = Quiz.objects.get(id=request.session['quiz_id'])
+    quiz = Quiz.objects.get(id=quiz_id)
+
     # LTI User role check
     user_roles = request.session['LTI_LAUNCH']['roles']
     if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
         return True
-
+    
     # collaborator check
     if request.user.collaborator_set.filter(course=quiz.course).exists():
         return True
