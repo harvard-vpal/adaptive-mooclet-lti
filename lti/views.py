@@ -6,7 +6,8 @@ from django.conf import settings
 from ims_lti_py.tool_config import ToolConfig
 from django.http import HttpResponse, HttpResponseRedirect
 import logging
-from engine.models import Quiz, QuizLtiParameters
+from engine.models import Quiz
+from models import LtiParameters
 from utils import display_preview
 from urllib import urlencode
 
@@ -100,7 +101,7 @@ def launch(request,quiz_id):
     else:
 
         # save student LTI parameters to db, needed for asynchronous grade passback
-        quiz_lti_parameters, created = QuizLtiParameters.objects.get_or_create(
+        quiz_lti_parameters, created = LtiParameters.objects.get_or_create(
             user=request.user,
             quiz=quiz,
         )
