@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import logging
 from engine.models import Quiz, QuizLtiParameters
 from utils import display_preview
+from urllib import urlencode
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
