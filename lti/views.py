@@ -109,6 +109,10 @@ def launch(request,quiz_id):
         quiz_lti_parameters.lis_result_sourcedid = lis_result_sourcedid
         quiz_lti_parameters.oauth_consumer_key = oauth_consumer_key
         quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
+        quiz_lti_parameters.lis_person_sourcedid = request.POST.get('lis_person_sourcedid','')
+        quiz_lti_parameters.canvas_user_id = request.POST.get('canvas_user_id','')
+        quiz_lti_parameters.canvas_course_id = request.POST.get('canvas_course_id','')
+
         quiz_lti_parameters.save()
         
 

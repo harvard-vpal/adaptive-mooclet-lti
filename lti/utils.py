@@ -43,7 +43,7 @@ def grade_passback(grade=None, request=None, user=None, quiz=None):
             return None
         
     elif user and quiz:
-        quiz_lti_parameters = user.quizltiparameters_set.filter(quiz=quiz)
+        quiz_lti_parameters = user.ltiparameters_set.filter(quiz=quiz)
         if quiz_lti_parameters.exists():
             LTI_LAUNCH = quiz_lti_parameters.values()[0]
     else:
