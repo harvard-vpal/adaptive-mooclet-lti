@@ -2,6 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import *
+from lti.models import *
 
 class QuizAdmin (admin.ModelAdmin):
 	list_display = ['id','name','user']
@@ -44,4 +45,4 @@ admin.site.register(Policy, PolicyAdmin)
 admin.site.register(MoocletType)
 admin.site.register(Collaborator)
 admin.site.register(Course)
-admin.site.register(QuizLtiParameters)
+admin.site.register(LtiParameters)

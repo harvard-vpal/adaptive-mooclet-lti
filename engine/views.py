@@ -52,7 +52,7 @@ def quiz_create_url(request):
 
 
 #### UTILITY VIEWS ####
-
+# not used anymore after safari LTI params issue
 def quiz_display(request, quiz_id):
     '''
     Redirect to proper mode of displaying quiz, based on urls present in quiz model fields
@@ -73,7 +73,7 @@ def quiz_display(request, quiz_id):
             # pass in django user_id as a GET parameter to survey
             'quiz_id':quiz_id,
             'user_id':request.user.id,
-            'quizsource': 'preview' if display_preview(request) else 'student',
+            'quizsource': 'preview' if display_preview(quiz_id, request) else 'student',
         }
         params_append_char = '&' if '?' in external_url else '?'
         return redirect(external_url+ params_append_char + urlencode(extra_params))

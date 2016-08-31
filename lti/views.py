@@ -6,8 +6,10 @@ from django.conf import settings
 from ims_lti_py.tool_config import ToolConfig
 from django.http import HttpResponse, HttpResponseRedirect
 import logging
-from engine.models import Quiz, QuizLtiParameters
+from engine.models import Quiz
+from models import LtiParameters
 from utils import display_preview
+from urllib import urlencode
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
@@ -105,12 +107,45 @@ def launch(request,quiz_id):
     quiz_lti_parameters.save()
 
     # determine whether to display in preview mode or quiz mode (does role check)
-    if display_preview(request):
+    if display_preview(quiz_id, request):
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:
-        return redirect('engine:quiz_display', quiz_id=quiz.id)
+        # save student LTI parameters to db, needed for asynchronous grade passback
+        quiz_lti_parameters, created = LtiParameters.objects.get_or_create(
+            user=request.user,
+            quiz=quiz,
+        )
+        quiz_lti_parameters.lis_outcome_service_url = lis_outcome_service_url
+        quiz_lti_parameters.lis_result_sourcedid = lis_result_sourcedid
+        quiz_lti_parameters.oauth_consumer_key = oauth_consumer_key
+        quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
+        quiz_lti_parameters.lis_person_sourcedid = request.POST.get('lis_person_sourcedid','')
+        quiz_lti_parameters.canvas_user_id = request.POST.get('canvas_user_id','')
+        quiz_lti_parameters.canvas_course_id = request.POST.get('canvas_course_id','')
 
+        quiz_lti_parameters.save()
+        
+
+        external_url = quiz.getExternalUrl()
+        # if external url, use it to display content
+        if external_url:
+            extra_params = {
+                # pass in django user_id as a GET parameter to survey
+                'quiz_id':quiz_id,
+                'user_id':request.user.id,
+                'quizsource': 'preview' if display_preview(quiz_id, request) else 'student',
+            }
+            params_append_char = '&' if '?' in external_url else '?'
+            return redirect(external_url+ params_append_char + urlencode(extra_params))
+
+        # otherwise use django quiz app
+        else:
+            if quiz.question_set.all().exists():
+                question = quiz.question_set.first()
+                return redirect('quiz:question',question_id=question.id)
+            else:
+                return redirect('quiz:placeholder')
 
 
 @login_required()
