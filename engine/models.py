@@ -15,9 +15,8 @@ import policies
 class MoocletType(models.Model):
     name = models.CharField(max_length=100, unique=True)
     display_name = models.CharField(max_length=200)
-    content_type = models.ForeignKey(ContentType,null=True)
-    # TODO parent content
-    # TODO child content
+    parent_content_type = models.ForeignKey(ContentType,null=True, related_name='parent_mooclet_type')
+    version_content_type = models.ForeignKey(ContentType,null=True, related_name='version_mooclet_type')
 
     def __unicode__(self):
         return self.display_name
