@@ -111,7 +111,8 @@ def get_explanation_for_student(request):
     explanation = version.explanation
 
     return JsonResponse({
-        'id':explanation.id,
+        'explanation_id':explanation.id,
+        'version_id':version.id,
         'text':explanation.text,
     })
 
