@@ -10,8 +10,11 @@ urlpatterns = [
     url(r'^list_values$', views.mooclet_list_values, name='mooclet_list_values'),
     url(r'^mooclet_results$', views.mooclet_results, name='mooclet_results'),
 
-    url(r'^version/create', views.version_create, name='version_create'),
-    url(r'^version/(?P<version_id>[0-9]+)/modify', views.version_modify, name='version_modify'),
+    url(r'^version/create$', views.version_create, name='version_create'),
+    url(r'^version/(?P<version_id>[0-9]+)/modify$', views.version_modify, name='version_modify'),
+    url(r'^explanation/create$', views.explanation_create, name='explanation_create'),
+    url(r'^explanation_modify/(?P<version_id>[0-9]+)/modify$', views.explanation_modify, name='explanation_modify'),
+
 
     # url(r'^version/(?P<version_id>[0-9]+)/', include('engine.urls_version')),
 

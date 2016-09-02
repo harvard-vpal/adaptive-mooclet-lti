@@ -5,7 +5,8 @@
     "fields": {
       "name": "explanation",
       "display_name": "Explanation-MOOClet",
-      "content_type": ["engine", "answer"]
+      "parent_content_type": ["engine", "answer"],
+      "version_content_type": ["engine", "explanation"]
     }
   },
   {
@@ -14,7 +15,8 @@
     "fields": {
       "name": "next_question",
       "display_name": "NextQuestion-MOOClet",
-      "content_type": ["engine", "quiz"]
+      "parent_content_type": ["engine", "quiz"],
+      "version_content_type": ["engine", "question"]
     }
   }
 ]

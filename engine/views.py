@@ -334,51 +334,6 @@ def explanation_list(request, quiz_id, question_id):
     return render(request, 'engine/explanation_list.html', context)
 
 
-def explanation_create(request, quiz_id, question_id, mooclet_id):
-    '''
-    create new explanation version
-    '''
-    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
-
-    if request.method=='GET':
-        context = {
-            'explanation_form':ExplanationForm()
-        }
-        return render(request, 'engine/explanation_create.html',context)
-
-    elif request.method=='POST':
-        explanation_form = ExplanationForm(request.POST)
-        explanation = explanation_form.save(commit=False)
-        explanation.mooclet = mooclet
-        explanation.save()
-
-        return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
-
-
-def explanation_modify(request, quiz_id, question_id, explanation_id):
-    '''
-    modify an explanation version
-    '''
-    explanation = get_object_or_404(Explanation,pk=explanation_id)
-    mooclet = explanation.mooclet
-
-    if request.method=='GET':
-        context = {
-            'explanation_form':ExplanationModifyForm(instance=explanation)
-        }
-        return render(request, 'engine/explanation_modify.html',context)
-
-    elif request.method=='POST':
-        explanation_form = ExplanationModifyForm(request.POST,instance=explanation)
-        explanation_form.is_valid()
-        if explanation_form.cleaned_data['delete']:
-            explanation = explanation.delete()
-        else:
-            explanation = explanation_form.save()
-
-
-        
-        return redirect('engine:explanation_list',quiz_id=request.session['quiz_id'])
 
 
 def question_detail(request, quiz_id, question_id):
@@ -478,7 +433,7 @@ def mooclet_detail(request, **kwargs):
     # look up mooclet type and identify associated parent object
 
     # object class that the mooclet is attached to
-    parent_content_type = mooclet.type.content_type
+    parent_content_type = mooclet.type.parent_content_type
     parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=kwargs[parent_content_type.name+'_id'])
 
     versions = mooclet.version_set.all()
@@ -716,38 +671,113 @@ def mooclet_results(request, **kwargs):
 
 def version_modify(request, **kwargs):
     '''
-    modify text of answer 
+    modify version, by redirecting to correct version object's modify view 
     '''
     quiz = get_object_or_404(Answer, pk=kwargs['quiz_id'])
     version = get_object_or_404(Version, pk=kwargs['version_id'])
     mooclet = version.mooclet
 
-    # content_type for model that the mooclet is attached to
-    parent_content_type = mooclet.type.content_type
-    # parent object instance
-    parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=kwargs[parent_content_type.name+'_id']) 
+     # send to apppropriate interface, based on what the version model of the mooclet
+    if mooclet.type.name == 'explanation':
+        question = get_object_or_404(Question, pk=kwargs['question_id'])
+        answer = get_object_or_404(Answer, pk=kwargs['answer_id'])
+        return redirect('engine:explanation_modify',quiz_id=quiz.pk, question_id=question.pk, answer_id=answer.pk, mooclet_id=mooclet.pk, version_id=version.pk)
+    else:
+        return HttpResponse('Not implemented')
 
-    if parent_content_type.name == 'question':
-        question = parent_content
-    elif parent_content_type.name == 'answer':
-        answer = parent_content
-        question = answer.question
+    # # content_type for model that the mooclet is attached to
+    # parent_content_type = mooclet.type.parent_content_type
+    # # parent object instance
+    # parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=kwargs[parent_content_type.name+'_id']) 
 
-    if request.method == 'GET':
-        version_form = VersionForm(instance=version)
-        context = {
-            'quiz': quiz,
-            'question': question,
-            'answer': answer,
-            'version_form': version_form,
-        }
-        return render(request, 'engine/answer_modify.html', context)
+    # if parent_content_type.name == 'question':
+    #     question = parent_content
+    # elif parent_content_type.name == 'answer':
+    #     answer = parent_content
+    #     question = answer.question
 
-    elif request.method == 'POST':
-        # TODO
-        pass
+    # if request.method == 'GET':
+    #     version_form = VersionForm(instance=version)
+    #     context = {
+    #         'quiz': quiz,
+    #         'question': question,
+    #         'answer': answer,
+    #         'version_form': version_form,
+    #     }
+    #     return render(request, 'engine/answer_modify.html', context)
+
+    # elif request.method == 'POST':
+    #     # TODO
+    #     pass
 
 
 def version_create(request, **kwargs):
-    # TODO
-    pass
+    quiz = get_object_or_404(Answer, pk=kwargs['quiz_id'])
+    mooclet = get_object_or_404(Mooclet, pk=kwargs['mooclet_id'])
+
+    # send to apppropriate interface, based on what the version model of the mooclet
+    if mooclet.type.name == 'explanation':
+        question = get_object_or_404(Question, pk=kwargs['question_id'])
+        answer = get_object_or_404(Answer, pk=kwargs['answer_id'])
+        return redirect('engine:explanation_create',quiz_id=quiz.pk, question_id=question.pk, answer_id=answer.pk, mooclet_id=mooclet.pk)
+    else:
+        return HttpResponse('Not implemented')
+
+
+def explanation_create(request, quiz_id, question_id, answer_id, mooclet_id):
+    '''
+    create new explanation version
+    '''
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+
+    if request.method=='GET':
+        context = {
+            'explanation_form':ExplanationForm()
+        }
+        return render(request, 'engine/explanation_create.html',context)
+
+    elif request.method=='POST':
+        explanation_form = ExplanationForm(request.POST)
+        explanation = explanation_form.save(commit=False)
+        explanation.mooclet = mooclet
+        explanation.save()
+
+        return redirect('engine:mooclet_detail',quiz_id=quiz_id,question_id=question_id,answer_id=answer_id, mooclet_id=mooclet_id)
+
+
+def explanation_modify(request, quiz_id, question_id, answer_id, mooclet_id, version_id):
+    '''
+    modify an explanation version
+    '''
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    question = get_object_or_404(Question,pk=question_id)
+    answer = get_object_or_404(Answer,pk=answer_id)
+    mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
+    version = get_object_or_404(Version,pk=version_id)
+    explanation = version.explanation
+    
+
+    if request.method=='GET':
+        context = {
+            'quiz':quiz,
+            'question':question,
+            'answer':answer,
+            'mooclet':mooclet,
+            'version':version,
+            'explanation_form':ExplanationModifyForm(instance=explanation)
+        }
+        return render(request, 'engine/explanation_modify.html',context)
+
+    elif request.method=='POST':
+        explanation_form = ExplanationModifyForm(request.POST,instance=explanation)
+        explanation_form.is_valid()
+        if explanation_form.cleaned_data['delete']:
+            explanation = explanation.delete()
+        else:
+            explanation = explanation_form.save()
+
+
+        
+        return redirect('engine:mooclet_detail',quiz_id=quiz_id,question_id=question_id,answer_id=answer_id,mooclet_id=mooclet_id)
+
+
