@@ -8,7 +8,8 @@ class QuizAdmin (admin.ModelAdmin):
 	list_display = ['id','name','user']
 
 class QuestionAdmin (admin.ModelAdmin):
-	list_display = ['id','get_quiz_id','text']
+	list_display = ['id','text']
+	filter_horizontal = ('quiz',)
 
 	def get_quiz_id(self,obj):
 		return obj.quiz.id
