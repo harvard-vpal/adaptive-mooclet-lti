@@ -51,5 +51,60 @@
       "mooclet_explanation": 1,
       "_order": 4
     }
+  },
+
+
+   {
+    "model": "engine.question",
+    "pk": 2,
+    "fields": {
+      "name": "Default thompson sampling question",
+      "quiz": [2],
+      "text": "What is 1+1?"
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 5,
+    "fields": {
+      "question": 2,
+      "text": "1",
+      "correct": false,
+      "mooclet_explanation": 2,
+      "_order": 1
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 6,
+    "fields": {
+      "question": 2,
+      "text": "2",
+      "correct": true,
+      "mooclet_explanation": 2,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 7,
+    "fields": {
+      "question": 2,
+      "text": "3",
+      "correct": false,
+      "mooclet_explanation": 2,
+      "_order": 3
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 8,
+    "fields": {
+      "question": 2,
+      "text": "4",
+      "correct": false,
+      "mooclet_explanation": 2,
+      "_order": 4
+    }
   }
 ]

@@ -37,5 +37,46 @@
     "fields": {
       "text": "Because foo bar baz."
     }
+  },
+
+
+   {
+    "model": "engine.mooclet",
+    "pk": 2,
+    "fields": {
+      "name": "Default Thompson Sampling mooclet",
+      "policy": 3,
+      "type": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 3,
+    "fields": {
+      "mooclet": 2,
+      "_order": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 4,
+    "fields": {
+      "mooclet": 2,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 3,
+    "fields": {
+      "text": "Because 1 plus 1 is 2."
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 4,
+    "fields": {
+      "text": "Because foo bar baz."
+    }
   }
 ]

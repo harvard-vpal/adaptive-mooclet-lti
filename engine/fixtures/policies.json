@@ -21,7 +21,7 @@
     "pk": 3,
     "fields": {
       "name": "thompson_sampling",
-      "variables": [1]
+      "variables": [1, 2]
     }
   }
 ]  
