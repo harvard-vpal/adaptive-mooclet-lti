@@ -1,0 +1,113 @@
+,
+
+
+
+  {
+    "model": "engine.mooclet",
+    "pk": 3,
+    "fields": {
+      "name": "Default Thompson Sampling mooclet Answer 2",
+      "policy": 3,
+      "type": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 6,
+    "fields": {
+      "mooclet": 3,
+      "_order": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 7,
+    "fields": {
+      "mooclet": 3,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 8,
+    "fields": {
+      "mooclet": 3,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 6,
+    "fields": {
+      "text": "This is the <em>change</em> in the temperature from <em>t</em>=0 to <em>t</em>=3. Now we need to find the actual temperature at <em>t</em>=3."
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 7,
+    "fields": {
+      "text": "This is the <em>change</em> in the temperature from <em>t</em>=0 to <em>t</em>=3. Now we need to find the actual temperature at <em>t</em>=3. To see an example of solving a similar problem, watch the first nine minutes of the <a href='https://canvas.harvard.edu/courses/8193/pages/week-11-introduction-and-indefinite-integrals-in-context?module_item_id=121678/.'  target='_blank'>video about indefinite integrals</a>"
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 8,
+    "fields": {
+      "text": "This is the <em>change</em> in the temperature from <em>t</em>=0 to <em>t</em>=3. Now we need to find the actual temperature at <em>t</em>=3. To see an example of solving a similar problem, take a look at part (a) in the <a href='https://canvas.harvard.edu/courses/8193/pages/week-11-introduction-and-indefinite-integrals-in-context?module_item_id=121678.'  target='_blank'>chalkboard image about indefinite integrals</a>"
+    }
+  },
+
+  {
+    "model": "engine.mooclet",
+    "pk": 4,
+    "fields": {
+      "name": "Default Thompson Sampling mooclet Answer 3",
+      "policy": 3,
+      "type": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 9,
+    "fields": {
+      "mooclet": 3,
+      "_order": 1
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 10,
+    "fields": {
+      "mooclet": 3,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.version",
+    "pk": 11,
+    "fields": {
+      "mooclet": 3,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 9,
+    "fields": {
+      "text": "This is the temperature at <em>t</em>=5, but that is not where the maximum occurs. Find the critical point(s) and do a number line."
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 10,
+    "fields": {
+      "text": "This is the temperature at <em>t</em>=5, but that is not where the maximum occurs. Find the critical point(s) and do a number line. To see an example of solving a similar problem, watch the first nine minutes of the <a href='https://canvas.harvard.edu/courses/8193/pages/week-11-introduction-and-indefinite-integrals-in-context?module_item_id=121678/.'  target='_blank'>video about indefinite integrals</a>"
+    }
+  },
+  {
+    "model": "engine.explanation",
+    "pk": 11,
+    "fields": {
+      "text": "This is the temperature at <em>t</em>=5, but that is not where the maximum occurs. Find the critical point(s) and do a number line. To see an example of solving a similar problem, take a look at part (a) in the <a href='https://canvas.harvard.edu/courses/8193/pages/week-11-introduction-and-indefinite-integrals-in-context?module_item_id=121678.'  target='_blank'>chalkboard image about indefinite integrals</a>"
+    }
+  }
