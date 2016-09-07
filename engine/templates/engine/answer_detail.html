@@ -12,8 +12,8 @@ Answer Manager
 
 <div class="section-summary">
 	<h2> Answer properties </h2>
-	<p> Question text: {{answer.question.text}}
-	<p> Answer text: {{answer.text}}</p>
+	<p> Question text: {{answer.question.text | safe}}
+	<p> Answer text: {{answer.text | safe}}</p>
 </div>
 
 <div class="section-links">

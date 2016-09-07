@@ -12,7 +12,7 @@ Interact with MOOClet
 <div class="section-context">
 	{% if mooclet.type == "explanation" %}
 		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
-		Answer text: {{answer.text}}
+		Answer text: {{answer.text | safe}}
 	{% else %}
 		No mooclet context provided
 	{% endif %}
@@ -30,7 +30,7 @@ Interact with MOOClet
 	<h2>Versions:</h2>
 	<ul>
 	{% for version in mooclet.version_set.all %}
-		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version}}</a></li>
+		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe}}</a></li>
 	{% endfor %}
 	<li><i><a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Add new version</a></i></li>
 	</ul>
@@ -59,7 +59,7 @@ Interact with MOOClet
 {% comment %}
 <div class="section-probabilities">
 	{% for version, probability in version_probabilities %}
-    	Probability of {{ version }} = {{ probability }} <br>
+    	Probability of {{ version | safe }} = {{ probability }} <br>
 
 	{% endfor %}
 </div>

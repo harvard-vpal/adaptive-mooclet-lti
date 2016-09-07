@@ -28,7 +28,7 @@ Quiz Manager
 <h2> Manage quiz questions </h2>
 <ul>
 {% for question in quiz.question_set.all %}
-	<li><a href="{% url 'engine:question_detail' quiz_id=quiz.pk question_id=question.pk %}">{{question}}</a></li>
+	<li><a href="{% url 'engine:question_detail' quiz_id=quiz.pk question_id=question.pk %}">{{question | safe}}</a></li>
 {% endfor %}
 	<li><i><a href="{% url 'engine:question_create' quiz_id=quiz.pk%} ">Create new question</a></i></li>
 </ul>

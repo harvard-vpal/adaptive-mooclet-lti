@@ -24,7 +24,7 @@ MOOClet results
 <tr>
 	<th>Version</th>
 	{% for variable in variables %}
-		<th> {{variable.name}} </th>
+		<th> {{variable.display_name}} </th>
 	{% endfor %}
 </tr>
 </thead>
@@ -32,7 +32,7 @@ MOOClet results
 <tbody>
 {% for version in versions %}
 	<tr>
-	<td>{{version}}
+	<td>{{version | safe}}
 	{% for variable in variables %}
 		{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
 			<td>{% iloc values_matrix m n %}</td>

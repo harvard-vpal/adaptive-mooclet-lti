@@ -54,7 +54,6 @@ def get_question(request):
             break
 
     output = {
-        'quiz_id': question.quiz.id,
         'text':question.text,
         'correct_choice':correct_choice,
     }
