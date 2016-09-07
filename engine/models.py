@@ -209,7 +209,7 @@ class Quiz(models.Model):
     # context = models.CharField(max_length=100,default='')
     # TODO consider removing course field
     course = models.ForeignKey(Course, blank=True,null=True)
-    mooclet_next_question = models.ForeignKey(Mooclet,null=True)
+    mooclet_next_question = models.ForeignKey(Mooclet,null=True,blank=True)
 
     class Meta:
         verbose_name_plural = 'quizzes'
