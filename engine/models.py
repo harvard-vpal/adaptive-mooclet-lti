@@ -49,7 +49,7 @@ class Version(models.Model):
     '''
     Mooclet version
     '''
-    mooclet = models.ForeignKey(Mooclet)
+    mooclet = models.ForeignKey(Mooclet, null=True)
 
     class Meta:
         order_with_respect_to = 'mooclet'

@@ -292,7 +292,7 @@ def answer_create(request, quiz_id, question_id):
 
 
     elif request.method == 'POST':
-        answer_form = AnswerForm(requset.POST)
+        answer_form = AnswerForm(request.POST)
         answer = answer_form.save()
         return redirect('engine:question_detail', quiz_id=quiz.pk, question_id=question.pk)
 
@@ -386,8 +386,21 @@ def question_create(request, quiz_id):
     create a new question
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
-    context = {'quiz':quiz}
-    return render(request, 'engine/question_create.html', context)
+
+    if request.method=='GET':
+        question_form = QuestionForm()
+        context = {
+            'quiz':quiz,
+            'question_form': question_form,
+        }
+        return render(request, 'engine/question_create.html', context)
+    elif request.method == 'POST':
+        question_form = QuestionForm(request.POST)
+        question = question_form.save()
+        question.quiz.add(quiz)
+        question.save()
+        return redirect('engine:quiz_detail', quiz_id=quiz.pk)
+
 
 
 def question_modify(request, quiz_id, question_id):
