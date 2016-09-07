@@ -292,7 +292,7 @@ def answer_create(request, quiz_id, question_id):
 
 
     elif request.method == 'POST':
-        answer_form = AnswerForm(requset.POST)
+        answer_form = AnswerForm(request.POST)
         answer = answer_form.save()
         return redirect('engine:question_detail', quiz_id=quiz.pk, question_id=question.pk)
 
