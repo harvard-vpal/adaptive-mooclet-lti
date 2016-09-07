@@ -28,5 +28,60 @@
       "is_user_variable": false,
       "content_type": ["engine", "version"]
     }
+  },
+
+  {
+    "model": "engine.variable",
+    "pk": 4,
+    "fields": {
+      "name": "student_rating",
+      "description": "Student Rating",
+      "is_user_variable": true,
+      "content_type": ["engine", "version"]
+    }
+  },
+
+  {
+    "model": "engine.variable",
+    "pk": 5,
+    "fields": {
+      "name": "num_students",
+      "description": "Number of Students",
+      "is_user_variable": true,
+      "content_type": ["engine", "version"]
+    }
+  },
+
+  {
+    "model": "engine.variable",
+    "pk": 6,
+    "fields": {
+      "name": "explanation_probability",
+      "description": "Probability of Explanation",
+      "is_user_variable": true,
+      "content_type": ["engine", "version"]
+    }
+  },
+
+  {
+    "model": "engine.variable",
+    "pk": 7,
+    "fields": {
+      "name": "instructor_rating",
+      "description": "Instructor Rating",
+      "is_user_variable": true,
+      "content_type": ["engine", "version"]
+    }
+  },
+
+  {
+    "model": "engine.variable",
+    "pk": 8,
+    "fields": {
+      "name": "Instructor Confidence",
+      "description": "Instructor Confidence in Rating",
+      "is_user_variable": true,
+      "content_type": ["engine", "version"]
+    }
   }
 ]

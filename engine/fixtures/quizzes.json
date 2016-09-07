@@ -5,5 +5,12 @@
     "fields": {
       "name": "Default sandbox quiz"
     }
+  },
+  {
+    "model": "engine.quiz",
+    "pk": 2,
+    "fields": {
+      "name": "Default Thompson sampling sandbox quiz"
+    }
   }
 ]

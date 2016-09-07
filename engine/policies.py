@@ -19,3 +19,6 @@ def weighted_random(variables,context):
 
 def thompson_sampling_placeholder(variables,context):
 	return choice(context['mooclet'].version_set.all())
+
+def thompson_sampling(variables,context):
+	return choice(context['mooclet'].version_set.all())
