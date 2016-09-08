@@ -10,7 +10,7 @@ from .forms import *
 from .utils import *
 from qualtrics.utils import provision_qualtrics_quiz
 from lti.utils import display_preview
-
+from numpy import std
 # from django.views import View
 
 
@@ -678,9 +678,13 @@ def mooclet_results(request, **kwargs):
             elif variable.name == 'num_students':
                 new_value = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).count()
             elif variable.name == 'rating_std_dev':
-                 new_value = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all().aggregate(StdDev('value', sample=True))
-                 new_value = new_value['value__stddev']
+                 
+                 ratings = [v.value for v in Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all()]
+                 if len(ratings) >= 1:
+                    new_value = std(ratings)
+                 #new_value = new_value['value__stddev']
             #     new_value = Variable.objects.get(name='student_rating').get_data({'quiz':quiz, 'version':version }).count()
+                #new_value = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all().aggregate(StdDev('value', sample=True))
             value = Value.objects.filter(variable=variable, object_id=version.pk).last()
             if new_value and value:
                 value.value = new_value
