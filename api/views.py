@@ -98,7 +98,7 @@ def get_explanation_for_student(request):
     # answer = get_list_or_404(Answer, question=question, order=answer_choice)[0]
     # also answer_choice is 1-indexed
     answer = question.answer_set.order_by('_order')[answer_choice-1]
-    mooclet = answer.mooclet
+    mooclet = answer.mooclet_explanation
     
     mooclet_context = {'mooclet': mooclet}
 

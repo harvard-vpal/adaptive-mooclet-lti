@@ -19,7 +19,7 @@ Question Manager
 
 <div class="section-summary">
 	<h2> Question info:</h2>
-	<p> Question: {{question.text}}</p>
+	<p> Question: {{question.text | safe}}</p>
 	<ul>
 	{% for answer in question.answer_set.all %}
 		<li><a href="{% url 'engine:answer_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk %}">Answer: {{answer}}</a></li>

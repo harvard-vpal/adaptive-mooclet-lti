@@ -5,10 +5,12 @@ from django.http import HttpResponse
 from urllib import urlencode
 from .models import *
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Avg, StdDev
 from .forms import *
 from .utils import *
 from qualtrics.utils import provision_qualtrics_quiz
 from lti.utils import display_preview
+from numpy import std
 # from django.views import View
 
 
@@ -651,6 +653,63 @@ def mooclet_list_values(request, **kwargs):
     return render(request, 'engine/mooclet_list_values.html',context)
 
 def mooclet_results(request, **kwargs):
+    mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
+    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
+    question = get_object_or_404(Question,pk=kwargs['question_id'])
+    answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
+
+    # determine appropriate variables
+    variables = []
+    variables.append(Variable.objects.get_or_create(name='mean_student_rating', display_name="Mean Student Rating")[0])
+    variables.append(Variable.objects.get_or_create(name='num_students', display_name="Number of Students")[0])
+    variables.append(Variable.objects.get_or_create(name='rating_std_dev', display_name="Standard Deviation of Rating")[0])
+    #variables = [v for v in Variable.objects.all() if v.content_type.name == 'version']
+    versions = mooclet.version_set.all()
+    values_matrix = []
+    # for variable in mooclet.policy.variables.all():
+    for version in versions:
+        version_values = []
+        for variable in variables:
+            #value = variable.get_data({'quiz':quiz, 'version':version }).last()
+            
+            if variable.name == 'mean_student_rating':
+                new_value = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all().aggregate(Avg('value'))
+                new_value = new_value['value__avg']
+            elif variable.name == 'num_students':
+                new_value = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).count()
+            elif variable.name == 'rating_std_dev':
+                 
+                 ratings = [v.value for v in Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all()]
+                 if len(ratings) >= 1:
+                    new_value = std(ratings)
+                 #new_value = new_value['value__stddev']
+            #     new_value = Variable.objects.get(name='student_rating').get_data({'quiz':quiz, 'version':version }).count()
+                #new_value = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all().aggregate(StdDev('value', sample=True))
+            value = Value.objects.filter(variable=variable, object_id=version.pk).last()
+            if new_value and value:
+                value.value = new_value
+                value.save()
+                version_values.append(value.value)
+            elif new_value and not value:
+                value = Value.objects.create(variable=variable, object_id=version.pk, value=new_value)
+                version_values.append(value.value)
+            else:
+                version_values.append('n/a')
+        values_matrix.append(version_values)
+
+    context = {
+        'quiz':quiz,
+        'mooclet':mooclet,
+        'question':question,
+        'answer':answer,
+        'versions': versions,
+        'variables': variables,
+        'values_matrix':values_matrix,
+    }
+    return render(request, 'engine/mooclet_results.html',context)
+
+
+def oldmooclet_results(request, **kwargs):
     mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
     quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
     question = get_object_or_404(Question,pk=kwargs['question_id'])

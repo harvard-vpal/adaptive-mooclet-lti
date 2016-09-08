@@ -24,7 +24,7 @@ Quiz results
 <tr>
 	<th>Answer</th>
 	{% for variable in variables %}
-		<th> {{variable.name}} </th>
+		<th> {{variable.display_name}} </th>
 	{% endfor %}
 </tr>
 </thead>
@@ -53,7 +53,7 @@ Quiz results
 		<div class="tr">
 			<span class="td">Version</span>
 			{% for user_variable in user_variables %}
-				<span class="td"> {{user_variable.name}} </span>
+				<span class="td"> {{user_variable.display_name}} </span>
 			{% endfor %}
 		</div>
 		
