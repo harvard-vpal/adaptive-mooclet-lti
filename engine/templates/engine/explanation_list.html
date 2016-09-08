@@ -15,7 +15,7 @@ Modify/Add Versions of Explanations to be randomly shown after each Answer
 
 {% for answer in answers %}
 
-	<p>{{answer.text}}</p>
+	<p>{{answer.text | safe}}</p>
 	<a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}"
 
 	<ul>
