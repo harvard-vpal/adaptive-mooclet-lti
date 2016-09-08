@@ -103,16 +103,6 @@ def launch_sandbox(request):
 
 #### QUIZ MANAGEMENT ####
 
-def quiz_detail(request, quiz_id):
-    '''
-    Quiz management home for instructors
-    '''
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    context = {'quiz':quiz}
-
-    return render(request, 'engine/quiz_detail.html', context)
-
-
 def collaborator_request(request):
     # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
     # display session data, researcher sends their user id to instructor
@@ -142,6 +132,16 @@ def collaborator_create(request, quiz_id):
     return render(request, 'engine/collaborator_create.html',context)
 
 
+def quiz_detail(request, quiz_id):
+    '''
+    Quiz management home for instructors
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    context = {'quiz':quiz}
+
+    return render(request, 'engine/quiz_detail.html', context)
+
+
 def quiz_modify(request, quiz_id):
     '''
     Modify quiz info (name)
@@ -163,9 +163,56 @@ def quiz_modify(request, quiz_id):
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
 
-def old_quiz_modify(request, quiz_id):
+def question_detail(request, quiz_id, question_id):
     '''
-    displays a form to collect question, answers and explanations
+    question home page
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=question_id)
+    context = {
+        'quiz':quiz,
+        'question':question,
+    }
+    return render(request, 'engine/question_detail.html', context)
+
+
+def question_results(request, quiz_id, question_id):
+    '''
+    Display question level results (e.g. stats about each answer)
+    '''
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    question = get_object_or_404(Question,pk=question_id)
+
+    answers = question.answer_set.all()
+
+    # determine appropriate variables
+    variables = [v for v in Variable.objects.all() if v.content_type.name == 'answer']
+
+    values_matrix = []
+    # for variable in mooclet.policy.variables.all():
+    for answer in answers:
+        answer_values = []
+        for variable in variables:
+            value = variable.get_data({'quiz':quiz, 'question':question, 'answer': answer}).last()
+            if value:
+                answer_values.append(value.value)
+            else:
+                answer_values.append('n/a')
+        values_matrix.append(answer_values)
+
+    context = {
+        'quiz':quiz,
+        'question':question,
+        'answers':answers,
+        'variables': variables,
+        'values_matrix':values_matrix,
+    }
+    return render(request, 'engine/quiz_results.html',context)
+
+
+def question_and_answers_modify(request, question):
+    '''
+    Edit question and 4 answers all at once
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
 
@@ -204,7 +251,7 @@ def old_quiz_modify(request, quiz_id):
             # 'answer_formgroups':answer_formgroups,
         }
 
-        return render(request, 'engine/quiz_modify.html', context)
+        return render(request, 'engine/question_detail.html', context)
 
     # handle form submission/processing
     elif request.method == 'POST':
@@ -259,7 +306,43 @@ def old_quiz_modify(request, quiz_id):
 
         question.save()
 
-        return redirect('engine:quiz_detail', quiz_id=quiz_id)
+        return redirect('engine:question_detail', quiz_id=quiz_id)
+
+
+def question_create(request, quiz_id):
+    '''
+    Simple view for creating a new question
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+
+    if request.method=='GET':
+        question_form = QuestionForm()
+        context = {
+            'quiz':quiz,
+            'question_form': question_form,
+        }
+        return render(request, 'engine/question_create.html', context)
+    elif request.method == 'POST':
+        question_form = QuestionForm(request.POST)
+        question = question_form.save()
+        question.quiz.add(quiz)
+        question.save()
+        return redirect('engine:quiz_detail', quiz_id=quiz.pk)
+
+
+def question_modify(request, quiz_id, question_id):
+    '''
+    Modify an existing question
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=question_id)
+    question_form = QuestionForm(instance=question)
+    context = {
+        'quiz':quiz,
+        'question':question,
+        'question_form': question_form,
+    }
+    return render(request, 'engine/question_modify.html', context)
 
 
 def answer_detail(request, quiz_id, question_id, answer_id):
@@ -276,6 +359,7 @@ def answer_detail(request, quiz_id, question_id, answer_id):
         'answer': answer,
     }
     return render(request, 'engine/answer_detail.html', context)
+
 
 def answer_create(request, quiz_id, question_id):
     '''
@@ -319,123 +403,6 @@ def answer_modify(request, quiz_id, question_id, answer_id):
 
     elif request.method == 'POST':
         pass
-
-
-def explanation_list(request, quiz_id, question_id):
-    '''
-    list explanations for a single question (multiple choices)
-    '''
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    question = quiz.question_set.first()
-    answers = question.answer_set.order_by('_order')
-    context = {
-        'quiz':quiz,
-        'question':question,
-        'answers':answers, 
-    }
-
-    return render(request, 'engine/explanation_list.html', context)
-
-
-
-
-def question_detail(request, quiz_id, question_id):
-    '''
-    question home page
-    '''
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    question = get_object_or_404(Question, pk=question_id)
-    context = {
-        'quiz':quiz,
-        'question':question,
-    }
-    return render(request, 'engine/question_detail.html', context)
-
-
-def question_results(request, quiz_id, question_id):
-    quiz = get_object_or_404(Quiz,pk=quiz_id)
-    question = get_object_or_404(Question,pk=question_id)
-
-    answers = question.answer_set.all()
-
-    # determine appropriate variables
-    variables = [v for v in Variable.objects.all() if v.content_type.name == 'answer']
-
-    values_matrix = []
-    # for variable in mooclet.policy.variables.all():
-    for answer in answers:
-        answer_values = []
-        for variable in variables:
-            value = variable.get_data({'quiz':quiz, 'question':question, 'answer': answer}).last()
-            if value:
-                answer_values.append(value.value)
-            else:
-                answer_values.append('n/a')
-        values_matrix.append(answer_values)
-
-    context = {
-        'quiz':quiz,
-        'question':question,
-        'answers':answers,
-        'variables': variables,
-        'values_matrix':values_matrix,
-    }
-    return render(request, 'engine/quiz_results.html',context)
-
-
-
-def question_create(request, quiz_id):
-    '''
-    create a new question
-    '''
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-
-    if request.method=='GET':
-        question_form = QuestionForm()
-        context = {
-            'quiz':quiz,
-            'question_form': question_form,
-        }
-        return render(request, 'engine/question_create.html', context)
-    elif request.method == 'POST':
-        question_form = QuestionForm(request.POST)
-        question = question_form.save()
-        question.quiz.add(quiz)
-        question.save()
-        return redirect('engine:quiz_detail', quiz_id=quiz.pk)
-
-
-
-def question_modify(request, quiz_id, question_id):
-    '''
-    modify an existing question
-    '''
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    question = get_object_or_404(Question, pk=question_id)
-    question_form = QuestionForm(instance=question)
-    context = {
-        'quiz':quiz,
-        'question':question,
-        'question_form': question_form,
-    }
-    return render(request, 'engine/question_modify.html', context)
-
-
-def quiz_mooclets(request,quiz_id):
-    '''
-    list all mooclets (can be multiple types) for a quiz
-    '''
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    questions = quiz.question_set.all()
-    answers = [[question.answer_set.order_by('_order')] for question in questions]
-    # mooclets = [answer.mooclet for answer in answers]
-    context = {
-        'quiz':quiz,
-        'question':question, 
-        'answers':answers, # 2d array of question answers
-        # 'mooclets':mooclets,
-    }
-    return render(request, 'engine/quiz_mooclets.html', context)
 
 
 def mooclet_detail(request, **kwargs):
@@ -653,6 +620,7 @@ def mooclet_list_values(request, **kwargs):
     }
     return render(request, 'engine/mooclet_list_values.html',context)
 
+
 def mooclet_results(request, **kwargs):
     mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
     quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
@@ -710,38 +678,6 @@ def mooclet_results(request, **kwargs):
     return render(request, 'engine/mooclet_results.html',context)
 
 
-def oldmooclet_results(request, **kwargs):
-    mooclet = get_object_or_404(Mooclet,pk=kwargs['mooclet_id'])
-    quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
-    question = get_object_or_404(Question,pk=kwargs['question_id'])
-    answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
-
-    # determine appropriate variables
-    variables = [v for v in Variable.objects.all() if v.content_type.name == 'version']
-    versions = mooclet.version_set.all()
-    values_matrix = []
-    # for variable in mooclet.policy.variables.all():
-    for version in versions:
-        version_values = []
-        for variable in variables:
-            value = variable.get_data({'quiz':quiz, 'version':version }).last()
-            if value:
-                version_values.append(value.value)
-            else:
-                version_values.append('n/a')
-        values_matrix.append(version_values)
-
-    context = {
-        'quiz':quiz,
-        'mooclet':mooclet,
-        'question':question,
-        'answer':answer,
-        'versions': versions,
-        'variables': variables,
-        'values_matrix':values_matrix,
-    }
-    return render(request, 'engine/mooclet_results.html',context)
-
 def version_modify(request, **kwargs):
     '''
     modify version, by redirecting to correct version object's modify view 
@@ -758,31 +694,6 @@ def version_modify(request, **kwargs):
     else:
         return HttpResponse('Not implemented')
 
-    # # content_type for model that the mooclet is attached to
-    # parent_content_type = mooclet.type.parent_content_type
-    # # parent object instance
-    # parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=kwargs[parent_content_type.name+'_id']) 
-
-    # if parent_content_type.name == 'question':
-    #     question = parent_content
-    # elif parent_content_type.name == 'answer':
-    #     answer = parent_content
-    #     question = answer.question
-
-    # if request.method == 'GET':
-    #     version_form = VersionForm(instance=version)
-    #     context = {
-    #         'quiz': quiz,
-    #         'question': question,
-    #         'answer': answer,
-    #         'version_form': version_form,
-    #     }
-    #     return render(request, 'engine/answer_modify.html', context)
-
-    # elif request.method == 'POST':
-    #     # TODO
-    #     pass
-
 
 def version_create(request, **kwargs):
     quiz = get_object_or_404(Answer, pk=kwargs['quiz_id'])
@@ -795,6 +706,22 @@ def version_create(request, **kwargs):
         return redirect('engine:explanation_create',quiz_id=quiz.pk, question_id=question.pk, answer_id=answer.pk, mooclet_id=mooclet.pk)
     else:
         return HttpResponse('Not implemented')
+
+
+def explanation_list(request, quiz_id, question_id):
+    '''
+    list explanations for a single question (multiple choices)
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = quiz.question_set.first()
+    answers = question.answer_set.order_by('_order')
+    context = {
+        'quiz':quiz,
+        'question':question,
+        'answers':answers, 
+    }
+
+    return render(request, 'engine/explanation_list.html', context)
 
 
 def explanation_create(request, quiz_id, question_id, answer_id, mooclet_id):

@@ -8,8 +8,6 @@ urlpatterns = [
     # instructor management views
     url(r'^$', views.quiz_detail, name='quiz_detail'),
     url(r'^modify$', views.quiz_modify, name='quiz_modify'),
-    # "list mooclets for a quiz"
-    url(r'^mooclets$', views.quiz_mooclets, name='quiz_mooclets'),
     
     # collaborator-related
     url(r'^collaborator_request$', views.collaborator_request, name='collaborator_request'),

@@ -15,10 +15,6 @@ Quiz Manager
 <!-- <h2> Edit quiz and explanations </h2> -->
 
 	<p> <a href="{% url 'engine:quiz_modify' quiz_id=quiz.pk %}">Edit Quiz info</a></p>
-	
-	{% comment %}
-	<p> <a href="{% url 'engine:quiz_mooclets' quiz_id=quiz.pk %}">See all associated adaptive components for this quiz </a></p>	
-	{% endcomment %}
 
 	<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Invite Collaborators to suggest and edit adaptive quiz components.</a></p>
 
