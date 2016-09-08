@@ -38,10 +38,10 @@ def qsf_for_question(request, question_id):
     return HttpResponse(question_qsf)
 
 
-def end_quiz(request, grade):
+def end_quiz(request, quiz, grade):
     '''
     Redirect here after survey (end of last survey in chain, if multiple questions) 
     to do grade passback and return to LMS
     '''
-    grade_passback(request, grade)
+    grade_passback(grade, request.user, quiz)
     return redirect('lti:exit')

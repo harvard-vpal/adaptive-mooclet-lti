@@ -1,27 +1,29 @@
 from dce_lti_py import OutcomeRequest
 from django.conf import settings
-from  engine.models import Quiz
+from engine.models import Quiz
+from lti.models import LtiParameters
 
 
-def display_preview(request):
+def display_preview(user, quiz):
     '''
-    Checks whether to launch the LTI tool in preview mode or quiz mode
+    Checks whether to launch the LTI tool in preview mode or quiz mode for a given user and quiz
     Returns True for preview, False for quiz
     '''
-    quiz = Quiz.objects.get(id=request.session['quiz_id'])
+    lti_parameters = LtiParameters.objects.get(user=user, quiz=quiz)
+
     # LTI User role check
-    user_roles = request.session['LTI_LAUNCH']['roles']
+    user_roles = lti_parameters.roles
     if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
         return True
 
     # collaborator check
-    if request.user.collaborator_set.filter(course=quiz.course).exists():
+    if user.collaborator_set.filter(course=quiz.course).exists():
         return True
 
     return False
 
 
-def grade_passback(grade=None, request=None, user=None, quiz=None):
+def grade_passback(grade, user, quiz):
     '''
     Return grade / outcome data back to the LMS via LTI Outcome Service protocol
     To get grade passback url, either provide: 
@@ -30,45 +32,24 @@ def grade_passback(grade=None, request=None, user=None, quiz=None):
         user/quiz combo (used to retrieve LTI params stored in db)
     
     '''
-    if not grade:
-        # TODO get grade from value store, would require user/quiz in parameters
-        return None
-
-    if request:
-        if 'LTI_LAUNCH' in request:
-            LTI_LAUNCH = request.session['LTI_LAUNCH']
-        else:
-            #TODO if no LTI_LAUNCH in request, do something useful
-            return None
-        
-    elif user and quiz:
-        lti_parameters = user.ltiparameters_set.filter(quiz=quiz)
-        if lti_parameters.exists():
-            LTI_LAUNCH = lti_parameters.values()[0]
-    else:
-        pass
+    lti_parameters = LtiParameters.objects.get(user=user, quiz=quiz)
 
     # send the outcome data
     outcome = OutcomeRequest(
         {
             # required for outcome reporting
-            'lis_outcome_service_url':LTI_LAUNCH['lis_outcome_service_url'],
-            'lis_result_sourcedid':LTI_LAUNCH['lis_result_sourcedid'],
-            'consumer_key': LTI_LAUNCH['oauth_consumer_key'],
-            'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[LTI_LAUNCH['oauth_consumer_key']],
+            'lis_outcome_service_url':lti_parameters.lis_outcome_service_url,
+            'lis_result_sourcedid':lti_parameters.lis_result_sourcedid,
+            'consumer_key': lti_parameters.oauth_consumer_key,
+            'consumer_secret': settings.LTI_OAUTH_CREDENTIALS[lti_parameters.oauth_consumer_key],
             'message_identifier': 'myMessage'
         }
     )
     
-    outcome_response = outcome.post_replace_result(
-        grade,
-        # result_data={
-        # #     # 'url':'placeholder'
-        #     'text':'complete'
-        # }
-    )
-    print 'GRADE PASSBACK'
-    print grade, LTI_LAUNCH
+    outcome_response = outcome.post_replace_result(grade)
+
+    # error logging
+    print 'GRADE PASSBACK TRIGGERED: user={}, quiz={}, course={}, grade={}'.format(user.pk, quiz.pk, course.pk, grade)
     print outcome_response
 
     # TODO error detection on bad passback

@@ -9,6 +9,7 @@ import logging
 from engine.models import Quiz
 from lti.models import LtiParameters
 from utils import display_preview
+import json
 
 # using dce_lti_py instad of ims_lti_py for grade passback
 from dce_lti_py import OutcomeRequest
@@ -75,42 +76,32 @@ def launch(request,quiz_id):
         If Student: display the quiz (specified by quiz_id)
         If Instructor: display the management view associated with the quiz
     '''
-
-    # put quiz id in session variable, referenced by navigation links
     quiz = get_object_or_404(Quiz, pk=quiz_id)
-    request.session['quiz_id'] = quiz.pk
-
-    # put more LTI params in the LTI launch session variable - needed when authenticating sent results back to canvas
-    lis_outcome_service_url = request.POST.get('lis_outcome_service_url', '')
-    lis_result_sourcedid = request.POST.get('lis_result_sourcedid', '')
-    oauth_consumer_key = request.POST.get('oauth_consumer_key', '')
 
 
-    more_lti_params = {
-        'lis_outcome_service_url': lis_outcome_service_url,
-        'lis_result_sourcedid': lis_result_sourcedid,
-        'oauth_consumer_key': oauth_consumer_key,
-    }
-    request.session['LTI_LAUNCH'].update(more_lti_params)
-
-    # save student LTI parameters to db, needed for asynchronous grade passback
-    quiz_lti_parameters, created = LtiParameters.objects.get_or_create(
+    # save student LTI parameters to db
+    lti_parameters, created = LtiParameters.objects.get_or_create(
         user=request.user,
         quiz=quiz,
     )
-    #TODO collect other LTI params
-    quiz_lti_parameters.lis_outcome_service_url = lis_outcome_service_url
-    quiz_lti_parameters.lis_result_sourcedid = lis_result_sourcedid
-    quiz_lti_parameters.oauth_consumer_key = oauth_consumer_key
-    quiz_lti_parameters.lti_user_id = request.POST.get('user_id','')
-    quiz_lti_parameters.lis_person_sourcedid = request.POST.get('lis_person_sourcedid','')
-    quiz_lti_parameters.save()
+    for parameter_name in lti_parameters.parameter_names:
+        setattr(lti_parameters, parameter_name, request.POST.get(parameter_name,''))
+
+    # do this separately bc its named differently
+    lti_parameters.lti_user_id = request.POST.get('user_id','')
+
+    # save raw post params
+    lti_parameters.data = json.dumps(dict(request.POST))
+
+    lti_parameters.save()
 
     # determine whether to display in preview mode or quiz mode (does role check)
-    if display_preview(request):
+    if display_preview(request.user, quiz):
+        # instructor-like role: launch the quiz management view
         return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:
+        # student role; launch the quiz
         return redirect('engine:launch', quiz_id=quiz.id)
 
 
@@ -121,6 +112,8 @@ def launch_resource_selection(request):
     LTI launch from assignment settings
     Used when first creating a new LTI quiz assignment
     '''
+
+    # TODO Safari-proofing
     if 'ext_content_return_types' in request.POST:
         more_lti_params = {
             'ext_content_return_types': request.POST.get('ext_content_return_types', None),
@@ -128,6 +121,7 @@ def launch_resource_selection(request):
             'ext_content_return_url': request.POST.get('ext_content_return_url', None),
         }
         request.session['LTI_LAUNCH'].update(more_lti_params)
+
 
     return redirect('engine:quiz_create_options')
 

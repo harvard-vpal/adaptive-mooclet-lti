@@ -99,7 +99,9 @@ def answer(request, answer_id):
             Response.objects.filter(user=request.user,answer=answer).last()
 
             # grade passback to LMS
-            grade_passback(score,request)
+            #TODO need to define quiz first, this won't work
+            quiz = None
+            grade_passback(score, request.user, quiz)
 
             return redirect('lti:return_to_LMS')
 

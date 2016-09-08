@@ -59,7 +59,8 @@ def quiz_create_url(request):
 
 def launch(request, quiz_id):
     '''
-    Redirect to proper mode of displaying quiz, based on urls present in quiz model fields
+    Redirect to proper mode of displaying quiz (native or external)
+    Checks if external URLs are present in quiz model fields
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     
@@ -77,7 +78,7 @@ def launch(request, quiz_id):
             # pass in django user_id as a GET parameter to survey
             'quiz_id':quiz_id,
             'user_id':request.user.id,
-            'quizsource': 'preview' if display_preview(request) else 'student',
+            'quizsource': 'preview' if display_preview(request.user, quiz) else 'student',
         }
         params_append_char = '&' if '?' in external_url else '?'
         return redirect(external_url+ params_append_char + urlencode(extra_params))
@@ -847,7 +848,6 @@ def explanation_modify(request, quiz_id, question_id, answer_id, mooclet_id, ver
             explanation = explanation.delete()
         else:
             explanation = explanation_form.save()
-
 
         
         return redirect('engine:mooclet_detail',quiz_id=quiz_id,question_id=question_id,answer_id=answer_id,mooclet_id=mooclet_id)

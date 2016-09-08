@@ -169,7 +169,7 @@ def submit_quiz_grade(request):
     )
     value.save()
 
-    grade_passback(grade, user=user, quiz=quiz)
+    grade_passback(grade, user, quiz)
 
     return JsonResponse({'message': 'Quiz grade successfully submitted'})
 
