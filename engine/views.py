@@ -687,7 +687,7 @@ def mooclet_results(request, **kwargs):
                 value.save()
                 version_values.append(value.value)
             elif new_value and not value:
-                value = value.objects.create(variable=variable, object_id=version.pk, value=new_value)
+                value = Value.objects.create(variable=variable, object_id=version.pk, value=new_value)
                 version_values.append(value.value)
             else:
                 version_values.append('n/a')
