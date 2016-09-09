@@ -1,0 +1,29 @@
+{% extends "engine/base_question.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+View answers and associated explanation-MOOClets
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Answers and associated MOOClets" ""%}
+{% endblock breadcrumbs %}
+
+{% block body %}
+
+<p> Question: {{question.text | safe}}</p>
+
+<ul>
+{% for answer in question.answer_set.all %}
+
+	<li>
+		Answer: {{answer.text | safe}}
+		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Explanation-MOOClet</a>
+	</li>
+	
+{% endfor %}
+</ul>
+
+{% endblock %}

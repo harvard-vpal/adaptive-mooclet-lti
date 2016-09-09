@@ -1,4 +1,4 @@
-{% extends "engine/base_quiz.html" %}
+{% extends "engine/base_question.html" %}
 {% load staticfiles %}
 {% load django_bootstrap_breadcrumbs %}
 
@@ -8,14 +8,13 @@ Create/Modify Question Text &amp; Answers
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Quiz update" "" %}
+	{% breadcrumb "Update question and answers" "" %}
 {% endblock breadcrumbs %}
 
 {% block body %}
 
 <form method="post">
-	<h3>Quiz Name</h3>
-	{{quiz_form.as_p}}
+	<h3>Question</h3>
 
 	{{question_form.as_p}}
 

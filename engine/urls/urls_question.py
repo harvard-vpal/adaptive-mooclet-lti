@@ -9,5 +9,5 @@ urlpatterns = [
 	url(r'^question_and_answers_modify$', views.question_and_answers_modify, name='question_and_answers_modify'),
     url(r'^results$', views.question_results, name='question_results'),
     url(r'^answer/create$', views.answer_create, name='answer_create'),
-
+    url(r'^answer/list$', views.answer_list, name='answer_list'),
 ]

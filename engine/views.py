@@ -210,7 +210,7 @@ def question_results(request, quiz_id, question_id):
     return render(request, 'engine/quiz_results.html',context)
 
 
-def question_and_answers_modify(request, question):
+def question_and_answers_modify(request, quiz_id, question_id):
     '''
     Edit question and 4 answers all at once
     '''
@@ -235,7 +235,7 @@ def question_and_answers_modify(request, question):
         if quiz.question_set.all().exists():
             use_qualtrics = bool(quiz.question_set.first().url)
 
-        quiz_form = QuizForm(instance=quiz,initial={'use_qualtrics':use_qualtrics})
+        # quiz_form = QuizForm(instance=quiz,initial={'use_qualtrics':use_qualtrics})
 
         question_form = QuestionForm(instance=question)
 
@@ -245,25 +245,20 @@ def question_and_answers_modify(request, question):
             # 'quiz_form':CreateQuizForm(),
             # 'Question':ModelForm(Question),
             'quiz':quiz,
-            'quiz_form':quiz_form,
+            'question':question,
+            # 'quiz_form':quiz_form,
             'question_form':question_form,
             'answer_formset': answer_formset,
             # 'answer_formgroups':answer_formgroups,
         }
 
-        return render(request, 'engine/question_detail.html', context)
+        return render(request, 'engine/question_and_answers_modify.html', context)
 
     # handle form submission/processing
     elif request.method == 'POST':
 
-        quiz_form = QuizForm(request.POST, instance=quiz)
-        quiz = quiz_form.save(commit=False)
-
-        # quiz.course = 7566
-        if 'LTI_LAUNCH' in request.session:
-            quiz.context = request.session['LTI_LAUNCH']['context_id']
-        quiz.user = request.user
-        quiz.save()
+        # quiz_form = QuizForm(request.POST, instance=quiz)
+        # quiz = quiz_form.save(commit=False)
 
         question_form = QuestionForm(request.POST, instance=question)
         question = question_form.save(commit=False)
@@ -285,28 +280,28 @@ def question_and_answers_modify(request, question):
                 answer.mooclet = mooclet
             answer.save()
 
-        quiz_form.is_valid()
-        if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
+        # quiz_form.is_valid()
+        # if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
             
-            print "starting quiz provisioning process"
+        #     print "starting quiz provisioning process"
 
-            new_survey_url = provision_qualtrics_quiz(request, question)
+        #     new_survey_url = provision_qualtrics_quiz(request, question)
             
-            if not new_survey_url:
-                raise Exception('quiz creation failed and did not return a qualtrics id')
+        #     if not new_survey_url:
+        #         raise Exception('quiz creation failed and did not return a qualtrics id')
 
-            question.url = new_survey_url
+        #     question.url = new_survey_url
 
-        # remove url field if checkbox deselected
-        if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
-            question.url = ''
+        # # remove url field if checkbox deselected
+        # if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
+        #     question.url = ''
 
             # TODO: delete the corresponding survey on qualtrics
             # delete_qualtrics_quiz(request, survey_url)
 
         question.save()
 
-        return redirect('engine:question_detail', quiz_id=quiz_id)
+        return redirect('engine:question_detail', quiz_id=quiz_id, question_id=question_id)
 
 
 def question_create(request, quiz_id):
@@ -344,6 +339,17 @@ def question_modify(request, quiz_id, question_id):
     }
     return render(request, 'engine/question_modify.html', context)
 
+def answer_list(request, quiz_id, question_id):
+    '''
+    Answer list
+    '''
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=question_id)
+    context = {
+        'quiz':quiz,
+        'question':question,
+    }
+    return render(request, 'engine/answer_list.html', context)
 
 def answer_detail(request, quiz_id, question_id, answer_id):
     '''
