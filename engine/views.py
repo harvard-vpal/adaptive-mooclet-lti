@@ -610,17 +610,28 @@ def mooclet_simulate_probabilities(request, **kwargs):
     mooclet_context = {'mooclet': mooclet}
     #TODO indicate N
     #create a dict to count the number of times each version is picked
-    version_counts = {unicode(version): 0 for version in versions}
+    version_counts = {version: 0 for version in versions}
 
     #get versions 100 times and keep track of how often each is picked
     num_iterations = 100
     for i in range(1, num_iterations):
         version = mooclet.get_version(mooclet_context)
-        version = unicode(version)
+        #version = unicode(version)
         version_counts[version] = version_counts[version] + 1
     versions = version_counts.keys()
+
     probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+    explanation_probability, created = Variable.objects.get_or_create(name='explanation_probability')
+    for version, probability in zip(versions, probabilities):
+        explanation_probability_value = explanation_probability.get_data({'version': version}).last()
+        if explanation_probability_value:
+            explanation_probability_value.value = probability
+            explanation_probability_value.save()
+        else:
+            #no current probability stored
+            explanation_probability_value = Value.objects.create(variable=explanation_probability, object_id=version.pk, value=probability)
     probabilities = ['{:.2f}%'.format(probability * 100) for probability in probabilities]
+    versions = [unicode(version) for version in versions]
     context = {
         'quiz': quiz,
         'mooclet': mooclet,
@@ -660,6 +671,7 @@ def mooclet_results(request, **kwargs):
 
     # determine appropriate variables
     variables = []
+    variables.append(Variable.objects.get_or_create(name='explanation_probability')[0])
     variables.append(Variable.objects.get_or_create(name='mean_student_rating', display_name="Mean Student Rating")[0])
     variables.append(Variable.objects.get_or_create(name='num_students', display_name="Number of Students")[0])
     variables.append(Variable.objects.get_or_create(name='rating_std_dev', display_name="Standard Deviation of Rating")[0])
@@ -670,6 +682,7 @@ def mooclet_results(request, **kwargs):
     for version in versions:
         version_values = []
         for variable in variables:
+            new_value = None
             #value = variable.get_data({'quiz':quiz, 'version':version }).last()
             
             if variable.name == 'mean_student_rating':
@@ -686,13 +699,17 @@ def mooclet_results(request, **kwargs):
             #     new_value = Variable.objects.get(name='student_rating').get_data({'quiz':quiz, 'version':version }).count()
                 #new_value = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all().aggregate(StdDev('value', sample=True))
             value = Value.objects.filter(variable=variable, object_id=version.pk).last()
+            
+
             if new_value and value:
                 value.value = new_value
                 value.save()
-                version_values.append(value.value)
+                version_values.append('{:.2f}'.format(value.value))
             elif new_value and not value:
                 value = Value.objects.create(variable=variable, object_id=version.pk, value=new_value)
-                version_values.append(value.value)
+                version_values.append('{:.2f}'.format(value.value))
+            elif value and not new_value:
+                version_values.append('{:.2f}'.format(value.value))
             else:
                 version_values.append('n/a')
         values_matrix.append(version_values)
