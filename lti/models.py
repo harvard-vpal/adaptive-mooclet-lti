@@ -12,7 +12,7 @@ class LtiParameters(models.Model):
     user = models.ForeignKey(User)
     quiz = models.ForeignKey(Quiz)
 
-    # LTI params
+    # LTI params - ADD THESE BELOW TOO
     lis_outcome_service_url = models.CharField(max_length=200,default='')
     lis_result_sourcedid = models.CharField(max_length=100,default='')
     oauth_consumer_key = models.CharField(max_length=100,default='')
@@ -22,6 +22,18 @@ class LtiParameters(models.Model):
     roles = models.CharField(max_length=200,default='')
     context_id = models.CharField(max_length=200,default='')
 
+    # used to enable iteration through parameter names to make saving these easier
+    parameter_names = [
+        'lis_outcome_service_url',
+        'lis_result_sourcedid',
+        'oauth_consumer_key',
+        'lis_person_sourcedid',
+        'custom_canvas_user_id',
+        'custom_canvas_course_id',
+        'roles',
+        'context_id',
+    ]
+
     #TODO may want to collect other LTI params
 
     # corresponds to "user_id" LTI param (hashed field), field renamed so it's not confused with user foreign key
@@ -30,14 +42,7 @@ class LtiParameters(models.Model):
     # generic text field where all LTI params are dumped as json
     data = models.TextField(default='')
 
-    parameter_names = [
-        'lis_outcome_service_url',
-        'lis_result_sourcedid',
-        'oauth_consumer_key',
-        'lis_person_sourcedid',
-        'custom_canvas_user_id',
-        'custom_canvas_course_id',
-    ]
+    
 
 
     class Meta:
