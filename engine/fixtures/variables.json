@@ -64,7 +64,7 @@
       "name": "explanation_probability",
       "display_name": "Probability of Explanation",
       "description": "Probability of Explanation",
-      "is_user_variable": true,
+      "is_user_variable": false,
       "content_type": ["engine", "version"]
     }
   },

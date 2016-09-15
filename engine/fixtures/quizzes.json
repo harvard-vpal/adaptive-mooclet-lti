@@ -10,7 +10,8 @@
     "model": "engine.quiz",
     "pk": 2,
     "fields": {
-      "name": "Default Thompson sampling sandbox quiz"
+      "name": "Default Thompson sampling sandbox quiz",
+      "url": "https://harvard.az1.qualtrics.com/SE/?SID=SV_6onk2iR3sfF0E2F"
     }
   }
 ]

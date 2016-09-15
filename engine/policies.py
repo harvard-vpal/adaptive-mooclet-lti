@@ -68,7 +68,7 @@ def thompson_sampling(variables,context):
 			prior_failure_db_value = Value.objects.create(variable=prior_failure_db, object_id=version.id, value=prior_failure)
 	
 
-
+		#TODO - log to db later?
 		successes = (rating_average * rating_count) + prior_success
 		failures = (max_rating * rating_count) - (rating_average * rating_count) + prior_failure
 
