@@ -43,6 +43,8 @@ def thompson_sampling(variables,context):
 		rating_count = student_ratings.count()
 		rating_average = student_ratings.aggregate(Avg('value'))
 		rating_average = rating_average['value__avg']
+		if rating_average is None:
+			rating_average = 0
 
 
 		#get instructor conf and use for priors later
