@@ -582,6 +582,7 @@ def mooclet_simulate_probabilities(request, **kwargs):
     answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
     versions = mooclet.version_set.all()
     mooclet_context = {'mooclet': mooclet}
+    version_content_type = ContentType.objects.get_for_model(Version)
     #TODO indicate N
     #create a dict to count the number of times each version is picked
     version_counts = {version: 0 for version in versions}
@@ -595,7 +596,7 @@ def mooclet_simulate_probabilities(request, **kwargs):
     versions = version_counts.keys()
 
     probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
-    explanation_probability, created = Variable.objects.get_or_create(name='explanation_probability')
+    explanation_probability, created = Variable.objects.get_or_create(name='explanation_probability', content_type=version_content_type)
     for version, probability in zip(versions, probabilities):
         explanation_probability_value = explanation_probability.get_data({'version': version}).last()
         if explanation_probability_value:
@@ -643,13 +644,14 @@ def mooclet_results(request, **kwargs):
     quiz = get_object_or_404(Quiz,pk=kwargs['quiz_id'])
     question = get_object_or_404(Question,pk=kwargs['question_id'])
     answer = get_object_or_404(Answer,pk=kwargs['answer_id'])
+    version_content_type = ContentType.objects.get_for_model(Version)
 
     # determine appropriate variables
     variables = []
-    variables.append(Variable.objects.get_or_create(name='explanation_probability')[0])
-    variables.append(Variable.objects.get_or_create(name='mean_student_rating', display_name="Mean Student Rating")[0])
-    variables.append(Variable.objects.get_or_create(name='num_students', display_name="Number of Students")[0])
-    variables.append(Variable.objects.get_or_create(name='rating_std_dev', display_name="Standard Deviation of Rating")[0])
+    variables.append(Variable.objects.get_or_create(name='explanation_probability', content_type=version_content_type)[0])
+    variables.append(Variable.objects.get_or_create(name='mean_student_rating', display_name="Mean Student Rating", content_type=version_content_type)[0])
+    variables.append(Variable.objects.get_or_create(name='num_students', display_name="Number of Students", content_type=version_content_type)[0])
+    variables.append(Variable.objects.get_or_create(name='rating_std_dev', display_name="Standard Deviation of Rating", content_type=version_content_type)[0])
     #variables = [v for v in Variable.objects.all() if v.content_type.name == 'version']
     versions = mooclet.version_set.all()
     values_matrix = []
