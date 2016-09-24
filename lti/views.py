@@ -98,9 +98,7 @@ def launch(request,quiz_id):
     # determine whether to display in preview mode or quiz mode (does role check)
     if display_preview(request.user, quiz):
         # instructor-like role: launch the quiz management view
-        #return redirect('engine:quiz_detail', quiz_id=quiz_id)
-        # temporary: make the first question management view the landing page by going to question_detail rather than quiz_detail
-        return redirect('engine:question_detail', quiz_id=quiz_id)
+        return redirect('engine:quiz_detail', quiz_id=quiz_id)
 
     else:
         # student role; launch the quiz
