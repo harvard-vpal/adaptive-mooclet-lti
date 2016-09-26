@@ -45,7 +45,7 @@ Question Manager
 <div>
 	<h2> Student's View of Question</h2>
 	<!-- preview quiz -->
-	<iframe src="{% url 'engine:launch' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
+	<iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
 </div>
 
 {% endblock %}
