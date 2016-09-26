@@ -57,13 +57,13 @@ def quiz_create_url(request):
 
 #### UTILITY VIEWS ####
 
-def launch(request, quiz_id):
+def launch_quiz(request, quiz_id):
     '''
     Redirect to proper mode of displaying quiz (native or external)
     Checks if external URLs are present in quiz model fields
     '''
     quiz = get_object_or_404(Quiz,pk=quiz_id)
-    
+    #handle redicrets to different instructor/student views here?
     # redirect to an alternate view if the quiz is complete
     # grade_data = Variable.objects.get(name='quiz_grade').get_data({'quiz':quiz,'user':request.user})
     # if grade_data:
@@ -102,6 +102,20 @@ def launch_sandbox(request):
 
 
 #### QUIZ MANAGEMENT ####
+
+def launch_quiz_manager(requist, quiz_id):
+    """
+    show the instructor view - for now, question_detail
+    if the quiz has an associated questionelse quiz_detail
+    """
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    if quiz.question_set.exists():
+        #show question view
+        question = quiz.question_set.first()
+        return redirect('engine:question_detail', quiz_id=quiz.pk, question_id=question.pk)
+    else:
+        return redirect('engine:quiz_detail', quiz_id=quiz.pk)
+    pass
 
 def collaborator_request(request):
     # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
@@ -274,10 +288,10 @@ def question_and_answers_modify(request, quiz_id, question_id):
         policy = Policy.objects.get(name='uniform_random')
 
         for answer in answers:
-            if not answer.mooclet:
+            if not answer.mooclet_explanation:
                 mooclet = Mooclet(policy=policy)
                 mooclet.save()
-                answer.mooclet = mooclet
+                answer.mooclet_explanation = mooclet
             answer.save()
 
         # quiz_form.is_valid()

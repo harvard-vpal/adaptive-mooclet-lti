@@ -98,11 +98,13 @@ def launch(request,quiz_id):
     # determine whether to display in preview mode or quiz mode (does role check)
     if display_preview(request.user, quiz):
         # instructor-like role: launch the quiz management view
-        return redirect('engine:quiz_detail', quiz_id=quiz_id)
+        #return redirect('engine:quiz_detail', quiz_id=quiz_id)
+        #generic instructor_launch function
+        return redirect('engine:launch_quiz_manager', quiz_id=quiz_id)
 
     else:
         # student role; launch the quiz
-        return redirect('engine:launch', quiz_id=quiz.id)
+        return redirect('engine:launch_quiz', quiz_id=quiz.id)
 
 
 @login_required()
