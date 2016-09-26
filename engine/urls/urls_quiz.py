@@ -3,11 +3,12 @@ from .. import views
 
 urlpatterns = [
 
-    url(r'^launch$', views.launch_quiz, name='launch'),
+    url(r'^launch_quiz$', views.launch_quiz, name='launch_quiz'),
     
     # instructor management views
     url(r'^$', views.quiz_detail, name='quiz_detail'),
     url(r'^modify$', views.quiz_modify, name='quiz_modify'),
+    url(r'^launch_quiz_manager$', views.launch_quiz_manager, name='launch_quiz_manager'),
     
     # collaborator-related
     url(r'^collaborator_request$', views.collaborator_request, name='collaborator_request'),
