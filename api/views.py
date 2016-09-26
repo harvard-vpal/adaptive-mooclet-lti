@@ -9,6 +9,10 @@ from rest_framework import viewsets
 from api.serializers import *
 from lti.utils import grade_passback
 
+from django.db.models import Avg
+
+from numpy import std
+
 ##########################
 ##### rest-framework #####
 ##########################
@@ -216,6 +220,64 @@ def submit_value(request):
             value.save()
 
     return JsonResponse({'message': 'User variables successfully submitted'})
+
+
+def update_intermediates(request):
+    """
+    update intermediate viarables (mean, N, model params?)
+    on survey completion
+    """
+
+    token = 'jjw'
+    version_content_type = ContentType.objects.get_for_model(Version)
+    if 'token' not in request.GET or request.GET['token'] != token:
+        return JsonResponse({'message':'Required parameter token not found or incorrect'})
+
+    if 'quiz_id' not in request.GET:
+        return JsonResponse({'message':'Required parameter quiz_id not found in GET parameters'})
+
+    if 'version_id' not in request.GET:
+        return JsonResponse({'message':'Required parameter version_id not found in GET parameters'})
+    
+    version = Version.objects.get(pk=int(request.GET['version_id']))
+    student_ratings = Variable.objects.get(name='student_rating').get_data({'version': version}).all()
+    rating_count = student_ratings.count()
+    rating_average = student_ratings.aggregate(Avg('value'))
+    rating_average = rating_average['value__avg']
+    if rating_average is None:
+        rating_average = 0
+    std_dev = 0
+    ratings = [v.value for v in Variable.objects.filter(name='student_rating').first().get_data({'version':version }).all()]
+    if len(ratings) >= 1:
+        std_dev = std(ratings)
+    num_students_db, created = Variable.objects.get_or_create(name='num_students', display_name="Number of Students", content_type=version_content_type)
+    mean_rating_db, created = Variable.objects.get_or_create(name='mean_student_rating', display_name="Mean Student Rating", content_type=version_content_type)
+    std_dev_db, created = Variable.objects.get_or_create(name='rating_std_dev', display_name="Standard Deviation of Rating", content_type=version_content_type)
+
+    current_num_students = Value.objects.filter(variable=num_students_db, object_id=version.pk).last()
+    current_mean = Value.objects.filter(variable=mean_rating_db, object_id=version.pk).last()
+    current_std_dev = Value.objects.filter(variable=num_students_db, object_id=version.pk).last()
+
+    if current_num_students:
+        current_num_students.value = float(rating_count)
+        current_num_students.save()
+    elif not current_num_students and rating_count:
+        current_num_students = Value.objects.create(variable=num_students_db, object_id=version.pk, value=rating_count)
+
+    if current_mean:
+        current_mean.value = rating_average
+        current_mean.save()
+    elif not current_mean and rating_average:
+        current_mean = Value.objects.create(variable=mean_rating_db, object_id=version.pk, value=rating_average)
+
+    if current_std_dev:
+        current_std_dev.value = std_dev
+        current_std_dev.save()
+    elif not current_std_dev and std_dev:
+        current_std_dev = Value.objects.create(variable=std_dev_db, object_id=version.pk, value=std_dev)
+
+    return JsonResponse({'message':'Success. New variables:', 'count': rating_count, 'mean': rating_average, 'standard deviation': std_dev})
+
 
 # def submit_user_variables(request):
 #      '''

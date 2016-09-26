@@ -17,5 +17,6 @@ urlpatterns = [
 	url(r'^submit_result_of_explanation$', views.submit_result_of_explanation, name='submit_result_of_explanation'),
 	url(r'^submit_quiz_grade$', views.submit_quiz_grade, name='submit_quiz_grade'),
 	url(r'^submit_user_variable$', views.submit_value, name='submit_user_variable'),
+	url(r'^update_intermediates$', views.update_intermediates, name='update_intermediates'),
 ]
 
