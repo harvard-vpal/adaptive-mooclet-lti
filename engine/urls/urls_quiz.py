@@ -3,7 +3,7 @@ from .. import views
 
 urlpatterns = [
 
-    url(r'^launch$', views.launch, name='launch'),
+    url(r'^launch$', views.launch_quiz, name='launch'),
     
     # instructor management views
     url(r'^$', views.quiz_detail, name='quiz_detail'),
