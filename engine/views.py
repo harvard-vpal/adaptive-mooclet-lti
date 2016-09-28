@@ -103,7 +103,7 @@ def launch_sandbox(request):
 
 #### QUIZ MANAGEMENT ####
 
-def launch_quiz_manager(requist, quiz_id):
+def launch_quiz_manager(request, quiz_id):
     """
     show the instructor view - for now, question_detail
     if the quiz has an associated questionelse quiz_detail
@@ -115,7 +115,6 @@ def launch_quiz_manager(requist, quiz_id):
         return redirect('engine:question_detail', quiz_id=quiz.pk, question_id=question.pk)
     else:
         return redirect('engine:quiz_detail', quiz_id=quiz.pk)
-    pass
 
 def collaborator_request(request):
     # potential researcher would have to authenticate in the course, then open this view in a new browser window/tab (outside lms)
@@ -286,10 +285,10 @@ def question_and_answers_modify(request, quiz_id, question_id):
         #TODO create separate create_mooclet page where policy can be chosen
         # for now, set to a default policy
         policy = Policy.objects.get(name='uniform_random')
-
+        mooclet_type = MoocletType.objects.get(name='explanation')
         for answer in answers:
             if not answer.mooclet_explanation:
-                mooclet = Mooclet(policy=policy)
+                mooclet = Mooclet(policy=policy, type=mooclet_type)
                 mooclet.save()
                 answer.mooclet_explanation = mooclet
             answer.save()
@@ -335,6 +334,19 @@ def question_create(request, quiz_id):
         question_form = QuestionForm(request.POST)
         question = question_form.save()
         question.quiz.add(quiz)
+        question_form.is_valid()
+        if question_form.cleaned_data['use_qualtrics'] and not question.url:   
+            print "starting quiz provisioning process"
+            new_survey_url = provision_qualtrics_quiz(request, question)
+                    
+            if not new_survey_url:
+                raise Exception('quiz creation failed and did not return a qualtrics id')
+
+            question.url = new_survey_url
+
+            # remove url field if checkbox deselected
+            if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
+                question.url = ''
         question.save()
         return redirect('engine:quiz_detail', quiz_id=quiz.pk)
 

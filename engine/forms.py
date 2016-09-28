@@ -24,6 +24,7 @@ class QuestionForm(forms.ModelForm):
 	Create new Question
 	Used in "create_quiz" view
 	'''
+	use_qualtrics = forms.BooleanField(initial=True, required=False, label="Keep checked as default (use Qualtrics template)")
 	class Meta:
 		model = Question
 		fields = ['text']
