@@ -345,7 +345,7 @@ def question_create(request, quiz_id):
             question.url = new_survey_url
 
             # remove url field if checkbox deselected
-            if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
+            if not question_form.cleaned_data['use_qualtrics'] and question.url:
                 question.url = ''
         question.save()
         return redirect('engine:quiz_detail', quiz_id=quiz.pk)
