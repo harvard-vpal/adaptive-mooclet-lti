@@ -1,0 +1,24 @@
+{% extends "engine/base_mooclet.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+{% load custom_tags %}
+
+{% block title %}
+Simulated Version Probabilities
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Simulate version probabilities" "" %}
+{% endblock breadcrumbs %}
+
+{% block body %}
+
+<p> Number of iterations: {{num_iterations}}</p>
+<ul>
+{% for version, probability in version_probabilities %}
+    <li>Probability of Version: {{ version | safe }} = {{ probability }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

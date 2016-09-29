@@ -7,6 +7,7 @@ djangorestframework
 django-storages
 boto
 django-bootstrap3
+django-bootstrap-breadcrumbs
 #django-crispy-forms
 
 #django-cached-authentication-middleware>=0.2.0

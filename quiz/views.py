@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from engine.models import *
 from .forms import ChooseAnswerForm, RateExplanationForm
-from engine.utils import get_explanation_for_student
 from lti.utils import grade_passback
 
 # Create your views here.
@@ -37,7 +36,18 @@ def question(request, question_id):
         if choose_answer_form.is_valid():
             answer = choose_answer_form.cleaned_data['answer']
 
-            # TODO save selected answer and grade to database
+            if answer.correct:
+                grade = 1
+            else:
+                grade = 0
+
+            # Save selected answer and grade to database
+            response = Response(
+                user=request.user,
+                answer=answer,
+                grade=grade,
+            )
+            response.save()
 
             # redirect to explanation/rating view, for the selected explanation
             return redirect('quiz:answer',answer_id=answer.id)
@@ -48,7 +58,7 @@ def answer(request, answer_id):
     self-hosted quiz: show explanation for answer and let student rate the explanation
     '''
     answer = Answer.objects.get(pk=answer_id)
-    mooclet = answer.mooclet
+    mooclet = answer.mooclet_explanation
 
     if request.method =='GET':
 
@@ -85,11 +95,13 @@ def answer(request, answer_id):
             rating.user = request.user
             rating.save()
 
-            #TODO determine grading policy
-            score = 1
+            # get response
+            Response.objects.filter(user=request.user,answer=answer).last()
 
             # grade passback to LMS
-            grade_passback(score,request)
+            #TODO need to define quiz first, this won't work
+            quiz = None
+            grade_passback(score, request.user, quiz)
 
             return redirect('lti:return_to_LMS')
 

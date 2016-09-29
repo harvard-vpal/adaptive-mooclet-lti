@@ -1,30 +1,14 @@
-from .algorithms import computeExplanation_Thompson
-from .models import Explanation
-import random
+from .models import *
+from django.contrib.contenttypes.models import ContentType
 
+def get_mooclet_context(mooclet):
+    # content_type for model that the mooclet is attached to
+    parent_content_type = mooclet.type.content_type
+    # parent object instance
+    parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=parent_content_id) 
 
-def get_explanation_for_student(answer, user, method=None):
-    if not method:
-        method = 'random'
-        
-    explanations = answer.mooclet.version_set.all()
-
-    # if method == 'thompson':
-
-    #     allExplanations = []
-    #     allResultsForExplanations = []
-    #     for explanation in explanations:
-    #         someResults = []
-    #         for result in explanation.result_set.all():
-    #             someResults.append(result.value)
-    #         allResultsForExplanations.append(someResults)
-    #         allExplanations.append(explanation)
-    #     student_id = 'placeholder'
-    #     selectedExplanation, exp_value = computeExplanation_Thompson(student_id, allExplanations, allResultsForExplanations)
-    #     return selectedExplanation
-
-    if method == 'random':
-        return random.choice(explanations)
-
-    else:
-        raise Exception('Method "{}" for determining explanation not recognized')
+    if parent_content_type.name == 'question':
+        question = parent_content
+    elif parent_content_type.name == 'answer':
+        answer = parent_content
+        question = answer.question

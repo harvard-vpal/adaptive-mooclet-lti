@@ -1,28 +1,32 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_mooclet.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+Modify/Add Versions of Explanations to be randomly shown after each Answer
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Explanation list" ""%}
+{% endblock breadcrumbs %}
 
 {% block body %}
-	<h1> Modify/Add Versions of Explanations to be randomly shown after each Answer</h1>
 
-	<div class="nav">
-		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to Question Manager</a>
-	</div>
+{% for answer in answers %}
 
-	<div>	
-		{% for answer in answers %}
+	<p>{{answer.text | safe}}</p>
+	<a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}"
 
-			<p>{{answer.text}}</p>
+	<ul>
+	{% for version in answer.mooclet.version_set.all %}
 
-			<ul>
-			{% for version in answer.mooclet.version_set.all %}
+		<li><a href="{% url 'engine:explanation_modify' explanation_id=version.explanation.pk %}">{{version.explanation.text}}</a></li>
 
-				<li><a href="{% url 'engine:explanation_modify' explanation_id=version.explanation.pk %}">{{version.explanation.text}}</a></li>
+	{% endfor %}
+	<li><a href="{% url 'engine:explanation_create' mooclet_id=answer.mooclet.pk %}">Add a new explanation</a></li>
+	</ul>
+	
+{% endfor %}
 
-			{% endfor %}
-			<li><a href="{% url 'engine:explanation_create' mooclet_id=answer.mooclet.pk %}">Add a new explanation</a></li>
-			</ul>
-			
-			
-		{% endfor %}
-	</div>
 {% endblock %}

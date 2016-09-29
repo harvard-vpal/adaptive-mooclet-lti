@@ -1,0 +1,110 @@
+[ 
+  {
+    "model": "engine.question",
+    "pk": 1,
+    "fields": {
+      "name": "Default question",
+      "quiz": [1],
+      "text": "What is 1+1?"
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 1,
+    "fields": {
+    	"question": 1,
+      "text": "1",
+      "correct": false,
+      "mooclet_explanation": 1,
+      "_order": 1
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 2,
+    "fields": {
+    	"question": 1,
+      "text": "2",
+      "correct": true,
+      "mooclet_explanation": 1,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 3,
+    "fields": {
+    	"question": 1,
+      "text": "3",
+      "correct": false,
+      "mooclet_explanation": 1,
+      "_order": 3
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 4,
+    "fields": {
+    	"question": 1,
+      "text": "4",
+      "correct": false,
+      "mooclet_explanation": 1,
+      "_order": 4
+    }
+  },
+
+
+   {
+    "model": "engine.question",
+    "pk": 2,
+    "fields": {
+      "name": "Default thompson sampling question",
+      "quiz": [2],
+      "text": "Before moving on to the next topic, check your understanding of the use of indefinite integrals in context.&nbsp;<div><br></div><div>At time <em>t</em>=0 the temperature is 50 degrees and the rate of change of the temperature over the next 5 hours is given by<em> f(t)=9−t2</em> degrees per hour.</div><div><br></div><div>What is the maximum temperature during these five hours?</div>"
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 5,
+    "fields": {
+      "question": 2,
+      "text": "50 degrees",
+      "correct": false,
+      "mooclet_explanation": 2,
+      "_order": 1
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 6,
+    "fields": {
+      "question": 2,
+      "text": "18 degrees",
+      "correct": false,
+      "mooclet_explanation": 2,
+      "_order": 2
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 7,
+    "fields": {
+      "question": 2,
+      "text": "160/3 (or 53.333...) degrees",
+      "correct": false,
+      "mooclet_explanation": 2,
+      "_order": 3
+    }
+  },
+  {
+    "model": "engine.answer",
+    "pk": 8,
+    "fields": {
+      "question": 2,
+      "text": "68 degrees",
+      "correct": true,
+      "mooclet_explanation": 2,
+      "_order": 4
+    }
+  }
+]

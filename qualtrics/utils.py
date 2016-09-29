@@ -144,9 +144,9 @@ def provision_qualtrics_quiz(request, question):
     given a question model instance, modify the template qsf model to insert the question id, then upload to qualtrics
     '''
 
-    quiz = question.quiz
+    #quiz = question.quiz
     # name of the survey that will created on Qualtrics after QSF upload
-    survey_name = 'adaptive-quiz quiz_{} question_{} june2 {}'.format(quiz.id, question.id, question.text)
+    survey_name = 'adaptive-quiz question_{} june2 {}'.format(question.id, question.text)
 
     # this is the url that the modified QSF will be hosted at
     qsf_url = request.build_absolute_uri(reverse('qualtrics:qsf_for_question',kwargs={'question_id':question.id}))

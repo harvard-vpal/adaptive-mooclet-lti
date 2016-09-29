@@ -1,0 +1,33 @@
+{% extends "engine/base_quiz.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+List MOOClets
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "MOOClet list" "" %}
+{% endblock breadcrumbs %}
+
+{% block body %}
+	
+{% for question in quiz.question_set.all %}
+	<p> Question: {{ question.text | safe }}
+	<ul>
+	{% for answer in question.answer_set.all %}
+		
+		<li> Answer: {{answer.text | safe}}
+			
+		{% if answer.mooclet.pk %}
+			<a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}">Explanation-MOOClet (id={{answer.mooclet.pk}})</a>
+			
+		{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+	</p>
+{% endfor %}
+
+{% endblock %}

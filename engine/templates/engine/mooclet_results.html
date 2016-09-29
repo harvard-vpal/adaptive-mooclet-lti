@@ -1,0 +1,85 @@
+{% extends "engine/base_mooclet.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+{% load custom_tags %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"/>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js" type="text/javascript"></script>
+{% endblock head %}
+
+{% block title %}
+MOOClet results
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Version results" "" %}
+{% endblock breadcrumbs %}
+
+{% block body %}
+
+<table id="myTable">
+<thead>
+<tr>
+	<th>Version</th>
+	{% for variable in variables %}
+		<th> {{variable.display_name}} </th>
+	{% endfor %}
+</tr>
+</thead>
+
+<tbody>
+{% for version in versions %}
+	<tr>
+	<td>{{version | safe}}</td>
+	{% for variable in variables %}
+		{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
+				<td>{% iloc values_matrix m n %}</td>
+		{% endwith %}
+	{% endfor %}
+
+	</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% comment %}
+
+<h2> Student Variables for MOOClet </h2>
+<div class="student-version-values-table">
+	<div class="table">
+
+		<div class="tr">
+			<span class="td">Version</span>
+			{% for user_variable in user_variables %}
+				<span class="td"> {{user_variable.name}} </span>
+			{% endfor %}
+		</div>
+		
+		{% for version in versions %}
+			<div class="tr">
+			<span class="td"> {{version}} </span>
+
+			{% for user_variable in user_variables %}
+				{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
+					<span class="td">{% iloc value_tables m n %}</span>
+				{% endwith %}
+			{% endfor %}
+			</div>
+		{% endfor %}
+	</div>
+</div>
+
+{% endcomment %}
+
+{% endblock body %}
+
+{% block footer %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#myTable').DataTable();
+});
+</script>
+{% endblock footer %}
+

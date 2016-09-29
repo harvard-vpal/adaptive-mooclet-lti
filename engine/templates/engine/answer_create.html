@@ -1,0 +1,24 @@
+{% extends "engine/base_question.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+
+{% block title %}
+Create answer
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Create answer" "" %}
+{% endblock breadcrumbs %}
+
+{% block body %}
+
+<form method="post">
+    {{ answer_form.as_p }}
+    <input type="submit" value="Save" />
+</form>
+
+
+{% endblock %}
+

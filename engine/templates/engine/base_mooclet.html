@@ -1,0 +1,36 @@
+{% extends "engine/base_quiz.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block breadcrumbs %}
+
+{% if quiz %}
+	{% breadcrumb "Quiz" "engine:quiz_detail" quiz.pk %}
+{% endif %}
+{% if question %}
+	{% breadcrumb "Question" "engine:question_detail" quiz.pk question.pk %}
+{% endif %}
+{% if answer %}
+	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
+{% endif %}
+
+{% breadcrumb mooclet.type.display_name "engine:mooclet_detail" quiz.pk question.pk answer.pk mooclet.pk %}
+
+
+{% comment %}
+{% if mooclet.type == "explanation" %}
+	{% breadcrumb "Question" "engine:question_detail" quiz.pk question.pk %}
+	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk answer.pk %}
+	{% breadcrumb "Explanation-MOOClet" "engine:mooclet_detail" quiz.pk mooclet.pk %}
+
+{% elif mooclet.type == "next_question" %}
+	{% breadcrumb "NextQuestion-MOOClet" "engine:mooclet_detail" quiz.pk mooclet.pk %}
+
+{% else %}
+	{% breadcrumb "MOOClet" "engine:mooclet_detail" quiz.pk mooclet.pk %}
+
+{% endif %}
+{% endcomment %}
+
+
+{% endblock breadcrumbs %}

@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'ordered_model',
     'bootstrap3',
+    'django_bootstrap_breadcrumbs',
     # 'crispy_forms',
 
     ## core functions
@@ -96,7 +97,8 @@ TEMPLATES = [{
             'django.contrib.auth.context_processors.auth',
 
             # access the request inside django template
-            'django.core.context_processors.request',
+            'django.template.context_processors.request',
+            # 'django.template.context_processors.debug',
 
             # enable django messages
             'django.contrib.messages.context_processors.messages',
@@ -150,6 +152,10 @@ USE_L10N = True
 USE_TZ = True
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SESSION_COOKIE_SECURE = True
+
+SECURE_SSL_REDIRECT = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

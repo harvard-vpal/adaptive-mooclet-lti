@@ -2,18 +2,20 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import *
+from lti.models import LtiParameters
 
 class QuizAdmin (admin.ModelAdmin):
 	list_display = ['id','name','user']
 
 class QuestionAdmin (admin.ModelAdmin):
-	list_display = ['id','get_quiz_id','quiz','text']
+	list_display = ['id','text']
+	filter_horizontal = ('quiz',)
 
 	def get_quiz_id(self,obj):
 		return obj.quiz.id
 
 class AnswerAdmin (admin.ModelAdmin):
-	list_display = ['id','question','text','correct','mooclet']
+	list_display = ['id','question','text','correct','mooclet_explanation']
 
 # class ExplanationAdmin (admin.ModelAdmin):
 # 	list_display = ['id','answer','text']
@@ -41,7 +43,7 @@ admin.site.register(Version,VersionAdmin)
 admin.site.register(Variable)
 admin.site.register(Value)
 admin.site.register(Policy, PolicyAdmin)
-admin.site.register(MoocletType)
 admin.site.register(Collaborator)
 admin.site.register(Course)
-admin.site.register(QuizLtiParameters)
+admin.site.register(LtiParameters)
+admin.site.register(Response)

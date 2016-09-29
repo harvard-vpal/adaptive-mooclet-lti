@@ -1,0 +1,51 @@
+{% extends "engine/base_question.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+Question Manager
+{% endblock title %}
+
+{% block body %}
+
+<p> Use this page to Create and Modify Question Text, Answers, Explanations. </p>
+
+<div class="section">
+<h2> Question info:</h2>
+	<p> Question: {{question.text | safe}}</p>
+	<ul>
+	{% for answer in question.answer_set.all %}
+		<li><a href="{% url 'engine:answer_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk %}">Answer: {{answer}}</a></li>
+	{% endfor %}
+	{% if question.answer_set.all|length < 4 %}
+		
+	
+	<li><i><a href="{% url 'engine:answer_create' quiz_id=quiz.pk question_id=question.pk%} ">Create new answer</a></i></li>
+
+	{% endif %}
+	</ul>
+</div>
+
+<div class="section">
+<h2> Manage question </h2>
+	<p> <a href="{% url 'engine:question_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question text</a></p>
+	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers together</a></p>
+	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">See all answers and associated explanation-MOOClets</a></p>
+</div>
+
+
+{% comment %}
+<div class="section">
+<h2> Results and Analytics </h2>
+<a href="{% url 'engine:question_results' quiz_id=quiz.pk question_id=question.pk %}">View question-level results</a>
+	{# <p> <a href="#">Edit adaptive policy</a></p> #}
+</div>
+{% endcomment %}
+
+<div>
+	<h2> Student's View of Question</h2>
+	<!-- preview quiz -->
+	<iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
+</div>
+
+{% endblock %}

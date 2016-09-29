@@ -14,16 +14,17 @@ class QuizForm(forms.ModelForm):
 	Create new Quiz
 	Used in "create_quiz" view
 	'''
-	use_qualtrics = forms.BooleanField(required=False)
+	use_qualtrics = forms.BooleanField(required=False, label="Keep checked as default (use Qualtrics template)")
 	class Meta:
 		model = Quiz
-		fields = ['name']
+		fields = ['name', 'url']
 
 class QuestionForm(forms.ModelForm):
 	'''
 	Create new Question
 	Used in "create_quiz" view
 	'''
+	use_qualtrics = forms.BooleanField(initial=True, required=False, label="Keep checked as default (use Qualtrics template)")
 	class Meta:
 		model = Question
 		fields = ['text']
@@ -40,7 +41,7 @@ class AnswerForm(forms.ModelForm):
 		model = Answer
 		fields = ['text', 'correct']
 		widgets = {
-			'text': forms.widgets.TextInput,
+			'text': forms.Textarea(attrs={'rows':3}),
 		}
 
 class ExplanationForm(forms.ModelForm):
@@ -98,6 +99,9 @@ class CollaboratorForm(forms.ModelForm):
 		widgets = {
 			'user': forms.NumberInput(),
 		}
+		labels = {
+			'user': 'Collaborator ID',
+		}
 
 # class ValueForm(forms.ModelForm):
 # 	'''
@@ -119,4 +123,24 @@ class VersionValueForm(forms.ModelForm):
 		model=Value
 		fields = ['value']
 
-# form class representing a row of values for a version?	
+# form class representing a row of values for a version?
+
+class MoocletForm(forms.ModelForm):
+	'''
+	Form for creating mooclet
+	'''
+	class Meta:
+		model = Mooclet
+		fields = ['name','policy','type']
+
+
+# class VersionForm(forms.ModelForm):
+# 	'''
+# 	Create/modify new version
+# 	'''
+# 	class Meta:
+# 		model = Version
+# 		fields = ['text']
+# 		widgets = {
+# 			'text': forms.Textarea(attrs={'rows':3}),
+# 		}

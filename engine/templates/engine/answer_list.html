@@ -1,20 +1,29 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_question.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+View answers and associated explanation-MOOClets
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Answers and associated MOOClets" ""%}
+{% endblock breadcrumbs %}
 
 {% block body %}
-	<h1> List MOOClets </h1>
 
-	<div class="nav">
-		<a href="{% url 'engine:quiz_detail' quiz_id=request.session.quiz_id %}">Back to manage quiz</a>
-	</div>
+<p> Question: {{question.text | safe}}</p>
+
+<ul>
+{% for answer in question.answer_set.all %}
+
+	<li>
+		Answer: {{answer.text | safe}}
+		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Explanation-MOOClet</a>
+	</li>
 	
-	<div>	
-		{% for answer in answers %}
-			<p>
-			Answer: {{answer.text}}
-			<br>
-			<li><a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet.pk %}?answer_id={{answer.id}}">Explanation Mooclet for answer</a></li>
-			</p>
-		{% endfor %}
-	</div>
+{% endfor %}
+</ul>
+
 {% endblock %}

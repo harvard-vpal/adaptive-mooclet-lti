@@ -1,0 +1,34 @@
+{% extends "engine/base_quiz.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+Create New Mooclet
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+
+{% breadcrumb "Create Mooclet" "engine:create_mooclet" %}
+
+{% endblock breadcrumbs %}
+
+{% comment %}
+{% block nav %}
+{% include "engine/nav_back_to_url.html" %}	
+{% endblock nav %}
+{% endcomment %}
+
+{% block body %}
+
+
+
+<form method="post">
+
+	{{mooclet_form.as_p}}
+
+	<input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
+

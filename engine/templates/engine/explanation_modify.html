@@ -1,20 +1,22 @@
-{% extends "engine/base.html" %}
+{% extends "engine/base_mooclet.html" %}
 {% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+Edit explanation
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Modify Explanation" "" %}
+{% endblock breadcrumbs %}
 
 {% block body %}
 
-<h1> Edit explanation </h1>
-
-<div class="nav">
-	<a href="{% url 'engine:explanation_list' quiz_id=request.session.quiz_id %}">Back to quiz explanations</a>
-</div>
-
-<div>
-	<form method="post">
-		{{explanation_form.as_p}}
-	    <input type="submit" value="Save" />
-	</form>
-</div>
+<form method="post">
+	{{explanation_form.as_p}}
+    <input type="submit" value="Save" />
+</form>
 
 {% endblock %}
 

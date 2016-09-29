@@ -12,7 +12,16 @@
     "pk": 2,
     "fields": {
       "name": "weighted_random",
-      "variables": [4]
+      "variables": [3]
+    }
+  },
+
+  {
+    "model": "engine.policy",
+    "pk": 3,
+    "fields": {
+      "name": "thompson_sampling",
+      "variables": [7, 8]
     }
   }
 ]  

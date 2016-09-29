@@ -9,6 +9,10 @@ from rest_framework import viewsets
 from api.serializers import *
 from lti.utils import grade_passback
 
+from django.db.models import Avg
+
+from numpy import std
+
 ##########################
 ##### rest-framework #####
 ##########################
@@ -54,7 +58,6 @@ def get_question(request):
             break
 
     output = {
-        'quiz_id': question.quiz.id,
         'text':question.text,
         'correct_choice':correct_choice,
     }
@@ -99,7 +102,7 @@ def get_explanation_for_student(request):
     # answer = get_list_or_404(Answer, question=question, order=answer_choice)[0]
     # also answer_choice is 1-indexed
     answer = question.answer_set.order_by('_order')[answer_choice-1]
-    mooclet = answer.mooclet
+    mooclet = answer.mooclet_explanation
     
     mooclet_context = {'mooclet': mooclet}
 
@@ -111,7 +114,8 @@ def get_explanation_for_student(request):
     explanation = version.explanation
 
     return JsonResponse({
-        'id':explanation.id,
+        'explanation_id':explanation.id,
+        'version_id':version.id,
         'text':explanation.text,
     })
 
@@ -169,12 +173,133 @@ def submit_quiz_grade(request):
     )
     value.save()
 
-    grade_passback(grade, user=user, quiz=quiz)
+    grade_passback(grade, user, quiz)
 
     return JsonResponse({'message': 'Quiz grade successfully submitted'})
 
 # TODO generic function for submitting values
-# def submit_value()
+def submit_value(request):
+    """
+    Submit a generic variable value to app db
+    input: variable, value, user, [object_id, version, mooclet, quiz, course]
+    output: success message
+    """
+    reserved_params = ['token', 'user_id', 'content_type', 'object_id']
+    token = "jjw"
+    if 'token' not in request.GET or request.GET['token'] != token:
+        return JsonResponse({'message':'Required parameter token not found or incorrect'})
+    if 'user_id' not in request.GET:
+        return JsonResponse({'message':'Required parameter user_id not found in GET params'})
+
+    user_id = int(request.GET['user_id'])
+    user = User.objects.get(pk=user_id)
+    content_type = None
+    object_id = None
+    
+    if 'content_type' in request.GET:
+        content_type = ContentType.objects.get( model=request.GET['content_type'])
+    #we may want to not allow object_id without a content_type   
+    if 'object_id' in request.GET:
+        object_id = int(request.GET['object_id'])
+
+
+    for param in request.GET:
+        if param not in reserved_params:
+            #skip text variables since they aren't implemented
+            try:
+                variable_value = float(request.GET[param])
+            except ValueError:
+                break
+            variable, created = Variable.objects.get_or_create(name=param, content_type=content_type, is_user_variable=True)
+            value = Value(
+                variable=variable,
+                user=user,
+                object_id=object_id,
+                value=variable_value
+            )
+            value.save()
+
+    return JsonResponse({'message': 'User variables successfully submitted'})
+
+
+def update_intermediates(request):
+    """
+    update intermediate viarables (mean, N, model params?)
+    on survey completion
+    """
+
+    token = 'jjw'
+    version_content_type = ContentType.objects.get_for_model(Version)
+    if 'token' not in request.GET or request.GET['token'] != token:
+        return JsonResponse({'message':'Required parameter token not found or incorrect'})
+
+    if 'quiz_id' not in request.GET:
+        return JsonResponse({'message':'Required parameter quiz_id not found in GET parameters'})
+
+    if 'version_id' not in request.GET:
+        return JsonResponse({'message':'Required parameter version_id not found in GET parameters'})
+    
+    version = Version.objects.get(pk=int(request.GET['version_id']))
+    student_ratings = Variable.objects.get(name='student_rating').get_data({'version': version}).all()
+    rating_count = student_ratings.count()
+    rating_average = student_ratings.aggregate(Avg('value'))
+    rating_average = rating_average['value__avg']
+    if rating_average is None:
+        rating_average = 0
+    std_dev = 0
+    ratings = [v.value for v in Variable.objects.filter(name='student_rating').first().get_data({'version':version }).all()]
+    if len(ratings) >= 1:
+        std_dev = std(ratings)
+    num_students_db, created = Variable.objects.get_or_create(name='num_students', display_name="Number of Students", content_type=version_content_type)
+    mean_rating_db, created = Variable.objects.get_or_create(name='mean_student_rating', display_name="Mean Student Rating", content_type=version_content_type)
+    std_dev_db, created = Variable.objects.get_or_create(name='rating_std_dev', display_name="Standard Deviation of Rating", content_type=version_content_type)
+
+    current_num_students = Value.objects.filter(variable=num_students_db, object_id=version.pk).last()
+    current_mean = Value.objects.filter(variable=mean_rating_db, object_id=version.pk).last()
+    current_std_dev = Value.objects.filter(variable=num_students_db, object_id=version.pk).last()
+
+    if current_num_students:
+        current_num_students.value = float(rating_count)
+        current_num_students.save()
+    elif not current_num_students and rating_count:
+        current_num_students = Value.objects.create(variable=num_students_db, object_id=version.pk, value=rating_count)
+
+    if current_mean:
+        current_mean.value = rating_average
+        current_mean.save()
+    elif not current_mean and rating_average:
+        current_mean = Value.objects.create(variable=mean_rating_db, object_id=version.pk, value=rating_average)
+
+    if current_std_dev:
+        current_std_dev.value = std_dev
+        current_std_dev.save()
+    elif not current_std_dev and std_dev:
+        current_std_dev = Value.objects.create(variable=std_dev_db, object_id=version.pk, value=std_dev)
+
+    return JsonResponse({'message':'Success. New variables:', 'count': rating_count, 'mean': rating_average, 'standard deviation': std_dev})
+
+
+# def submit_user_variables(request):
+#      '''
+#     Submits a set of user variables to app db
+
+#     INPUT (via GET params): user_id, quiz_id, variables
+#     OUTPUT: confirmation message
+#     '''
+
+#     required_get_params = ['user_id', 'quiz_id']
+#     for param in required_get_params:
+#         if param not in request.GET:
+#             return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
+
+#     user_id = int(request.GET['user_id'])
+#     user = User.objects.get(pk=user_id)
+#     quiz_id = int(request.GET['quiz_id'])
+#     quiz = Quiz.objects.get(pk=quiz_id)
+
+#     for param, value in request.GET:
+#         if param not in required_get_params:
+
 
 
 

@@ -1,0 +1,58 @@
+{% extends "engine/base_mooclet.html" %}
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+{% load custom_tags %}
+
+{% block title %}
+Change policy variable values associated with MOOClet versions
+{% endblock title %}
+
+{% block breadcrumbs %}
+	{{ block.super }}
+	{% breadcrumb "Modify version values" "" %}
+{% endblock breadcrumbs %}
+
+{% block body %}
+
+{% comment %}
+<div class="context">
+	{% if answer %}
+		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
+		Answer text: {{answer.text | safe}}
+	{% else %}
+		No mooclet context provided
+	{% endif %}
+</div>
+{% endcomment %}
+
+<h2> Instructor Variables for MOOClet </h2>
+<div class="version-values-table">
+	<form method="post">
+	<div class="table">
+
+		<div class="tr">
+			<span class="td">Version</span>
+			{% for instructor_variable in instructor_variables %}
+				<span class="td"> {{instructor_variable.name}} </span>
+			{% endfor %}
+		</div>
+
+		
+		{% for version in versions %}
+			<div class="tr">
+			<span class="td"> {{version | safe}} </span>
+
+			{% for instructor_variable in instructor_variables %}
+				{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
+					<span class="td">{% iloc value_formgroups m n %}</span>
+				{% endwith %}
+			{% endfor %}
+			</div>
+		{% endfor %}
+		
+	<input type="submit" value="Save">
+
+</div>
+
+
+{% endblock %}
