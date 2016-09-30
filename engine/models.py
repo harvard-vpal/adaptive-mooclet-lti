@@ -156,7 +156,7 @@ class Value(models.Model):
     def __unicode__(self):
         var_name = self.variable.name if self.variable.name else ""
         value = self.value if self.value else ""
-        var_content_type = self.variable.content_type.name if self.variable.content_type.name else ""
+        var_content_type = self.variable.content_type.name if self.variable.content_type else ""
         value_object_id = self.object_id if self.object_id else ""
         return "{}={}, {}={}".format(var_name, value, var_content_type, value_object_id) 
 
