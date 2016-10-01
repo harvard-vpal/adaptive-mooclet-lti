@@ -233,7 +233,7 @@ def question_and_answers_modify(request, quiz_id, question_id): #
     if quiz.question_set.all().exists():
         question = quiz.question_set.first()
     else:
-        question = Question(quiz=quiz)
+        question = Question()
 
     # handle form display
     if request.method == 'GET':
@@ -275,6 +275,7 @@ def question_and_answers_modify(request, quiz_id, question_id): #
 
         question_form = QuestionForm(request.POST, instance=question)
         question = question_form.save(commit=False)
+        question.quiz.add(question)
         question.save()
 
         AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
