@@ -17,17 +17,19 @@ Answer Manager
 </div>
 
 <div class="section-links">
+	{% comment %}
 	<h2> Manage answer </h2>
 	<p> <a href="{% url 'engine:answer_modify' question_id=question.pk answer_id=answer.pk quiz_id=quiz.pk %}">Edit Text of Answer</a></p>
+	{% endcomment %}
 </div>
 
 <div class="section">
-<h2> Adaptive components </h2>
+<h2> Experiments </h2>
 	{% if answer.mooclet_explanation %}
-		<p><a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet_explanation.pk quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk%}">Manage explanation MOOClet</a><p>
+		<p><a href="{% url 'engine:mooclet_detail' mooclet_id=answer.mooclet_explanation.pk quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk%}">Edit this Answer's Feedback and View Experiment Data</a><p>
 
 	{% else %}
-		<p><a href="{% url 'engine:mooclet_create' type='explanation' %}">Add explanation mooclet to answer</a><p>
+		<p><a href="{% url 'engine:mooclet_create' type='explanation' %}">Add Experiment to Answer</a><p>
 	{% endif %}
 
 </div>

@@ -4,11 +4,11 @@
 {% load custom_tags %}
 
 {% block title %}
-Interact with MOOClet
+Experiment Information and Data
 {% endblock title %}
 
 {% block body %}
-
+{% comment %}
 <div class="section-context">
 	{% if mooclet.type == "explanation" %}
 		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
@@ -17,17 +17,12 @@ Interact with MOOClet
 		No mooclet context provided
 	{% endif %}
 </div>
+{% endcomment %}
 
-<div class="section-mooclet">
-	<h2>MOOClet properties</h2>
-	<p>Name: {{mooclet.name}}</p>
-	<p>Type: {{mooclet.type}}</p>
-	<p>Policy: {{mooclet.policy.name}}</p>
 
-</div>
 
 <div>
-	<h2>Versions:</h2>
+	<h2>Versions of Feedback:</h2>
 	<ul>
 	{% for version in mooclet.version_set.all %}
 		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe}}</a></li>
@@ -39,8 +34,10 @@ Interact with MOOClet
 <div class="section-links">
 	<h2> Links </h2>
 	<ul>
+	{% comment %}
 	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Get new data</a></li>
 	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View all mooclet data</a></li>
+	{% endcomment %}
 	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a></li>
 	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a></li>
 	{% comment %}
@@ -54,6 +51,16 @@ Interact with MOOClet
 	{% endif %}
 
 	</ul>
+</div>
+
+<div class="section-mooclet">
+	<h2>Advanced Info</h2>
+	{% comment %}
+	<p>Name: {{mooclet.name}}</p>
+	<p>Type: {{mooclet.type}}</p>
+	{% endcomment %}
+	<p>Policy: {{mooclet.policy.name}}</p>
+
 </div>
 
 {% comment %}
