@@ -295,25 +295,19 @@ def question_and_answers_modify(request, quiz_id, question_id): #
             answer.save()
 
 
-        quiz_form.is_valid()
-        if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
-            
+        question_form.is_valid()
+        if question_form.cleaned_data['use_qualtrics'] and not question.url:   
             print "starting quiz provisioning process"
-
             new_survey_url = provision_qualtrics_quiz(request, question)
-            
+                    
             if not new_survey_url:
                 raise Exception('quiz creation failed and did not return a qualtrics id')
 
             question.url = new_survey_url
 
-        # remove url field if checkbox deselected
-        if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
-            question.url = ''
-
-            # TODO: delete the corresponding survey on qualtrics
-            # delete_qualtrics_quiz(request, survey_url)
-
+            # remove url field if checkbox deselected
+            if not question_form.cleaned_data['use_qualtrics'] and question.url:
+                question.url = ''
         question.save()
 
         return redirect('engine:question_detail', quiz_id=quiz_id, question_id=question_id)
