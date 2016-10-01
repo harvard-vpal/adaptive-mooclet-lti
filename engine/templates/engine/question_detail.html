@@ -34,7 +34,7 @@ Question Manager
 	{% comment %}
 	<p> <a href="{% url 'engine:question_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question text</a></p>
 	{% endcomment %}
-	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers together</a></p>
+	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers</a></p>
 	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">Create Experiments on Feedback and View Data</a></p>
 </div>
 
