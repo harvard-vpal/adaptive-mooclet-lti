@@ -275,8 +275,8 @@ def question_and_answers_modify(request, quiz_id, question_id): #
 
         question_form = QuestionForm(request.POST, instance=question)
         question = question_form.save(commit=False)
-        question.quiz.add(quiz)
         question.save()
+        question.quiz.add(quiz)
 
         AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
         answer_formset = AnswerFormset(request.POST, instance=question)
@@ -294,7 +294,7 @@ def question_and_answers_modify(request, quiz_id, question_id): #
                 answer.mooclet_explanation = mooclet
             answer.save()
 
-        
+
         quiz_form.is_valid()
         if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
             
