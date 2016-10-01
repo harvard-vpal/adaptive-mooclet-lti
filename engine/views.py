@@ -275,7 +275,7 @@ def question_and_answers_modify(request, quiz_id, question_id): #
 
         question_form = QuestionForm(request.POST, instance=question)
         question = question_form.save(commit=False)
-        question.quiz.add(question)
+        question.quiz.add(quiz)
         question.save()
 
         AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
@@ -294,21 +294,22 @@ def question_and_answers_modify(request, quiz_id, question_id): #
                 answer.mooclet_explanation = mooclet
             answer.save()
 
-        # quiz_form.is_valid()
-        # if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
+        
+        quiz_form.is_valid()
+        if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
             
-        #     print "starting quiz provisioning process"
+            print "starting quiz provisioning process"
 
-        #     new_survey_url = provision_qualtrics_quiz(request, question)
+            new_survey_url = provision_qualtrics_quiz(request, question)
             
-        #     if not new_survey_url:
-        #         raise Exception('quiz creation failed and did not return a qualtrics id')
+            if not new_survey_url:
+                raise Exception('quiz creation failed and did not return a qualtrics id')
 
-        #     question.url = new_survey_url
+            question.url = new_survey_url
 
-        # # remove url field if checkbox deselected
-        # if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
-        #     question.url = ''
+        # remove url field if checkbox deselected
+        if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
+            question.url = ''
 
             # TODO: delete the corresponding survey on qualtrics
             # delete_qualtrics_quiz(request, survey_url)
