@@ -223,7 +223,7 @@ def question_results(request, quiz_id, question_id):
     return render(request, 'engine/quiz_results.html',context)
 
 
-def question_and_answers_modify(request, quiz_id): #, question_id
+def question_and_answers_modify(request, quiz_id, question_id): #
     '''
     Edit question and 4 answers all at once
     '''
