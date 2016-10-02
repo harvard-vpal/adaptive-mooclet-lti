@@ -3,12 +3,12 @@
 {% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
-View answers and associated explanation-MOOClets
+View answers and associated experiments
 {% endblock title %}
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Answers and associated MOOClets" ""%}
+	{% breadcrumb "Answers and associated experiments" ""%}
 {% endblock breadcrumbs %}
 
 {% block body %}
@@ -19,8 +19,8 @@ View answers and associated explanation-MOOClets
 {% for answer in question.answer_set.all %}
 
 	<li>
-		Answer: {{answer.text | safe}}
-		<a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Explanation-MOOClet</a>
+		Answer: {{answer.text | safe}} <br>
+		&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Edit this Answer's Feedback and View Experiment Data</a>
 	</li>
 	
 {% endfor %}

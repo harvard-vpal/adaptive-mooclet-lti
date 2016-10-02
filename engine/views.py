@@ -223,7 +223,7 @@ def question_results(request, quiz_id, question_id):
     return render(request, 'engine/quiz_results.html',context)
 
 
-def question_and_answers_modify(request, quiz_id, question_id):
+def question_and_answers_modify(request, quiz_id, question_id): #
     '''
     Edit question and 4 answers all at once
     '''
@@ -233,7 +233,7 @@ def question_and_answers_modify(request, quiz_id, question_id):
     if quiz.question_set.all().exists():
         question = quiz.question_set.first()
     else:
-        question = Question(quiz=quiz)
+        question = Question()
 
     # handle form display
     if request.method == 'GET':
@@ -276,6 +276,7 @@ def question_and_answers_modify(request, quiz_id, question_id):
         question_form = QuestionForm(request.POST, instance=question)
         question = question_form.save(commit=False)
         question.save()
+        question.quiz.add(quiz)
 
         AnswerFormset = inlineformset_factory(Question, Answer, fields=('text','correct'), can_delete=False, extra=4, max_num=4)
         answer_formset = AnswerFormset(request.POST, instance=question)
@@ -293,28 +294,23 @@ def question_and_answers_modify(request, quiz_id, question_id):
                 answer.mooclet_explanation = mooclet
             answer.save()
 
-        # quiz_form.is_valid()
-        # if quiz_form.cleaned_data['use_qualtrics'] and not question.url:
-            
-        #     print "starting quiz provisioning process"
 
-        #     new_survey_url = provision_qualtrics_quiz(request, question)
-            
-        #     if not new_survey_url:
-        #         raise Exception('quiz creation failed and did not return a qualtrics id')
+        question_form.is_valid()
+        if question_form.cleaned_data['use_qualtrics'] and not question.url:   
+            print "starting quiz provisioning process"
+            new_survey_url = provision_qualtrics_quiz(request, question)
+                    
+            if not new_survey_url:
+                raise Exception('quiz creation failed and did not return a qualtrics id')
 
-        #     question.url = new_survey_url
+            question.url = new_survey_url
 
-        # # remove url field if checkbox deselected
-        # if not quiz_form.cleaned_data['use_qualtrics'] and question.url:
-        #     question.url = ''
-
-            # TODO: delete the corresponding survey on qualtrics
-            # delete_qualtrics_quiz(request, survey_url)
-
+            # remove url field if checkbox deselected
+            if not question_form.cleaned_data['use_qualtrics'] and question.url:
+                question.url = ''
         question.save()
 
-        return redirect('engine:question_detail', quiz_id=quiz_id, question_id=question_id)
+        return redirect('engine:question_detail', quiz_id=quiz_id, question_id=question.pk)
 
 
 def question_create(request, quiz_id):

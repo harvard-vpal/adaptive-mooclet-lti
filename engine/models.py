@@ -58,7 +58,7 @@ class Version(models.Model):
         try:
             return getattr(self, 'explanation').__unicode__()
         except:
-            return "Version: {}".format(self.name)
+            return "Version: {}".format(self.pk)
 
 
 class Policy(models.Model):
@@ -154,7 +154,11 @@ class Value(models.Model):
     timestamp = models.DateTimeField(null=True,auto_now=True)
 
     def __unicode__(self):
-        return "{}={}, {}={}".format(self.variable.name, self.value, self.variable.content_type.name ,self.object_id) 
+        var_name = self.variable.name if self.variable.name else ""
+        value = self.value if self.value else ""
+        var_content_type = self.variable.content_type.name if self.variable.content_type else ""
+        value_object_id = self.object_id if self.object_id else ""
+        return "{}={}, {}={}".format(var_name, value, var_content_type, value_object_id) 
 
     def get_object_content(self,content_object_name):
         '''

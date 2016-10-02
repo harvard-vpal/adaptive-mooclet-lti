@@ -10,6 +10,7 @@ Question Manager
 
 <p> Use this page to Create and Modify Question Text, Answers, Explanations. </p>
 
+{% comment %}
 <div class="section">
 <h2> Question info:</h2>
 	<p> Question: {{question.text | safe}}</p>
@@ -26,11 +27,15 @@ Question Manager
 	</ul>
 </div>
 
+{% endcomment %}
+
 <div class="section">
 <h2> Manage question </h2>
+	{% comment %}
 	<p> <a href="{% url 'engine:question_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question text</a></p>
-	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers together</a></p>
-	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">See all answers and associated explanation-MOOClets</a></p>
+	{% endcomment %}
+	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers</a></p>
+	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">Create Experiments on Feedback and View Data</a></p>
 </div>
 
 
