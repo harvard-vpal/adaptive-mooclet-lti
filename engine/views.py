@@ -310,7 +310,7 @@ def question_and_answers_modify(request, quiz_id, question_id): #
                 question.url = ''
         question.save()
 
-        return redirect('engine:question_detail', quiz_id=quiz_id, question_id=question_id)
+        return redirect('engine:question_detail', quiz_id=quiz_id, question_id=question.pk)
 
 
 def question_create(request, quiz_id):
