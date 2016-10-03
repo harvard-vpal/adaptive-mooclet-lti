@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
-from qualtrics.models import Template
+# from qualtrics.models import Template
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.contrib.contenttypes.models import ContentType

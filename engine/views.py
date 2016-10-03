@@ -446,9 +446,19 @@ def mooclet_detail(request, **kwargs):
     # object class that the mooclet is attached to
     parent_content_type = mooclet.type.parent_content_type
     parent_content = ContentType.get_object_for_this_type(parent_content_type, pk=kwargs[parent_content_type.name+'_id'])
+    
+    # populate a mooclet context dict
+    mooclet_context = {}
+    if parent_content_type.name == 'question':
+        mooclet_context['question'] = parent_content
+    if parent_content_type.name == 'answer':
+        mooclet_context['answer'] = parent_content
+        mooclet_context['question'] = parent_content.question
 
     versions = mooclet.version_set.all()
     version_content_type = ContentType.objects.get_for_model(Version)
+
+    mooclet_policy_form = MoocletPolicyForm(instance=mooclet)
 
     # page used to display variables that are version-specific
     if request.method == 'GET':
@@ -457,14 +467,11 @@ def mooclet_detail(request, **kwargs):
             'quiz':quiz,
             'mooclet':mooclet,
             'versions':versions,
+            'mooclet_policy_form':mooclet_policy_form,
         }
 
         # pass additional context variables for navigation
-        if parent_content_type.name == 'question':
-            context['question'] = parent_content
-        if parent_content_type.name == 'answer':
-            context['answer'] = parent_content
-            context['question'] = parent_content.question
+        context.update(mooclet_context)
 
         if 'question' in kwargs:
             context['question'] = get_object_or_404(Question,pk=kwargs['question_id'])
@@ -474,9 +481,12 @@ def mooclet_detail(request, **kwargs):
         return render(request, 'engine/mooclet_detail.html',context)
 
     elif request.method == 'POST':
-
-        # TODO figure out which form corresponds to which value/explanation/variable
-        pass
+        # process mooclet policy form for adjusting policy
+        mooclet_policy_form = MoocletPolicyForm(request.POST, instance=mooclet)
+        mooclet = mooclet_policy_form.save()
+        # converts dict of objs to dict of pks
+        mooclet_context_pk = {name+'_id':obj.pk for name,obj in mooclet_context.items()}
+        return redirect('engine:mooclet_detail', quiz_id=quiz.pk, mooclet_id=mooclet.pk, **mooclet_context_pk)     
 
 
 def mooclet_create(request, **kwargs):

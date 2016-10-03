@@ -58,8 +58,14 @@ Experiment Information and Data
 	{% comment %}
 	<p>Name: {{mooclet.name}}</p>
 	<p>Type: {{mooclet.type}}</p>
-	{% endcomment %}
 	<p>Policy: {{mooclet.policy.name}}</p>
+	{% endcomment %}
+
+<form method="post">
+    {{mooclet_policy_form}}
+    <input type="submit" value="Save" />
+</form>
+	
 
 </div>
 
