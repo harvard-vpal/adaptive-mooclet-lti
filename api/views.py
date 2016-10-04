@@ -158,6 +158,9 @@ def submit_quiz_grade(request):
     for param in required_get_params:
         if param not in request.GET:
             return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
+    if 'quizsource' in request.GET and request.GET['quizsource'] == 'preview':
+        #instructor preview, don't save the values
+        return JsonResponse({'message':'Instructor preview, values not saved'})
     grade = float(request.GET['grade'])
     user_id = int(request.GET['user_id'])
     user = User.objects.get(pk=user_id)
@@ -184,12 +187,17 @@ def submit_value(request):
     input: variable, value, user, [object_id, version, mooclet, quiz, course]
     output: success message
     """
-    reserved_params = ['token', 'user_id', 'content_type', 'object_id']
+    reserved_params = ['token', 'user_id', 'content_type', 'object_id', 'quizsource']
     token = "jjw"
     if 'token' not in request.GET or request.GET['token'] != token:
         return JsonResponse({'message':'Required parameter token not found or incorrect'})
     if 'user_id' not in request.GET:
         return JsonResponse({'message':'Required parameter user_id not found in GET params'})
+
+    if 'quizsource' in request.GET and request.GET['quizsource'] == 'preview':
+        #instructor preview, don't save the values
+        return JsonResponse({'message':'Instructor preview, values not saved'})
+
 
     user_id = int(request.GET['user_id'])
     user = User.objects.get(pk=user_id)
