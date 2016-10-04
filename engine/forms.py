@@ -134,6 +134,15 @@ class MoocletForm(forms.ModelForm):
 		fields = ['name','policy','type']
 
 
+class MoocletPolicyForm(forms.ModelForm):
+	'''
+	Form for modifying policy of mooclet
+	'''
+	class Meta:
+		model = Mooclet
+		fields = ['policy']
+		
+
 # class VersionForm(forms.ModelForm):
 # 	'''
 # 	Create/modify new version
