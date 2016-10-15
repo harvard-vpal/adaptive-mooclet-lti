@@ -158,6 +158,9 @@ def submit_quiz_grade(request):
     for param in required_get_params:
         if param not in request.GET:
             return JsonResponse({'message':'Required parameter {} not found in GET params'.format(param)})
+    if 'quizsource' in request.GET and request.GET['quizsource'] == 'preview':
+        #instructor preview, don't save the values
+        return JsonResponse({'message':'Instructor preview, values not saved'})
     grade = float(request.GET['grade'])
     user_id = int(request.GET['user_id'])
     user = User.objects.get(pk=user_id)
@@ -184,12 +187,17 @@ def submit_value(request):
     input: variable, value, user, [object_id, version, mooclet, quiz, course]
     output: success message
     """
-    reserved_params = ['token', 'user_id', 'content_type', 'object_id']
+    reserved_params = ['token', 'user_id', 'content_type', 'object_id', 'quizsource']
     token = "jjw"
     if 'token' not in request.GET or request.GET['token'] != token:
         return JsonResponse({'message':'Required parameter token not found or incorrect'})
     if 'user_id' not in request.GET:
         return JsonResponse({'message':'Required parameter user_id not found in GET params'})
+
+    if 'quizsource' in request.GET and request.GET['quizsource'] == 'preview':
+        #instructor preview, don't save the values
+        return JsonResponse({'message':'Instructor preview, values not saved'})
+
 
     user_id = int(request.GET['user_id'])
     user = User.objects.get(pk=user_id)
@@ -240,6 +248,8 @@ def update_intermediates(request):
         return JsonResponse({'message':'Required parameter version_id not found in GET parameters'})
     
     version = Version.objects.get(pk=int(request.GET['version_id']))
+    mooclet = version.mooclet
+    versions = mooclet.version_set.all()
     student_ratings = Variable.objects.get(name='student_rating').get_data({'version': version}).all()
     rating_count = student_ratings.count()
     rating_average = student_ratings.aggregate(Avg('value'))
@@ -276,7 +286,30 @@ def update_intermediates(request):
     elif not current_std_dev and std_dev:
         current_std_dev = Value.objects.create(variable=std_dev_db, object_id=version.pk, value=std_dev)
 
-    return JsonResponse({'message':'Success. New variables:', 'count': rating_count, 'mean': rating_average, 'standard deviation': std_dev})
+    #simulate probabilities
+    mooclet_context = {'mooclet': mooclet}
+    version_counts = {version: 0 for version in versions}
+
+    #get versions 100 times and keep track of how often each is picked
+    num_iterations = 100
+    for i in range(1, num_iterations):
+        version = mooclet.get_version(mooclet_context)
+        #version = unicode(version)
+        version_counts[version] = version_counts[version] + 1
+    versions = version_counts.keys()
+
+    probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+    explanation_probability, created = Variable.objects.get_or_create(name='explanation_probability', content_type=version_content_type)
+    for version, probability in zip(versions, probabilities):
+        explanation_probability_value = explanation_probability.get_data({'version': version}).last()
+        if explanation_probability_value:
+            explanation_probability_value.value = probability
+            explanation_probability_value.save()
+        else:
+            #no current probability stored
+            explanation_probability_value = Value.objects.create(variable=explanation_probability, object_id=version.pk, value=probability)
+
+    return JsonResponse({'message':'Success. New variables:', 'count': rating_count, 'mean': rating_average, 'standard deviation': std_dev, 'probabilities': probabilities})
 
 
 # def submit_user_variables(request):
