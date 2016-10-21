@@ -785,11 +785,15 @@ def explanation_create(request, quiz_id, question_id, answer_id, mooclet_id):
     '''
     create new explanation version
     '''
+    quiz = get_object_or_404(Quiz,pk=quiz_id)
+    question = get_object_or_404(Question,pk=question_id)
+    answer = get_object_or_404(Answer,pk=answer_id)
     mooclet = get_object_or_404(Mooclet,pk=mooclet_id)
 
     if request.method=='GET':
         context = {
-            'explanation_form':ExplanationForm()
+            'explanation_form':ExplanationForm(),
+            'quiz':quiz
         }
         return render(request, 'engine/explanation_create.html',context)
 
