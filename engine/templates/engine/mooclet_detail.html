@@ -69,6 +69,13 @@ Experiment Information and Data
 
 </div>
 
+<div>
+<h2> Student's View of Question</h2>
+
+<!-- preview quiz -->
+<iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}" height='400px' width='80%'>
+</div>
+
 {% comment %}
 <div class="section-probabilities">
 	{% for version, probability in version_probabilities %}
