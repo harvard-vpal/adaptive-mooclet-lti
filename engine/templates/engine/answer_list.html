@@ -13,6 +13,10 @@ View answers and associated experiments
 
 {% block body %}
 
+<div>
+<button type="button" class="instruction-toggle" data-content-id="answer-instructions">What is this?</button>
+<p class="instruction-content" data-content-id="answer-instructions">[XX add instructions here]</p>
+</div>
 <p> Question: {{question.text | safe}}</p>
 
 <ul>
@@ -20,7 +24,7 @@ View answers and associated experiments
 
 	<li>
 		Answer: {{answer.text | safe}} <br>
-		&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Edit this Answer's Feedback and View Experiment Data</a>
+		&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Edit this Answer's Feedback and View Comparison Data</a>
 	</li>
 	
 {% endfor %}

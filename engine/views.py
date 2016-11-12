@@ -199,7 +199,7 @@ def question_results(request, quiz_id, question_id):
     answers = question.answer_set.all()
 
     # determine appropriate variables
-    variables = [v for v in Variable.objects.all() if v.content_type.name == 'answer']
+    variables = [v for v in Variable.objects.all() if v.content_type and v.content_type.name == 'answer']
 
     values_matrix = []
     # for variable in mooclet.policy.variables.all():

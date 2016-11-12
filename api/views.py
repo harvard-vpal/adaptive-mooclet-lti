@@ -113,6 +113,17 @@ def get_explanation_for_student(request):
     version = mooclet.get_version(mooclet_context)
     explanation = version.explanation
 
+    #update count of answers
+    answer_content_type = ContentType.objects.get_for_model(Answer)
+    answer_choice_count, created = Variable.objects.get_or_create(name='answer_choice_count', display_name='Count', content_type=answer_content_type)
+    value = answer_choice_count.get_data({'question':question, 'answer': answer}).last()
+    if not value:
+        value = Value.objects.create(variable=answer_choice_count, object_id=answer.pk, value=1.0)
+    else:
+        value.value += 1.0
+    value.save()
+    
+
     return JsonResponse({
         'explanation_id':explanation.id,
         'version_id':version.id,
@@ -234,6 +245,8 @@ def update_intermediates(request):
     """
     update intermediate viarables (mean, N, model params?)
     on survey completion
+    inputs: token, quiz_id, question_id, version_id
+    return success message
     """
 
     token = 'jjw'
@@ -246,7 +259,11 @@ def update_intermediates(request):
 
     if 'version_id' not in request.GET:
         return JsonResponse({'message':'Required parameter version_id not found in GET parameters'})
+
+    if 'question_id' not in request.GET:
+        return JsonResponse({'message':'Required parameter question_id not found in GET parameters'})
     
+    #update version level intermediate variables
     version = Version.objects.get(pk=int(request.GET['version_id']))
     mooclet = version.mooclet
     versions = mooclet.version_set.all()
@@ -308,6 +325,30 @@ def update_intermediates(request):
         else:
             #no current probability stored
             explanation_probability_value = Value.objects.create(variable=explanation_probability, object_id=version.pk, value=probability)
+
+    #Question Level variables
+    question = Question.objects.get(pk=int(request.GET['question_id']))
+    answers = question.answer_set.all()
+    answer_content_type = ContentType.objects.get_for_model(Answer)
+
+    answer_count = Variable.objects.get(name='answer_choice_count')
+    answer_counts = {answer: answer_count.get_data({'question': question, 'answer': answer }).last() for answer in answers}
+    total_count = sum(filter(None, answer_counts.values()))
+    answer_proportion, created = Variable.objects.get_or_create(name='answer_proportion', content_type=answer_content_type)
+    for answer in answer_counts:
+        #generate the proportion of answers
+        if answer_counts[answer]:
+            proportion = answer_counts[answer]/total_count
+        else: #no answer_choice_count, no one has chosen this answer
+            proportion = 0.0
+
+        value = answer_proportion.get_data({'question': question, 'answer': answer }).last()
+        if not value:
+            value = Value.objects.create(variable=answer_proportion, object_id=answer.pk, value=proportion)
+        else:
+            value.value = proportion
+        value.save()
+
 
     return JsonResponse({'message':'Success. New variables:', 'count': rating_count, 'mean': rating_average, 'standard deviation': std_dev, 'probabilities': probabilities})
 

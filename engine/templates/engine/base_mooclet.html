@@ -13,9 +13,11 @@
 {% if answer %}
 	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
 {% endif %}
-
+{% comment %}
 {% breadcrumb mooclet.type.display_name "engine:mooclet_detail" quiz.pk question.pk answer.pk mooclet.pk %}
+{% endcomment %}
 
+{% breadcrumb "Edit and View Data about Alternatives" "engine:mooclet_detail" quiz.pk question.pk answer.pk mooclet.pk %}
 
 {% comment %}
 {% if mooclet.type == "explanation" %}
