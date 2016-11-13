@@ -12,10 +12,16 @@ Modify/Add Versions of Explanations to be randomly shown after each Answer
 {% endblock breadcrumbs %}
 
 {% block body %}
+<!--instructions -->
 <div>
-<button type="button" class="instruction-toggle" data-content-id="explanation-instructions">What is this?</button>
-<p class="instruction-content" data-content-id="explanation-instructions">[XX add instructions here]</p>
+	[XX Add Instructions]  <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		This is the instructional content for this page.
+	</div>
+
 </div>
+<!--end instructions -->
 
 {% for answer in answers %}
 

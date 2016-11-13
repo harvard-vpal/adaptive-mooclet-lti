@@ -14,6 +14,20 @@ Create/Modify Question Text &amp; Answers
 {% block body %}
 
 <form method="post">
+	<!--instructions -->
+<div>
+	[XX Add Instructions]
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		Consult this checklist to ensure you have all the required information.
+		<ul>
+			<li>Have you written all four answers?</li>
+			<li>Have you chosen a correct answer?</li>
+		</ul>
+	</div>
+
+</div>
+<!--end instructions -->
 	<h3>Edit Text of Question and Answers</h3>
 
 	{{question_form.as_p}}

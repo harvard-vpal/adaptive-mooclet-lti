@@ -1,5 +1,6 @@
 {% extends "engine/base_question.html" %}
 {% load staticfiles %}
+
 {% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
@@ -8,11 +9,20 @@ Question Manager
 
 {% block body %}
 
-<p> Use this page to Create and Modify Question Text, Answers, Explanations. </p>
+<p> Use this page to Create and Modify <a href="#" data-toggle="tooltip" data-placement="top" title="This is a tooltip">Question</a> Text, Answers, Explanations. </p>
 <div>
-<button type="button" class="instruction-toggle" data-content-id="question-instructions">What is this?</button>
-<p class="instruction-content" data-content-id="question-instructions">[XX add instructions here]</p>
+
+
+
+<div>
+	[XX Add Instructions]  <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">What is this? (collapse)</button>
+	<div class="collapse" id="instructionCollapse">
+		This is the instructional content for this page.
+	</div>
 </div>
+
+
 {% comment %}
 <div class="section">
 <h2> Question info:</h2>
@@ -37,8 +47,8 @@ Question Manager
 	{% comment %}
 	<p> <a href="{% url 'engine:question_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question text</a></p>
 	{% endcomment %}
-	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers</a></p>
-	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">Create Experiments on Feedback and View Data</a></p>
+	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></p>
+	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">Create Experiments on Feedback and View Data</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></p>
 </div>
 
 

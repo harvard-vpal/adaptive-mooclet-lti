@@ -19,12 +19,16 @@
 	<script type="text/javascript" src="{% static 'lib/js/mathjax.js' %}"></script>
 
 	<script type="text/javascript">
-		$( window ).load(function() { 
+		$(document).load(function() { 
 			$('.instruction-toggle').click(function() {
 				var instructionContentId = $(this).data('content-id');
 				$(this).next('.instruction-content[data-content-id=' + instructionContentId + ']').slideToggle();
 			});
 		});
+
+		$(function () {
+  			$('[data-toggle="tooltip"]').tooltip()
+		})
 	</script>
 
 	<title>Adaptive Quiz</title>

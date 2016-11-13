@@ -19,10 +19,29 @@ Experiment Information and Data
 </div>
 {% endcomment %}
 
-<p>[XX add instructions]</p>
+<!--instructions -->
+<div>
+	[XX Add Instructions]    <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		This is the instructional content for this page.
+	</div>
+
+</div>
+<!--end instructions -->
 
 <div>
 	<h2>Versions of Feedback:</h2>
+	<!--instructions -->
+<div>
+	[XX Add Instructions]    <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		This is the instructional content for this page.
+	</div>
+
+</div>
+<!--end instructions -->
 	<ul>
 	{% for version in mooclet.version_set.all %}
 		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe}}</a></li>
@@ -38,8 +57,8 @@ Experiment Information and Data
 	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Get new data</a></li>
 	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View all mooclet data</a></li>
 	{% endcomment %}
-	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a></li>
-	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a></li>
+	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></li>
+	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></li>
 	{% comment %}
 	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
 	{% endcomment %}
