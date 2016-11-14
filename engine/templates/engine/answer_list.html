@@ -15,22 +15,29 @@ View answers and associated experiments
 
 <!--instructions -->
 <div>
-	[XX Add Instructions]  <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
+	Choose an answer below to author alternative versions of feedback messages that will be shown to students who choose that answer.
+	
+	<br>    <a href="#" data-toggle="tooltip" data-placement="top" 
+		   title="You will also be able to view student ratings of how helpful different feedback messages are."
+		   >More information</a>
+	
+	{% comment %}
 	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
 	<div class="collapse" id="instructionCollapse">
 		This is the instructional content for this page.
 	</div>
+	{% endcomment %}
 
 </div>
 <!--end instructions -->
-<p> Question: {{question.text | safe}}</p>
+{# <p> Question: {{question.text | safe}}</p> #}
 
 <ul>
 {% for answer in question.answer_set.all %}
 
 	<li>
 		Answer: {{answer.text | safe}} <br>
-		&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Edit this Answer's Feedback and View Comparison Data</a>
+		&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Edit this Answer's Feedback Messages and View Comparison Data</a>
 	</li>
 	
 {% endfor %}
