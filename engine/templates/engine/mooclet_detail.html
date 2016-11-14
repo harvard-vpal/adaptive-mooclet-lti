@@ -12,10 +12,10 @@ Alternative Feedback Messages for Answer
 
 <!--instructions -->
 <div>
-	This page lets you author different versions of feedback messages, view data about how students have rated them. You can also control
+	This page lets you author different versions of feedback messages, and view data about how students have rated them. You can also control
 	advanced features of determining the method for presenting feedback messages, and recording your predictions of which messages will be effective,
 	so you can compare these predictions to the data that is collected. 
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
+	<br> <br><button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
 	<div class="collapse" id="instructionCollapse">
 		The idea behind this app is that XX. You might find it helpful to look at YY in coming up with messages. The advanced options are ZZ.
 	</div>
@@ -44,7 +44,7 @@ Alternative Feedback Messages for Answer
 	<h2> View Ratings of Feedback Messages</h2>
 	<ul>
 	
-	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></li>
+	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <a href="#" data-toggle="tooltip" data-placement="top" title="This tells you how many people have been given each feedback message, what their average rating of the message has been, and how likely the next student is to receive each feedback message.">More information</a></li>
 	
 
 	{% if mooclet.type == "explanation" %}
