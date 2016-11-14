@@ -4,20 +4,11 @@
 {% load custom_tags %}
 
 {% block title %}
-Experiment Information and Data
+Alternative Feedback Messages for Answer
 {% endblock title %}
 
 {% block body %}
-{% comment %}
-<div class="section-context">
-	{% if mooclet.type == "explanation" %}
-		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
-		Answer text: {{answer.text | safe}}
-	{% else %}
-		No mooclet context provided
-	{% endif %}
-</div>
-{% endcomment %}
+
 
 <!--instructions -->
 <div>
@@ -53,15 +44,10 @@ Experiment Information and Data
 <div class="section-links">
 	<h2> Links </h2>
 	<ul>
-	{% comment %}
-	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Get new data</a></li>
-	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View all mooclet data</a></li>
-	{% endcomment %}
+	
 	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></li>
 	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></li>
-	{% comment %}
-	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
-	{% endcomment %}
+	
 
 	{% if mooclet.type == "explanation" %}
 		
@@ -73,7 +59,7 @@ Experiment Information and Data
 </div>
 
 <div class="section-mooclet">
-	<h2>Advanced Info</h2>
+	<h2>Advanced</h2>
 	{% comment %}
 	<p>Name: {{mooclet.name}}</p>
 	<p>Type: {{mooclet.type}}</p>
@@ -106,3 +92,26 @@ Experiment Information and Data
 
 
 {% endblock %}
+	
+	
+	{% comment %}
+<div class="section-context">
+	{% if mooclet.type == "explanation" %}
+		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
+		Answer text: {{answer.text | safe}}
+	{% else %}
+		No mooclet context provided
+	{% endif %}
+</div>
+{% endcomment %}
+
+	
+	
+	{% comment %}
+	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Get new data</a></li>
+	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View all mooclet data</a></li>
+	{% endcomment %}
+	
+	{% comment %}
+	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
+	{% endcomment %}
