@@ -9,21 +9,51 @@ Question Manager
 
 {% block body %}
 
-<p> Use this page to Create and Modify <a href="#" data-toggle="tooltip" data-placement="top" title="This is a tooltip">Question</a> Text, Answers, Explanations. </p>
-<div>
 
+{#<div> #}
 
+<div class="section">
+<h2> Edit text of question and answers </h2>
 
-<div>
-	[XX Add Instructions]  <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">What is this? (collapse)</button>
-	<div class="collapse" id="instructionCollapse">
-		This is the instructional content for this page.
-	</div>
+	This link allows you to change the text of the question that a student will be asked, the text for the four answer choices,
+	and which answer is right. You can preview your changes below in the [Student's View of the Question]. <br>
+	
+	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers</a> </p>
+	{# 	<a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>  #}
+	
+</div>
+	
+<div class="section">
+	<h2> Create and Compare Alternative Versions of Feedback Messages on Answers Edit text of question and answers </h2>
+
+	This link allows you to author multiple versions of the feedback messages students will receive when they choose each answer.
+	You will also be able to view data about how students rate the feedback messages, and to change how frequently each version of a feedback message is shown. <br>
+	
+	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">Create and View Data about Alternative Feedback Messages</a> </p> 
+	{# <a href="#" data-toggle="tooltip" data-placement="top" title="More information">More information</a> #}
 </div>
 
 
-{% comment %}
+
+
+<div>
+	<h2> Student's View of Question</h2>
+	This iframe shows you exactly what a student will see in Canvas when they encounter your question. 
+	<!-- preview quiz -->
+	<iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
+</div>
+
+{% endblock %}
+	
+	{% comment %}
+<div class="section">
+<h2> Results and Analytics </h2>
+<a href="{% url 'engine:question_results' quiz_id=quiz.pk question_id=question.pk %}">View question-level results</a>
+	{# <p> <a href="#">Edit adaptive policy</a></p> #}
+</div>
+{% endcomment %}
+	
+	{% comment %}
 <div class="section">
 <h2> Question info:</h2>
 	<p> Question: {{question.text | safe}}</p>
@@ -41,29 +71,3 @@ Question Manager
 </div>
 
 {% endcomment %}
-
-<div class="section">
-<h2> Manage question </h2>
-	{% comment %}
-	<p> <a href="{% url 'engine:question_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question text</a></p>
-	{% endcomment %}
-	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></p>
-	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">Create Experiments on Feedback and View Data</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></p>
-</div>
-
-
-{% comment %}
-<div class="section">
-<h2> Results and Analytics </h2>
-<a href="{% url 'engine:question_results' quiz_id=quiz.pk question_id=question.pk %}">View question-level results</a>
-	{# <p> <a href="#">Edit adaptive policy</a></p> #}
-</div>
-{% endcomment %}
-
-<div>
-	<h2> Student's View of Question</h2>
-	<!-- preview quiz -->
-	<iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}"  align='center' height='400px' width='80%'>
-</div>
-
-{% endblock %}
