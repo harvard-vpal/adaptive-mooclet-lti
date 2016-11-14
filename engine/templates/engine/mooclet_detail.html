@@ -12,10 +12,12 @@ Alternative Feedback Messages for Answer
 
 <!--instructions -->
 <div>
-	[XX Add Instructions]    <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	This page lets you author different versions of feedback messages, view data about how students have rated them. You can also control
+	advanced features of determining the method for presenting feedback messages, and recording your predictions of which messages will be effective,
+	so you can compare these predictions to the data that is collected. 
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
 	<div class="collapse" id="instructionCollapse">
-		This is the instructional content for this page.
+		The idea behind this app is that XX. You might find it helpful to look at YY in coming up with messages. The advanced options are ZZ.
 	</div>
 
 </div>
@@ -25,12 +27,9 @@ Alternative Feedback Messages for Answer
 	<h2>Versions of Feedback:</h2>
 	<!--instructions -->
 <div>
-	[XX Add Instructions]    <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
-	<div class="collapse" id="instructionCollapse">
-		This is the instructional content for this page.
-	</div>
-
+	Click below to add and edit different versions of feedback messages that will be shown when a student chooses this answer.
+	<br><a href="#" data-toggle="tooltip" data-placement="top" title="Each student will be assigned to one of these messages, and rate how helpful it is, and that data will be provided to you.">More about this</a>
+	
 </div>
 <!--end instructions -->
 	<ul>
@@ -42,11 +41,10 @@ Alternative Feedback Messages for Answer
 </div>
 
 <div class="section-links">
-	<h2> Links </h2>
+	<h2> View Ratings of Feedback Messages</h2>
 	<ul>
 	
 	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></li>
-	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a></li>
 	
 
 	{% if mooclet.type == "explanation" %}
@@ -65,6 +63,9 @@ Alternative Feedback Messages for Answer
 	<p>Type: {{mooclet.type}}</p>
 	<p>Policy: {{mooclet.policy.name}}</p>
 	{% endcomment %}
+	
+<a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> 
+	<br><a href="#" data-toggle="tooltip" data-placement="top" title="This lets you record your predictions about which feedback messages will work.">[More about this]</a>
 
 <form method="post">
     {{mooclet_policy_form}}
