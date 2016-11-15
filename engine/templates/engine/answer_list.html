@@ -45,7 +45,9 @@ View answers and associated experiments
 {% endfor %}
 </ul>
 
+<div>
 <h2> Student's View of Question</h2>
 <iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}" height='400px' width='80%'>
+	</div>
 
 {% endblock %}
