@@ -15,17 +15,19 @@ View answers and associated experiments
 
 <!--instructions -->
 <div>
-	Choose an answer below to author alternative versions of feedback messages that will be shown to students who choose that answer.
-	
-	<br>    <a href="#" data-toggle="tooltip" data-placement="top" 
-		   title="You will also be able to view student ratings of how helpful different feedback messages are."
-		   >More information</a>
+	The link below each of the four answers will take you to a page where you can write Feedback Messages, 
+	which will be shown to students who choose that answer. 
+	<br> <button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" 
+		     data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse"
+		     >More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		The page will provide a link for you to view student ratings of how helpful different feedback messages are.
+	</div>
 	
 	{% comment %}
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
-	<div class="collapse" id="instructionCollapse">
-		This is the instructional content for this page.
-	</div>
+	<br>    <a href="#" data-toggle="tooltip" data-placement="top" 
+		   title="You will also be able to view student ratings of how helpful different feedback messages are."
+		   >Tell me more</a>
 	{% endcomment %}
 
 </div>
@@ -42,5 +44,10 @@ View answers and associated experiments
 	
 {% endfor %}
 </ul>
+
+<div>
+<h2> Student's View of Question</h2>
+<iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}" height='400px' width='80%'>
+	</div>
 
 {% endblock %}

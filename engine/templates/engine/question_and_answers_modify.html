@@ -8,7 +8,7 @@ Create/Modify Question Text &amp; Answers
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Update question and answers" "" %}
+	{% breadcrumb "Text of question and answers" "" %}
 {% endblock breadcrumbs %}
 
 {% block body %}
@@ -16,20 +16,27 @@ Create/Modify Question Text &amp; Answers
 <form method="post">
 	<!--instructions -->
 <div>
-	[XX Add Instructions]
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	Type into "Question text" the question you want students to be asked. Type into "Answer text" the four answers students 
+	can choose. 
+	<br>After you click "Submit changes"
+	you can preview your changes in the "Student's View of Question" iframe.
+	
+	<br>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" 
+		aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
+	
 	<div class="collapse" id="instructionCollapse">
-		Consult this checklist to ensure you have all the required information.
 		<ul>
-			<li>Have you written all four answers?</li>
-			<li>Have you chosen a correct answer?</li>
+			<li>The order of the 4 answers is randomized for students.</li>
+			<li> After you've written the question and answer, you'll be able to write alternative feedback messages for students to receive after choosing each answer.
+			<li>If you want any formatting, you have to add HTML tags. For example:</li>
+			<li>Adding &lt;br&gt; moves things to another line – Line One &lt;br&gt; Line Two</li>
 		</ul>
+		
 	</div>
 
 </div>
 <!--end instructions -->
-	<h3>Edit Text of Question and Answers</h3>
-
 	{{question_form.as_p}}
 
 	{{ answer_formset.management_form}}
@@ -38,8 +45,12 @@ Create/Modify Question Text &amp; Answers
 		{{answer_form.as_p}}
 		
 	{% endfor %}
+	
+	
 
-	<input type="submit" value="Submit" />
+	<input type="submit" value="Submit Changes" />
+	<br><strong>Remember</strong>: Grades will be passed back to Canvas, so you need to check ONE answer's "Correct" box. 
+
 </form>
 
 
