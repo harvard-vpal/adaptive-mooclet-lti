@@ -11,6 +11,7 @@
 	{% breadcrumb "Question" "engine:question_detail" quiz.pk question.pk %}
 {% endif %}
 {% if answer %}
+	{% breadcrumb "Answers and associated experiments" "engine:answer_list" quiz.pk question.pk %}
 	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
 {% endif %}
 {% comment %}

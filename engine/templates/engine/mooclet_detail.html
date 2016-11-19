@@ -22,6 +22,12 @@ Alternative Feedback Messages for Answer
 
 </div>
 <!--end instructions -->
+<div>
+	<h2>Answer</h2>
+	<p>{{answer | safe}}</p>
+
+</div>
+
 
 <div>
 	<h2>Versions of Feedback:</h2>
@@ -34,7 +40,7 @@ Alternative Feedback Messages for Answer
 <!--end instructions -->
 	<ul>
 	{% for version in mooclet.version_set.all %}
-		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe}}</a></li>
+		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe | truncatewords_html:30}}</a></li>
 	{% endfor %}
 	<li><i><a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Add new version</a></i></li>
 	</ul>

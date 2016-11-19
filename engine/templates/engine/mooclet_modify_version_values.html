@@ -40,7 +40,7 @@ Change policy variable values associated with feedback versions
 		
 		{% for version in versions %}
 			<div class="tr">
-			<span class="td"> {{version | safe}} </span>
+			<span class="td"> {{version | safe | truncatewords_html:30}} </span>
 
 			{% for instructor_variable in instructor_variables %}
 				{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
