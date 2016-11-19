@@ -13,17 +13,41 @@ View answers and associated experiments
 
 {% block body %}
 
-<p> Question: {{question.text | safe}}</p>
+<!--instructions -->
+<div>
+	The link below each of the four answers will take you to a page where you can write Feedback Messages, 
+	which will be shown to students who choose that answer. 
+	<br> <button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" 
+		     data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse"
+		     >More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		The page will provide a link for you to view student ratings of how helpful different feedback messages are.
+	</div>
+	
+	{% comment %}
+	<br>    <a href="#" data-toggle="tooltip" data-placement="top" 
+		   title="You will also be able to view student ratings of how helpful different feedback messages are."
+		   >Tell me more</a>
+	{% endcomment %}
+
+</div>
+<!--end instructions -->
+{# <p> Question: {{question.text | safe}}</p> #}
 
 <ul>
 {% for answer in question.answer_set.all %}
 
 	<li>
 		Answer: {{answer.text | safe}} <br>
-		&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Edit this Answer's Feedback and View Experiment Data</a>
+		&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}">Edit this Answer's Feedback Messages and View Comparison Data</a>
 	</li>
 	
 {% endfor %}
 </ul>
+
+<div>
+<h2> Student's View of Question</h2>
+<iframe src="{% url 'engine:launch_quiz' quiz_id=quiz.pk %}" height='400px' width='80%'>
+	</div>
 
 {% endblock %}

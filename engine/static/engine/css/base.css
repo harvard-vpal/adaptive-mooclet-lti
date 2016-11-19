@@ -27,3 +27,7 @@ div.version-values-table {
 div.context {
 	margin: 1em 0em;
 }
+
+.instruction-content{
+	display: none;
+}

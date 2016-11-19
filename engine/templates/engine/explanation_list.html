@@ -8,10 +8,20 @@ Modify/Add Versions of Explanations to be randomly shown after each Answer
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Explanation list" ""%}
+	{% breadcrumb "Feedback list" ""%}
 {% endblock breadcrumbs %}
 
 {% block body %}
+<!--instructions -->
+<div>
+	[XX Add Instructions]  <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		This is the instructional content for this page.
+	</div>
+
+</div>
+<!--end instructions -->
 
 {% for answer in answers %}
 
@@ -24,7 +34,7 @@ Modify/Add Versions of Explanations to be randomly shown after each Answer
 		<li><a href="{% url 'engine:explanation_modify' explanation_id=version.explanation.pk %}">{{version.explanation.text}}</a></li>
 
 	{% endfor %}
-	<li><a href="{% url 'engine:explanation_create' mooclet_id=answer.mooclet.pk %}">Add a new explanation</a></li>
+	<li><a href="{% url 'engine:explanation_create' mooclet_id=answer.mooclet.pk %}">Add a new feedback message</a></li>
 	</ul>
 	
 {% endfor %}

@@ -32,7 +32,7 @@ Quiz results
 <tbody>
 {% for answer in answers %}
 	<tr>
-	<td>{{version}}
+	<td>{{answer}}
 	{% for variable in variables %}
 		{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
 			<td>{% iloc values_matrix m n %}</td>

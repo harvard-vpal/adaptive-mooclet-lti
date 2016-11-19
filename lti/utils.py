@@ -13,7 +13,7 @@ def display_preview(user, quiz):
 
     # LTI User role check
     user_roles = lti_parameters.roles
-    if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles:
+    if 'Instructor' in user_roles or 'ContentDeveloper' in user_roles or 'TeachingAssistant' in user_roles:
         return True
 
     # collaborator check

@@ -8,22 +8,21 @@ Quiz Manager
 
 {% block body %}
 
-<div class="section-links">
-<p> Use this page to Edit and View Quiz Info. </p>
 
-<!-- create quiz option -->
-<!-- <h2> Edit quiz and explanations </h2> -->
-
-	<p> <a href="{% url 'engine:quiz_modify' quiz_id=quiz.pk %}">Edit Quiz info</a></p>
-
-	{% comment %}
-	<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Invite Collaborators to suggest and edit adaptive quiz components.</a></p>
-	{% endcomment %}
-
-</div>
 
 <div class="section-summary">
 <h2> Manage quiz </h2>
+<!--instructions -->
+<div>
+	[XX Add Instructions]  <a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	<div class="collapse" id="instructionCollapse">
+		This is the instructional content for this page.
+	</div>
+
+</div>
+<!--end instructions -->
+
 <ul>
 {% for question in quiz.question_set.all %}
 	<li><a href="{% url 'engine:question_detail' quiz_id=quiz.pk question_id=question.pk %}">{{question | safe}}</a></li>
@@ -65,6 +64,18 @@ Quiz Manager
 </div>
 
 
+<div class="section-links">
+<p> Use this page to Edit and View Quiz Info. </p>
 
+<!-- create quiz option -->
+<!-- <h2> Edit quiz and explanations </h2> -->
+
+	<p> <a href="{% url 'engine:quiz_modify' quiz_id=quiz.pk %}">Edit Quiz info</a></p>
+
+	{% comment %}
+	<p> <a href="{% url 'engine:collaborator_create' quiz_id=quiz.pk %}">Invite Collaborators to suggest and edit adaptive quiz components.</a></p>
+	{% endcomment %}
+
+</div>
 
 {% endblock %}

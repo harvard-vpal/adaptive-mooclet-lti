@@ -4,45 +4,54 @@
 {% load custom_tags %}
 
 {% block title %}
-Experiment Information and Data
+Alternative Feedback Messages for Answer
 {% endblock title %}
 
 {% block body %}
-{% comment %}
-<div class="section-context">
-	{% if mooclet.type == "explanation" %}
-		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
-		Answer text: {{answer.text | safe}}
-	{% else %}
-		No mooclet context provided
-	{% endif %}
-</div>
-{% endcomment %}
 
+
+<!--instructions -->
+<div>
+	This page lets you author different versions of feedback messages, and view data about how students have rated them. You can also control
+	advanced features of determining the method for presenting feedback messages, and recording your predictions of which messages will be effective,
+	so you can compare these predictions to the data that is collected. 
+	<br> <br><button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
+	<div class="collapse" id="instructionCollapse">
+		The idea behind this app is that XX. You might find it helpful to look at YY in coming up with messages. The advanced options are ZZ.
+	</div>
+
+</div>
+<!--end instructions -->
+<div>
+	<h2>Answer</h2>
+	<p>{{answer | safe}}</p>
+
+</div>
 
 
 <div>
 	<h2>Versions of Feedback:</h2>
+	<!--instructions -->
+<div>
+	Click below to add and edit different versions of feedback messages that will be shown when a student chooses this answer.
+	<br><a href="#" data-toggle="tooltip" data-placement="top" title="Each student will be assigned to one of these messages, and rate how helpful it is, and that data will be provided to you.">More about this</a>
+	
+</div>
+<!--end instructions -->
 	<ul>
 	{% for version in mooclet.version_set.all %}
-		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe}}</a></li>
+		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe | truncatewords_html:30}}</a></li>
 	{% endfor %}
 	<li><i><a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Add new version</a></i></li>
 	</ul>
 </div>
 
 <div class="section-links">
-	<h2> Links </h2>
+	<h2> View Ratings of Feedback Messages</h2>
 	<ul>
-	{% comment %}
-	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Get new data</a></li>
-	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View all mooclet data</a></li>
-	{% endcomment %}
-	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a></li>
-	<li><a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a></li>
-	{% comment %}
-	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
-	{% endcomment %}
+	
+	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <a href="#" data-toggle="tooltip" data-placement="top" title="This tells you how many people have been given each feedback message, what their average rating of the message has been, and how likely the next student is to receive each feedback message.">More information</a></li>
+	
 
 	{% if mooclet.type == "explanation" %}
 		
@@ -54,12 +63,15 @@ Experiment Information and Data
 </div>
 
 <div class="section-mooclet">
-	<h2>Advanced Info</h2>
+	<h2>Advanced</h2>
 	{% comment %}
 	<p>Name: {{mooclet.name}}</p>
 	<p>Type: {{mooclet.type}}</p>
 	<p>Policy: {{mooclet.policy.name}}</p>
 	{% endcomment %}
+	
+<a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> 
+	<br><a href="#" data-toggle="tooltip" data-placement="top" title="This lets you record your predictions about which feedback messages will work.">[More about this]</a>
 
 <form method="post">
     {{mooclet_policy_form}}
@@ -87,3 +99,26 @@ Experiment Information and Data
 
 
 {% endblock %}
+	
+	
+	{% comment %}
+<div class="section-context">
+	{% if mooclet.type == "explanation" %}
+		<p> Interact with explanations-for-answer-MOOClet by viewing data, policy, rating explanations (to be added) </p>
+		Answer text: {{answer.text | safe}}
+	{% else %}
+		No mooclet context provided
+	{% endif %}
+</div>
+{% endcomment %}
+
+	
+	
+	{% comment %}
+	<li><a href="{% url 'engine:mooclet_simulate_probabilities' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Get new data</a></li>
+	<li><a href="{% url 'engine:mooclet_list_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}"> View all mooclet data</a></li>
+	{% endcomment %}
+	
+	{% comment %}
+	<li><a href="#"> TODO: define new display variable tranformations</a></li>	
+	{% endcomment %}
