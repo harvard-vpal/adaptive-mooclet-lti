@@ -3,7 +3,7 @@
 {% load django_bootstrap_breadcrumbs %}
 
 {% block title %}
-Quiz Manager
+Quip Manager
 {% endblock title %}
 
 {% block body %}
@@ -11,13 +11,18 @@ Quiz Manager
 
 
 <div class="section-summary">
-<h2> Manage quiz </h2>
 <!--instructions -->
 <div>
-	[XX Add Instructions]  <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="More information"></span>
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
+	Open up the Google Doc guide for how to use Quip to create a question for the first time, 
+	at <a href="https://docs.google.com/document/d/1Z-ZiXXa-Pr1Y-c7m6_iLGDLcycMagCCtWgCwF9GN3_I/edit">tiny.cc/quipq</a>  
+	<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" 
+	      title="Follow this guide the first time you set up a question. When you return to edit the question and view data, you will
+		     be directed to a different page. The guide is in a Google Doc so you can add comments or edits about anything
+		     that is unclear."></span>
+	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" 
+		aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
 	<div class="collapse" id="instructionCollapse">
-		This is the instructional content for this page.
+		XX - Should we iframe in the Google Doc and have it be displayed when someone clicks on this?
 	</div>
 
 </div>
