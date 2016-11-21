@@ -8,7 +8,7 @@ Edit feedback
 
 {% block breadcrumbs %}
 	{{ block.super }}
-	{% breadcrumb "Modify Message" "" %}
+	{% breadcrumb "Modify Feedback" "" %}
 {% endblock breadcrumbs %}
 
 {% block body %}
@@ -24,6 +24,10 @@ Edit feedback
 	{{explanation_form.as_p}}
     <input type="submit" value="Save" />
 </form>
+<div>
+	<h2>Current Feedback Message</h2>
+	{{explanation.text | safe}}
+</div>
 <div>
 <h2> Student's View of Question</h2>
 

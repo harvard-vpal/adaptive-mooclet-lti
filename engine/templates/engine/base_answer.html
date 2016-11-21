@@ -4,5 +4,6 @@
 
 {% block breadcrumbs %}
 	{{ block.super }}
+	{% breadcrumb "Answers and associated comparisons" "engine:answer_list" quiz.pk question.pk %}
 	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
 {% endblock breadcrumbs %}

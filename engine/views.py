@@ -825,6 +825,7 @@ def explanation_modify(request, quiz_id, question_id, answer_id, mooclet_id, ver
             'answer':answer,
             'mooclet':mooclet,
             'version':version,
+            'explanation':explanation,
             'explanation_form':ExplanationModifyForm(instance=explanation)
         }
         return render(request, 'engine/explanation_modify.html',context)
@@ -841,3 +842,14 @@ def explanation_modify(request, quiz_id, question_id, answer_id, mooclet_id, ver
         return redirect('engine:mooclet_detail',quiz_id=quiz_id,question_id=question_id,answer_id=answer_id,mooclet_id=mooclet_id)
 
 
+def tool_instructions(request, quiz_id, question_id):
+    """
+    instructions for using the tool. Quiz and Question needed for navigation
+    """
+    quiz = get_object_or_404(Quiz, pk=quiz_id)
+    question = get_object_or_404(Question, pk=question_id)
+    context = {
+        'quiz': quiz,
+        'question': question,
+    }
+    return render(request, 'engine/instructions.html', context)
