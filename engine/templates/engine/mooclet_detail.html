@@ -34,7 +34,7 @@ Alternative Feedback Messages for Answer
 	<!--instructions -->
 <div>
 	Click below to add and edit different versions of feedback messages that will be shown when a student chooses this answer.
-	<br><a href="#" data-toggle="tooltip" data-placement="top" title="Each student will be assigned to one of these messages, and rate how helpful it is, and that data will be provided to you.">More about this</a>
+	<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="Each student will be assigned to one of these messages, and rate how helpful it is, and that data will be provided to you."></span>
 	
 </div>
 <!--end instructions -->
@@ -50,7 +50,7 @@ Alternative Feedback Messages for Answer
 	<h2> View Ratings of Feedback Messages</h2>
 	<ul>
 	
-	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <a href="#" data-toggle="tooltip" data-placement="top" title="This tells you how many people have been given each feedback message, what their average rating of the message has been, and how likely the next student is to receive each feedback message.">More information</a></li>
+	<li><a href="{% url 'engine:mooclet_results' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">View Data and Policy Dashboard</a> <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This tells you how many people have been given each feedback message, what their average rating of the message has been, and how likely the next student is to receive each feedback message."></span></li>
 	
 
 	{% if mooclet.type == "explanation" %}
@@ -71,7 +71,7 @@ Alternative Feedback Messages for Answer
 	{% endcomment %}
 	
 <a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> 
-	<br><a href="#" data-toggle="tooltip" data-placement="top" title="This lets you record your predictions about which feedback messages will work.">[More about this]</a>
+<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This lets you record your predictions about which feedback messages will work."></span> 
 
 <form method="post">
     {{mooclet_policy_form}}
