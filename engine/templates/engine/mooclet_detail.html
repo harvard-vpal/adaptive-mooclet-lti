@@ -70,9 +70,7 @@ Alternative Feedback Messages for Answer
 	<p>Policy: {{mooclet.policy.name}}</p>
 	{% endcomment %}
 	
-<a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk 
-	 answer_id=answer.pk mooclet_id=mooclet.pk %}"
-   >Enter Instructor Judgments about Versions</a> 
+<a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> 
 	
 <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This lets you record your predictions about which feedback messages will work."></span> 
 <br> <br>
