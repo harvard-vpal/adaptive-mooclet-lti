@@ -32,7 +32,7 @@ Comparison results
 <tbody>
 {% for version in versions %}
 	<tr>
-	<td>{{version | safe}}</td>
+	<td>{{version | safe | truncatewords_html:30}}</td>
 	{% for variable in variables %}
 		{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
 				<td>{% iloc values_matrix m n %}</td>
@@ -59,7 +59,7 @@ Comparison results
 		
 		{% for version in versions %}
 			<div class="tr">
-			<span class="td"> {{version}} </span>
+			<span class="td"> {{version | safe | truncatewords_html:30}} </span>
 
 			{% for user_variable in user_variables %}
 				{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
