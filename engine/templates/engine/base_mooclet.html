@@ -10,10 +10,14 @@
 {% if question %}
 	{% breadcrumb "Question" "engine:question_detail" quiz.pk question.pk %}
 {% endif %}
+
+{% comment %}
 {% if answer %}
 	{% breadcrumb "Answers and associated comparisons" "engine:answer_list" quiz.pk question.pk %}
 	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
 {% endif %}
+{% endcomment %}
+
 {% comment %}
 {% breadcrumb mooclet.type.display_name "engine:mooclet_detail" quiz.pk question.pk answer.pk mooclet.pk %}
 {% endcomment %}

@@ -15,7 +15,7 @@ Alternative Feedback Messages for Answer
 	This page lets you author different versions of feedback messages, and view data about how students have rated them. You can also control
 	advanced features of determining the method for presenting feedback messages, and recording your predictions of which messages will be effective,
 	so you can compare these predictions to the data that is collected. 
-	<br> <br><button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
+	<br> <br><button type="button" class="btn btn-sm btn-info" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
 	<div class="collapse" id="instructionCollapse">
 		The idea behind this app is that XX. You might find it helpful to look at YY in coming up with messages. The advanced options are ZZ.
 	</div>
@@ -42,8 +42,8 @@ Alternative Feedback Messages for Answer
 	{% for version in mooclet.version_set.all %}
 		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe | truncatewords_html:30}}</a></li>
 	{% endfor %}
-	<li><i><a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Add new version</a></i></li>
 	</ul>
+	<a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}" class="btn btn-primary">Add new version</a>
 </div>
 
 <div class="section-links">

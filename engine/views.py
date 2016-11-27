@@ -182,9 +182,11 @@ def question_detail(request, quiz_id, question_id):
     '''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     question = get_object_or_404(Question, pk=question_id)
+    answers = question.answer_set.all()
     context = {
         'quiz':quiz,
         'question':question,
+        'answers':answers,
     }
     return render(request, 'engine/question_detail.html', context)
 
@@ -793,7 +795,10 @@ def explanation_create(request, quiz_id, question_id, answer_id, mooclet_id):
     if request.method=='GET':
         context = {
             'explanation_form':ExplanationForm(),
-            'quiz':quiz
+            'quiz':quiz,
+            'question':question,
+            'answer':answer,
+            'mooclet':mooclet,
         }
         return render(request, 'engine/explanation_create.html',context)
 
