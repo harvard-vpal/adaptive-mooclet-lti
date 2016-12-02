@@ -27,7 +27,7 @@ Alternative Feedback Messages for Answer
 
 
 <div>
-	<h2>Alterantive Feedback Messages on Answer "{{answer | safe}}"</h2>
+	<h2>Alternative Feedback Messages on Answer "{{answer | safe}}"</h2>
 	<!--instructions -->
 <div>
 	Click below to add and edit different versions of feedback messages that will be shown when a student chooses this answer.
@@ -37,7 +37,7 @@ Alternative Feedback Messages for Answer
 <!--end instructions -->
 	<ul>
 	{% for version in mooclet.version_set.all %}
-		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe | truncatewords_html:30}}</a></li>
+		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">{{version | safe | truncatewords_html:30}}</a></li>
 	{% endfor %}
 	</ul>
 	<a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}" class="btn btn-primary">Add new version</a>

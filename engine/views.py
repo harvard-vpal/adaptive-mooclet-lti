@@ -536,7 +536,7 @@ def mooclet_modify_version_values(request, **kwargs):
     
     versions = mooclet.version_set.all()
     Version_ct = ContentType.objects.get_for_model(Version)
-    instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct).all()
+    instructor_variables = mooclet.policy.variables.filter(content_type=Version_ct).order_by('pk').all()
 
     if request.method == 'GET':
 
