@@ -13,20 +13,21 @@ Edit feedback
 
 {% block body %}
 
+{% comment %}
 <div>
 	<p>Use the box below to modify the feedback message.</p>
-	{% comment %}
+	
 	<button type="button" class="btn btn-sm btn-info" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">More about this</button>
 		<div class="collapse" id="instructionCollapse">
 		Just like with questions and answers, you can use HTML markup for general formatting, or LaTeX for math formatting. The size of the box can be changed by clicking on the bottom right and dragging.
 		</div>
-	{% endcomment %}
+	
 </div>	
-<br>
-<br>
+{% endcomment %}
+
 <div>
-	<p> This feedback message will be shown when students choose the answer:</p>
-	<p>{{answer | safe }}</p>
+	<p> Use the box below to modify the feedback message that will be shown when students choose the answer:</p>
+	<p><strong>{{answer | safe }}</strong></p>
 </div>	
 <form method="post">
 	{{explanation_form.as_p}}
