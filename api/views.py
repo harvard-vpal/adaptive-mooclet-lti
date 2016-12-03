@@ -308,7 +308,7 @@ def update_intermediates(request):
     version_counts = {version: 0 for version in versions}
 
     #get versions 100 times and keep track of how often each is picked
-    num_iterations = 10000
+    num_iterations = 100
     for i in range(1, num_iterations):
         version = mooclet.get_version(mooclet_context)
         #version = unicode(version)
