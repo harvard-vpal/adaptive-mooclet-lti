@@ -17,12 +17,15 @@ View answers and associated comparisons
 <div>
 	The link below each of the four answers will take you to a page where you can write Feedback Messages, 
 	which will be shown to students who choose that answer. 
-	<br> <button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" 
+
+	{% comment %}
+	<br> <button type="button" class="btn btn-sm btn-info" data-toggle="collapse" 
 		     data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse"
 		     >More about this</button>
 	<div class="collapse" id="instructionCollapse">
 		The page will provide a link for you to view student ratings of how helpful different feedback messages are.
 	</div>
+	{% endcomment %}
 	
 	{% comment %}
 	<br>    <a href="#" data-toggle="tooltip" data-placement="top" 

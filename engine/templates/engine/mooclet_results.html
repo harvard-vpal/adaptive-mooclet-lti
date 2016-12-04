@@ -18,6 +18,9 @@ Comparison results
 {% endblock breadcrumbs %}
 
 {% block body %}
+<p>
+	This table lets you view how students have rated each of the feedback versions for this answer, and how likely it is that each version will be shown to future students. The messages are truncated for clarity, but the full messages are shown below.
+</p>
 
 <table id="myTable">
 <thead>
@@ -32,7 +35,7 @@ Comparison results
 <tbody>
 {% for version in versions %}
 	<tr>
-	<td>{{version | safe}}</td>
+	<td>{{version | safe | truncatewords_html:30}}</td>
 	{% for variable in variables %}
 		{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
 				<td>{% iloc values_matrix m n %}</td>
@@ -43,7 +46,16 @@ Comparison results
 {% endfor %}
 </tbody>
 </table>
+<div>
+	<h3>Full Text of Versions</h3>
 
+	<ol>
+		{% for version in versions %}
+		<li>{{version | safe }}</li>
+
+		{% endfor %}
+	</ol>
+</div>
 {% comment %}
 
 <h2> Student Variables for MOOClet </h2>
@@ -59,7 +71,7 @@ Comparison results
 		
 		{% for version in versions %}
 			<div class="tr">
-			<span class="td"> {{version}} </span>
+			<span class="td"> {{version | safe | truncatewords_html:30}} </span>
 
 			{% for user_variable in user_variables %}
 				{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}

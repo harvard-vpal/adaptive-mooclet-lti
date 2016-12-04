@@ -16,13 +16,12 @@ Create/Modify Question Text &amp; Answers
 <form method="post">
 	<!--instructions -->
 <div>
-	Type into "Question text" the question you want students to be asked. Type into "Answer text" the four answers students 
-	can choose. 
-	<br>After you click "Submit changes"
-	you can preview your changes in the "Student's View of Question" iframe.
+	Type into "Question text" the question you want students to be asked. Type into "Answer text" the four answer options from which students 
+	can choose. Be sure to check off one and only one answer as correct.
+
 	
-	<br>
-	<button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" 
+	{% comment %}
+	<button type="button" class="btn btn-sm btn-info" data-toggle="collapse" data-target="#instructionCollapse" 
 		aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
 	
 	<div class="collapse" id="instructionCollapse">
@@ -34,6 +33,7 @@ Create/Modify Question Text &amp; Answers
 		</ul>
 		
 	</div>
+	{% endcomment %}
 
 </div>
 <!--end instructions -->

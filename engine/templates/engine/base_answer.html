@@ -4,6 +4,10 @@
 
 {% block breadcrumbs %}
 	{{ block.super }}
+
+	{% comment %}
 	{% breadcrumb "Answers and associated comparisons" "engine:answer_list" quiz.pk question.pk %}
 	{% breadcrumb "Answer" "engine:answer_detail" quiz.pk question.pk answer.pk %}
+	{% endcomment %}
+	
 {% endblock breadcrumbs %}

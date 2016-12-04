@@ -26,7 +26,7 @@
     "pk": 3,
     "fields": {
       "name": "version_weight",
-      "display_name": "Version weight for weighted random policy",
+      "display_name": "Probability of Version (decimal)",
       "description": "Version weight for weighted random policy",
       "is_user_variable": false,
       "content_type": ["engine", "version"]

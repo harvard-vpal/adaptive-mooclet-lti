@@ -13,10 +13,14 @@ Question Manager
 {#<div> #}
 
 <div class="section">
+	<a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}" class="btn btn-primary">Edit question and answers</a>
+
+{% comment %}
+
 <h2> Edit text of question and answers </h2>
-	{% comment %}
+	
 	<p> <a href="{% url 'engine:tool_instructions' quiz_id=quiz.pk question_id=question.pk %}">Instructions for using this tool</a> </p>
-	{% endcomment %}
+	
 	
 	<p> <a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}">Edit question and answers</a> </p>
 	
@@ -25,18 +29,38 @@ Question Manager
 	<br> You can preview your changes below in the <strong> Student's View of the Question</strong>. 
 
 	{# commented	<a href="#" data-toggle="tooltip" data-placement="top" title="More information">What is this?</a>  #}
+
+{% endcomment %}
 	
 </div>
 	
 <div class="section">
-	<h2> Create and Compare Alternative Versions of Feedback Messages on Answers </h2>
-
+	<h2> Create Alternative Feedback Messages </h2>
+	{% comment %}
 	<p><a href="{% url 'engine:answer_list' quiz_id=quiz.pk question_id=question.pk %}">
 		Create and View Data about Alternative Feedback Messages</a> </p> 
+	{% endcomment %}
 
-	<br> The link above allows you to author multiple versions of the feedback messages students will receive when they choose each answer.
-	You will also be able to view data about how students rate the feedback messages, and to change how frequently each version of a feedback message is shown. <br>
+	<p> 
+		When students choose an answer, they will be shown a feedback message. Click to write feedback messages for each answer. 
+	</p>
+	<p>
+		You can write <em>multiple</em> messages to see which ones students find helpful.
+	</p>
+<h3> Answers </h3>
 	
+	<ul>
+		{% for answer in question.answer_set.all %}
+
+		<li>
+			{{answer.text | safe}} <br>
+			&nbsp; &nbsp;&nbsp;&nbsp; <a href="{% url 'engine:mooclet_detail' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=answer.mooclet_explanation.pk %}" class="btn btn-primary btn-sm">Add/Edit Feedback Messages</a>
+		</li>
+	
+		{% endfor %}
+	</ul>
+
+	{# <a href="{% url 'engine:question_results' quiz_id=quiz.pk question_id=question.pk %}"  class="btn btn-primary">View Question Results</a> #}
 	{# <a href="#" data-toggle="tooltip" data-placement="top" title="More information">More information</a> #}
 </div>
 

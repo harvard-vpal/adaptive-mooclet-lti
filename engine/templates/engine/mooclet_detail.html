@@ -12,38 +12,40 @@ Alternative Feedback Messages for Answer
 
 <!--instructions -->
 <div>
-	This page lets you author different versions of feedback messages, and view data about how students have rated them. You can also control
-	advanced features of determining the method for presenting feedback messages, and recording your predictions of which messages will be effective,
-	so you can compare these predictions to the data that is collected. 
-	<br> <br><button type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
+	<p> This page lets you author different versions of feedback messages, and view data about how students have rated them.</p>
+	<p>You can also control advanced features such as:</p>
+	<ul>
+		<li>Determining the method for presenting feedback messages.</li>
+		<li>Recording your predictions of which messages will be effective.</li>
+	</ul>
+	{% comment %} 
+	<br> <br><button type="button" class="btn btn-sm btn-info" data-toggle="collapse" data-target="#instructionCollapse" aria-expanded="false" aria-controls="instructionCollapse">Tell me more</button>
 	<div class="collapse" id="instructionCollapse">
 		The idea behind this app is that XX. You might find it helpful to look at YY in coming up with messages. The advanced options are ZZ.
 	</div>
+	{% endcomment %}
 
 </div>
 <!--end instructions -->
-<div>
-	<h2>Answer</h2>
-	<p>{{answer | safe}}</p>
-
-</div>
 
 
 <div>
-	<h2>Versions of Feedback:</h2>
+	<h2>Alternative Feedback Messages on Answer "{{answer | safe}}"</h2>
 	<!--instructions -->
 <div>
-	Click below to add and edit different versions of feedback messages that will be shown when a student chooses this answer.
-	<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="Each student will be assigned to one of these messages, and rate how helpful it is, and that data will be provided to you."></span>
+	<p>
+		Click below to add and edit different versions of feedback messages that will be shown when a student chooses this answer.
+		<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="Each student will be assigned to one of these messages, and rate how helpful it is, and that data will be provided to you."></span>
+	</p>
 	
 </div>
 <!--end instructions -->
-	<ul>
+	<ol>
 	{% for version in mooclet.version_set.all %}
-		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">Version: {{version | safe | truncatewords_html:30}}</a></li>
+		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">{{version | safe | truncatewords_html:30}}</a></li>
 	{% endfor %}
-	<li><i><a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Add new version</a></i></li>
-	</ul>
+	</ol>
+	<a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}" class="btn btn-primary">Add new version</a>
 </div>
 
 <div class="section-links">
@@ -63,7 +65,7 @@ Alternative Feedback Messages for Answer
 </div>
 
 <div class="section-mooclet">
-	<h2>Advanced</h2>
+	<h2>Change Method for choosing Versions</h2>
 	{% comment %}
 	<p>Name: {{mooclet.name}}</p>
 	<p>Type: {{mooclet.type}}</p>
@@ -71,13 +73,22 @@ Alternative Feedback Messages for Answer
 	{% endcomment %}
 	
 <a href="{% url 'engine:mooclet_modify_version_values' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}">Enter Instructor Judgments about Versions</a> 
+	
 <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This lets you record your predictions about which feedback messages will work."></span> 
-
+<br> <br>
+	Choose which method or Policy should be used for assigning versions of feedback messages to students.
+	<span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This lets you choose a method for how versions should be chosen for display."></span> 
+	<br>
 <form method="post">
     {{mooclet_policy_form}}
     <input type="submit" value="Save" />
 </form>
-	
+	The policies currently available are:
+	<ul>
+		<li>uniform_random <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This policy will choose a version randomly, with equal probability for each version."></span> </li>
+		<li>weighted_random <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This policy will allow you to assign probabilities to the versions to decide how often they are shown to students."></span> </li>
+		<li>thompson_sampling <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="This policy gradually optimize which version is being presented to students, based on how students rate each version"></span> </li>
+	</ul>
 
 </div>
 

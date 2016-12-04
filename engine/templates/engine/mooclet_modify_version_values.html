@@ -26,6 +26,13 @@ Change policy variable values associated with feedback versions
 {% endcomment %}
 
 <h2> Instructor Variables for Comparison </h2>
+<div>
+	<ul>
+		<li>It can be useful to articulate your beliefs about how helpful the alternative versions will be, before seeing the data.</li>
+		<li>Evaluation. Rate how helpful you think each feedback message will be for learning, on a scale from 0 (not at all helpful) to 10 (extremely helpful)</li>
+		<li>Confidence level. Rate how confident you are in your evaluation, on a scale from 1 (not at all confident) to 5 (perfectly confident).</li>
+	</ul>
+</div>
 <div class="version-values-table">
 	<form method="post">
 	<div class="table">
@@ -33,7 +40,7 @@ Change policy variable values associated with feedback versions
 		<div class="tr">
 			<span class="td">Version</span>
 			{% for instructor_variable in instructor_variables %}
-				<span class="td"> {{instructor_variable.name}} </span>
+				<span class="td"> {{instructor_variable.display_name}} </span>
 			{% endfor %}
 		</div>
 
