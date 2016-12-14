@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
-from engine.models import Quiz
+from quip.models import Quiz
 
 
 class LtiParameters(models.Model):
@@ -42,10 +42,8 @@ class LtiParameters(models.Model):
     # generic text field where all LTI params are dumped as json
     data = models.TextField(default='')
 
-    
-
-
     class Meta:
         unique_together = ('user','quiz')
         verbose_name = 'LTI Parameters'
         verbose_name_plural = 'LTI Parameters'
+

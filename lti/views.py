@@ -6,7 +6,7 @@ from django.conf import settings
 from ims_lti_py.tool_config import ToolConfig
 from django.http import HttpResponse, HttpResponseRedirect
 import logging
-from engine.models import Quiz
+from quip.models import Quiz
 from lti.models import LtiParameters
 from utils import display_preview
 import json
@@ -36,15 +36,10 @@ def tool_config(request):
         secure_launch_url = host,
     )
 
-    # # configuration for nav bar
-    # course_nav_params = {
-    #     'enabled': 'true',
-    #     'selection_width':"700",
-    #     'selection_height':"500",
-    #     'url': host + reverse('lti:manage_quizzes'),
-    # }
-    # lti_tool_config.set_ext_param('canvas.instructure.com', 'course_navigation', course_nav_params)
-
+    lti_tool_config.set_ext_param('canvas.instructure.com', 'privacy_level', 'public')
+    lti_tool_config.set_ext_param('canvas.instructure.com', 'domain', request.get_host().partition(':')[0])
+    lti_tool_config.description = 'The Qualtrics LTI Bridge allows instructors to embed qualtrics quizzes in an LMS as an LTI tool.'
+    
     # configuration for quiz selection mode
     resource_selection_params = {
         'enabled': 'true',
@@ -55,10 +50,16 @@ def tool_config(request):
     # add resource selection params to the xml
     lti_tool_config.set_ext_param('canvas.instructure.com', 'resource_selection', resource_selection_params)
 
-    lti_tool_config.set_ext_param('canvas.instructure.com', 'privacy_level', 'public')
-    lti_tool_config.set_ext_param('canvas.instructure.com', 'domain', request.get_host().partition(':')[0])
-    lti_tool_config.description = 'The Qualtrics LTI Bridge allows instructors to embed qualtrics quizzes in an LMS as an LTI tool.'
-    
+# # configuration for nav bar
+    # course_nav_params = {
+    #     'enabled': 'true',
+    #     'selection_width':"700",
+    #     'selection_height':"500",
+    #     'url': host + reverse('lti:manage_quizzes'),
+    # }
+    # lti_tool_config.set_ext_param('canvas.instructure.com', 'course_navigation', course_nav_params)
+
+
     return HttpResponse(lti_tool_config.to_xml(), content_type='text/xml', status=200)
 
 
@@ -100,7 +101,7 @@ def launch(request,quiz_id):
         # instructor-like role: launch the quiz management view
         #return redirect('engine:quiz_detail', quiz_id=quiz_id)
         #generic instructor_launch function
-        return redirect('engine:launch_quiz_manager', quiz_id=quiz_id)
+        return redirect('engine:launch_quiz', quiz_id=quiz_id)
 
     else:
         # student role; launch the quiz

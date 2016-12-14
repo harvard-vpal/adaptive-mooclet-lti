@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from engine.models import *
+from quip.models import *
 from .utils import get_modified_qsf
 from lti.utils import grade_passback
 

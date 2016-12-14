@@ -51,20 +51,21 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     ## external apps
     'storages',
     'rest_framework',
-    'ordered_model',
+    # 'ordered_model',
     'bootstrap3',
     'django_bootstrap_breadcrumbs',
-    # 'crispy_forms',
 
-    ## core functions
+    ## internal apps
     'lti',
-    'engine',
-    'quiz',
+    'quip',
+    'quipmanager',
     'qualtrics',
-    'api',
+    'mooclet',
+    # 'api',
 
 )
 

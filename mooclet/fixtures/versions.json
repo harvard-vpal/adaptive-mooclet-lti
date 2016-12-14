@@ -1,0 +1,42 @@
+[
+  {
+    "model": "mooclet.version",
+    "pk": 1,
+    "fields": {
+      "mooclet": 1,
+      "_order": 1
+    }
+  },
+  {
+    "model": "mooclet.version",
+    "pk": 2,
+    "fields": {
+      "mooclet": 1,
+      "_order": 2
+    }
+  },
+  {
+    "model": "mooclet.version",
+    "pk": 3,
+    "fields": {
+      "mooclet": 2,
+      "_order": 1
+    }
+  },
+  {
+    "model": "mooclet.version",
+    "pk": 4,
+    "fields": {
+      "mooclet": 2,
+      "_order": 2
+    }
+  },
+  {
+    "model": "mooclet.version",
+    "pk": 5,
+    "fields": {
+      "mooclet": 2,
+      "_order": 3
+    }
+  }
+]

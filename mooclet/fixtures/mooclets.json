@@ -1,0 +1,10 @@
+[
+  {
+    "model": "mooclet.mooclet",
+    "pk": 1,
+    "fields": {
+      "name": "Default mooclet",
+      "policy": 2
+    }
+  }
+]

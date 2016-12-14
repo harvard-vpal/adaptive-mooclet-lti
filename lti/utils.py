@@ -1,6 +1,6 @@
 from dce_lti_py import OutcomeRequest
 from django.conf import settings
-from engine.models import Quiz
+from quip.models import Quiz
 from lti.models import LtiParameters
 
 
