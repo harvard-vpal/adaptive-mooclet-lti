@@ -8,23 +8,23 @@ from django.db.models import Avg
 
 # variables: list of variable objects, can be used to retrieve related data
 # context: dict passed from view, contains current user, course, quiz, question context
+# iterations: a number of iterations of policy to run (for simulations) 
+# return a dict ov versions mapped to of probabilities
+
+def uniform_random(variables,context,iterations=100):
+	probabilities = {version: 1.0 / len(context['versions']) for version in context['versions']}
+	return probabilities
 
 
-def uniform_random(variables,context):
-	return choice(context['mooclet'].version_set.all())
-
-def weighted_random(variables,context):
+def weighted_random(variables,context,iterations=100):
 	Weight = variables.get(name='version_weight')
 	weight_data = Weight.get_data(context)
 
-	versions = [weight.version for weight in weight_data]
-	weights = [weight.value for weight in weight_data]
-	return choice(versions, p=weights)
+	probabilities = {weight.version: weight.value for weight in weight_data}
+	return probabilities
 
-def thompson_sampling_placeholder(variables,context):
-	return choice(context['mooclet'].version_set.all())
 
-def thompson_sampling(variables,context):
+def thompson_sampling(variables,context,iterations=100):
 	versions = context['versions']
 	#import models individually to avoid circular dependency
 	Variable = apps.get_model('engine', 'Variable')
@@ -36,19 +36,27 @@ def thompson_sampling(variables,context):
 	prior_failure = 0.1
 	#max value of version rating, from qualtrics
 	max_rating = 1
+	
+	student_ratings_data = Variable.objects.get(name='student_rating').get_data(context)
 
-	version_to_show = None
-	max_beta = 0
-
+	# set up aggregate data we only need once
+	versions_data = {}
 	for version in versions:
-		student_ratings = Variable.objects.get(name='student_rating').get_data({'version': version}).all()
-		rating_count = student_ratings.count()
+		student_ratings = student_ratings_data.filter(object_id=version.pk)
+		versions_data[version] = {}
+		version_data = versions_data[version]
+		version_data['count'] = student_ratings.count()
+
 		rating_average = student_ratings.aggregate(Avg('value'))
 		rating_average = rating_average['value__avg']
 		if rating_average is None:
 			rating_average = 0
 		else:
-		 rating_average = rating_average * 0.1
+			rating_average = rating_average * 0.1
+		 
+		version_data['avg'] = rating_average
+
+
 
 		#get instructor conf and use for priors later
 		#add priors to db
@@ -73,17 +81,33 @@ def thompson_sampling(variables,context):
 			prior_failure_db_value = Value.objects.create(variable=prior_failure_db, object_id=version.id, value=prior_failure)
 	
 
-		#TODO - log to db later?
-		successes = (rating_average * rating_count) + prior_success
-		failures = (max_rating * rating_count) - (rating_average * rating_count) + prior_failure
 
-		version_beta = beta(successes, failures)
+	version_counts = {version: 0 for version in context['versions']}
 
-		if version_beta > max_beta:
-			max_beta = version_beta
-			version_to_show = version
+	#beta sample versions
+	for i in range(1, iterations):
+		version_to_show = None
+		max_beta = 0
+	
+		for version in versions:
+			version_data = versions_data[version]
+			rating_count = version_data['count']
+			rating_average = version_data['avg']
+			
 
-	return version_to_show
+			
+			#TODO - log to db later?
+			successes = (rating_average * rating_count) + prior_success
+			failures = (max_rating * rating_count) - (rating_average * rating_count) + prior_failure
 
+			version_beta = beta(successes, failures)
 
+			if version_beta > max_beta:
+				max_beta = version_beta
+				version_to_show = version
 
+		version_counts[version_to_show] = version_counts[version] + 1
+
+	probabilities = {version: float(version_counts[version]) / sum(version_counts.values()) for version in versions}
+	#probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+	return probabilities

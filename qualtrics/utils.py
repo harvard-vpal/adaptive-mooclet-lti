@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import requests
 from django.conf import settings
 from os import path

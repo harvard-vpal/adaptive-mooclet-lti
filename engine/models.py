@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 import policies
+import policy_probabilities
 
 ####################################
 #### Generalized mooclet models ####
@@ -44,6 +45,12 @@ class Mooclet(models.Model):
         # version = self.version_set.get(pk=version_id)
         return version
 
+    def simulate_probabilities(self, context={}, iterations=100):
+        context['versions'] = self.version_set.all()
+        # context['version_ids'] = self.get_version_ids()
+        probabilites = self.policy.run_simulation(context, iterations)
+        # version = self.version_set.get(pk=version_id)
+        return probabilites
 
 class Version(models.Model):
     '''
@@ -80,6 +87,14 @@ class Policy(models.Model):
             # TODO look through custom user-provided functions
             return None
 
+    def get_policy_probability_function(self):
+        try:
+            return getattr(policy_probabilities, self.name)
+        except:
+            print "policy probability function matching specified name not found"
+            # TODO look through custom user-provided functions
+            return None
+
     def get_variables(self):
         # TODO implement returning all, subsets, etc.
         return self.variables.all()
@@ -91,6 +106,27 @@ class Policy(models.Model):
         version_id = policy_function(variables,context)
         return version_id
 
+    def run_simulation(self, context, iterations):
+        policy_probability_function = self.get_policy_probability_function()
+        if policy_probability_function == None:
+            return {'probabilities': 'n/a'}
+        variables = self.get_variables()
+        version_content_type = ContentType.objects.get_for_model(Version)
+
+        #get versions 100 times and keep track of how often each is picked
+        probabilities = policy_probability_function(variables, context, iterations=iterations)
+        
+        explanation_probability, created = Variable.objects.get_or_create(name='explanation_probability', content_type=version_content_type)
+        for version, probability in probabilities.iteritems():
+            explanation_probability_value = explanation_probability.get_data({'version': version}).last()
+            if explanation_probability_value:
+                explanation_probability_value.value = probability
+                explanation_probability_value.save()
+            else:
+                #no current probability stored
+                explanation_probability_value = Value.objects.create(variable=explanation_probability, object_id=version.pk, value=probability)
+
+        return probabilities
 
 class Variable(models.Model):
     name = models.CharField(max_length=100)

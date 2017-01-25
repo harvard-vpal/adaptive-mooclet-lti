@@ -305,26 +305,27 @@ def update_intermediates(request):
 
     #simulate probabilities
     mooclet_context = {'mooclet': mooclet}
-    version_counts = {version: 0 for version in versions}
+    probabilities = mooclet.simulate_probabilities(mooclet_context, iterations=10000)
+    # version_counts = {version: 0 for version in versions}
 
-    #get versions 100 times and keep track of how often each is picked
-    num_iterations = 100
-    for i in range(1, num_iterations):
-        version = mooclet.get_version(mooclet_context)
-        #version = unicode(version)
-        version_counts[version] = version_counts[version] + 1
-    versions = version_counts.keys()
+    # #get versions 100 times and keep track of how often each is picked
+    # num_iterations = 100
+    # for i in range(1, num_iterations):
+    #     version = mooclet.get_version(mooclet_context)
+    #     #version = unicode(version)
+    #     version_counts[version] = version_counts[version] + 1
+    # versions = version_counts.keys()
 
-    probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
-    explanation_probability, created = Variable.objects.get_or_create(name='explanation_probability', content_type=version_content_type)
-    for version, probability in zip(versions, probabilities):
-        explanation_probability_value = explanation_probability.get_data({'version': version}).last()
-        if explanation_probability_value:
-            explanation_probability_value.value = probability
-            explanation_probability_value.save()
-        else:
-            #no current probability stored
-            explanation_probability_value = Value.objects.create(variable=explanation_probability, object_id=version.pk, value=probability)
+    # probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
+    # explanation_probability, created = Variable.objects.get_or_create(name='explanation_probability', content_type=version_content_type)
+    # for version, probability in zip(versions, probabilities):
+    #     explanation_probability_value = explanation_probability.get_data({'version': version}).last()
+    #     if explanation_probability_value:
+    #         explanation_probability_value.value = probability
+    #         explanation_probability_value.save()
+    #     else:
+    #         #no current probability stored
+    #         explanation_probability_value = Value.objects.create(variable=explanation_probability, object_id=version.pk, value=probability)
 
     #Question Level variables
     question = Question.objects.get(pk=int(request.GET['question_id']))
@@ -350,7 +351,7 @@ def update_intermediates(request):
         value.save()
 
 
-    return JsonResponse({'message':'Success. New variables:', 'count': rating_count, 'mean': rating_average, 'standard deviation': std_dev, 'probabilities': probabilities})
+    return JsonResponse({'message':'Success. New variables:', 'count': rating_count, 'mean': rating_average, 'standard deviation': std_dev, 'probabilities': probabilities.values()})
 
 
 # def submit_user_variables(request):
