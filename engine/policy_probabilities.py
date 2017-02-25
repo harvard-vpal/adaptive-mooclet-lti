@@ -106,7 +106,7 @@ def thompson_sampling(variables,context,iterations=100):
 				max_beta = version_beta
 				version_to_show = version
 
-		version_counts[version_to_show] = version_counts[version] + 1
+		version_counts[version_to_show] = version_counts[version_to_show] + 1
 
 	probabilities = {version: float(version_counts[version]) / sum(version_counts.values()) for version in versions}
 	#probabilities = [float(version_counts[version]) / sum(version_counts.values()) for version in versions]
