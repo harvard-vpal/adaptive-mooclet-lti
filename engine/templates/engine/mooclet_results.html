@@ -35,7 +35,7 @@ Comparison results
 <tbody>
 {% for version in versions %}
 	<tr>
-	<td>{{version | safe | truncatewords_html:30}}</td>
+	<td>{{ forloop.counter }}. {{version | safe | truncatewords_html:30}}</td>
 	{% for variable in variables %}
 		{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
 				<td>{% iloc values_matrix m n %}</td>
@@ -56,6 +56,9 @@ Comparison results
 		{% endfor %}
 	</ol>
 </div>
+
+
+
 {% comment %}
 
 <h2> Student Variables for MOOClet </h2>
@@ -90,7 +93,9 @@ Comparison results
 {% block footer %}
 <script type="text/javascript">
 $(document).ready(function(){
-    $('#myTable').DataTable();
+    $('#myTable').DataTable({
+    	'order': []
+    });
 });
 </script>
 {% endblock footer %}
