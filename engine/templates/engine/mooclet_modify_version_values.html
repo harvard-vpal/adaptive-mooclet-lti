@@ -25,7 +25,7 @@ Change policy variable values associated with feedback versions
 </div>
 {% endcomment %}
 
-<h2> Instructor Variables for Comparison </h2>
+<h2> Instructor Variables for Comparison on answer "{{answer | safe}}"</h2>
 <div>
 	<ul>
 		<li>It can be useful to articulate your beliefs about how helpful the alternative versions will be, before seeing the data.</li>
@@ -47,7 +47,7 @@ Change policy variable values associated with feedback versions
 		
 		{% for version in versions %}
 			<div class="tr">
-			<span class="td"> {{version | safe | truncatewords_html:30}} </span>
+			<span class="td"> {{ forloop.counter }}.  {{version | safe | truncatewords_html:30}} </span>
 
 			{% for instructor_variable in instructor_variables %}
 				{% with m=forloop.parentloop.counter0 n=forloop.counter0 %}
@@ -59,6 +59,17 @@ Change policy variable values associated with feedback versions
 		
 	<input type="submit" value="Save">
 
+</div>
+
+<div>
+	<h3>Full Text of Versions</h3>
+
+	<ol>
+		{% for version in versions %}
+		<li>{{version | safe }}</li>
+
+		{% endfor %}
+	</ol>
 </div>
 
 
