@@ -221,24 +221,31 @@ def submit_value(request):
     if 'object_id' in request.GET:
         object_id = int(request.GET['object_id'])
 
-
+    count_unsaved_params = 0
+    count_saved_params = 0
     for param in request.GET:
         if param not in reserved_params:
             #skip text variables since they aren't implemented
             try:
                 variable_value = float(request.GET[param])
-            except ValueError:
-                break
-            variable, created = Variable.objects.get_or_create(name=param, content_type=content_type, is_user_variable=True)
-            value = Value(
+
+                variable, created = Variable.objects.get_or_create(name=param, content_type=content_type, is_user_variable=True)
+                value = Value(
                 variable=variable,
                 user=user,
                 object_id=object_id,
                 value=variable_value
-            )
-            value.save()
-
-    return JsonResponse({'message': 'User variables successfully submitted'})
+                )
+                value.save()
+                count_saved_params = count_saved_params + 1
+            except ValueError:
+                count_unsaved_params = count_unsaved_params + 1
+                pass
+            
+    message = '{} User variables successfully submitted'.format(str(count_saved_params))
+    if count_unsaved_params > 0:
+        message = '{} variables could not be saved'.format(str(count_unsaved_params))
+    return JsonResponse({'message': message})
 
 
 def update_intermediates(request):
