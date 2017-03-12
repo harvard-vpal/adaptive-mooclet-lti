@@ -11,6 +11,7 @@ from .utils import *
 from qualtrics.utils import provision_qualtrics_quiz
 from lti.utils import display_preview
 from numpy import std
+import csv
 # from django.views import View
 
 
@@ -858,3 +859,23 @@ def tool_instructions(request, quiz_id, question_id):
         'question': question,
     }
     return render(request, 'engine/instructions.html', context)
+
+
+def get_question_results(request, **kwargs):
+    quiz = get_object_or_404(Quiz, pk=kwargs['quiz_id'])
+    question = get_object_or_404(Question, pk=kwargs['question_id'])
+    answers = question.answer_set.all()
+    mooclets = [answer.mooclet_explanation for answer in answers]
+
+    Grade = Variable.objects.get(name='quiz_grade')
+    grades = Grade.get_data(context={'quiz': quiz})
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['user_id', 'grade'])
+    for grade in grades:
+        writer.writerow([grade.user, grade.value])
+
+    return response

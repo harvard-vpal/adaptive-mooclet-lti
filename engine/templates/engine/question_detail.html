@@ -15,6 +15,7 @@ Question Manager
 <div class="section">
 	<a href="{% url 'engine:question_and_answers_modify' quiz_id=quiz.pk question_id=question.pk %}" class="btn btn-primary">Edit question and answers</a>
 
+	<a href="{% url 'engine:get_question_results' quiz_id=quiz.pk question_id=question.pk %}" class="btn btn-primary">Get Question Data (csv)</a>
 {% comment %}
 
 <h2> Edit text of question and answers </h2>
