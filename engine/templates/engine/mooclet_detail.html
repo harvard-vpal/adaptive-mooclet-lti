@@ -40,12 +40,14 @@ Alternative Feedback Messages for Answer
 	
 </div>
 <!--end instructions -->
+	<a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}" class="btn btn-primary">Add new version</a>
 	<ol>
 	{% for version in mooclet.version_set.all %}
-		<li><a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}">{{version | safe | truncatewords_html:30}}</a></li>
+		<li>{{version | safe }} <br>
+			&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'engine:version_modify' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk version_id=version.pk %}" class="btn btn-primary btn-sm">Edit this Version</a></li>
 	{% endfor %}
 	</ol>
-	<a href="{% url 'engine:version_create' quiz_id=quiz.pk question_id=question.pk answer_id=answer.pk mooclet_id=mooclet.pk %}" class="btn btn-primary">Add new version</a>
+	
 </div>
 
 <div class="section-links">
