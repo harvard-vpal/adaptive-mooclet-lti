@@ -9,6 +9,10 @@ urlpatterns = [
 
     # shortcut for launching sandbox quiz
     url(r'^launch_sandbox$', views.launch_sandbox, name='launch_sandbox'),
+    
+    #shortcut to add version/quesiton comparison
+    # TODO add to question or mooclet
+    url(r'^question_comparison$', views.question_comparison, name='compare_question'),
 
     # include child urls - start with longest pattern so that mooclet patterns handling more parameters are accessed first
     url(r'^(?P<quiz_id>[0-9]+)/question/(?P<question_id>[0-9]+)/answer/(?P<answer_id>[0-9]+)/', include('engine.urls.urls_answer')),

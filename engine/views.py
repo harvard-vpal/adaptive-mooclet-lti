@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.forms import modelformset_factory,inlineformset_factory, ModelForm
 from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+import json
 from urllib import urlencode
 from .models import *
 from django.contrib.contenttypes.models import ContentType
@@ -661,7 +663,7 @@ def mooclet_list_values(request, **kwargs):
     values = []
     # for variable in mooclet.policy.variables.all():
     for variable in Variable.objects.all():
-        for value in variable.get_data({'quiz':quiz, 'answer':answer, 'mooclet':mooclet}):
+        for value in variable.get_data({'quiz':quiz, 'question':question, 'answer':answer, 'mooclet':mooclet}):
             values.append(value)
 
     context = {
@@ -865,17 +867,168 @@ def get_question_results(request, **kwargs):
     quiz = get_object_or_404(Quiz, pk=kwargs['quiz_id'])
     question = get_object_or_404(Question, pk=kwargs['question_id'])
     answers = question.answer_set.all()
-    mooclets = [answer.mooclet_explanation for answer in answers]
+    mooclets = answers.values_list('mooclet_explanation', flat=True)
+    mooclets = Mooclet.objects.filter(id__in=mooclets)
+    versions = [mooclet.version_set.all() for mooclet in mooclets]
+    values = []
+
+    # for variable in Variable.objects.all():
+    #     for value in variable.get_data({'quiz':quiz, 'question':question, 'answer':answer, 'mooclet':mooclet}):
+    #         values.append(value)
 
     Grade = Variable.objects.get(name='quiz_grade')
     grades = Grade.get_data(context={'quiz': quiz})
 
+    users = grades.values('user')
+
+
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
 
+    headers = (
+        'user_id', 'canvas_lit_user_id', 'quiz_id', 'quiz_name', 'answer_chosen', 
+        'answer_chosen_value', 'condition', 'mooclet_version_id', 'mooclet_version_text', 
+        'user_rating', 'user_rating_time', 'user_grade', 'user_grade_time'
+        )
+
     writer = csv.writer(response)
-    writer.writerow(['user_id', 'grade'])
+
+    writer.writerow(headers)
     for grade in grades:
-        writer.writerow([grade.user, grade.value])
+        writer.writerow([grade.user.pk, grade.value])
 
     return response
+
+
+def question_comparison(request, **kwargs):
+    #request contains a version id and a quiz_id
+    version = Version.objects.get(pk=request.GET['version_id'])
+
+    # get the rating variable and get all student ratings
+    rating = Variable.objects.get(name='student_rating')
+    rating_data = rating.get_data(context={'version' : version})
+
+    #get each user who provided a rating
+    users = rating_data.values('user')
+    
+    print users
+
+    grade = Variable.objects.get(name='quiz_grade')
+    #get the grades for the users who saw version = version_id on the new subsequent problem
+    grade_data = Value.objects.filter(variable=grade, object_id=request.GET['quiz_id'], user__in=users)
+
+    grade_count = grade_data.count()
+    grade_average = grade_data.aggregate(Avg('value'))
+    grade_average = grade_average['value__avg']
+    return JsonResponse({'grade count': grade_count, 'average': grade_average})
+
+def calculus_comparison(request, **kwargs):
+    """
+    Get ratings and grades for short versus link conditions of all
+    week 3 problems in calculus. split them by correct versus incorrect.
+    Where grade is defined as:
+    if problem = week3q1
+    grade = average(week3q2grade, week3q3 grade)
+    else if problem = week3q2
+    grade = week3q3grade
+    else if problem=week3q3
+    do nothing
+
+    arguments: start_problem, [list of following problems] in next_problems=2,3,4,5
+
+    """
+    condition = Variable.objects.get(name='condition')
+    grade = Variable.objects.get(name='quiz_grade')
+
+    week3q1quiz = Quiz.objects.get(pk=request.GET['start_problem'])#quiz id
+    week3q2quiz = Quiz.objects.get(pk=2)#quiz id
+    week3q3quiz = Quiz.objects.get(pk=3)#quiz id
+    week3quizzes = [week3q1quiz, week3q2quiz, week3q3quiz]
+
+    answers = {}
+    ratings_short_correct = 0
+    ratings_short_incorrect = 0
+    rating_link_correct = 0
+    rating_link_incorrect = 0
+
+    grade_short_correct = 0
+    grade_short_incorrect = 0
+    grade_link_correct = 0
+    grade_link_incorrect = 0
+
+
+    #collect the answers intoa dict of {quiz: [answer1,answer2,answer3...]}
+    for quiz in week3quizzes:
+        answers[quiz] = quiz.question_set.first().answer_set.all()
+        #get mooclets
+        for answer in answers[quiz]:
+            mooclet = answer.mooclet_explanation
+            #get the versions
+            versions = Version.objects.filter(mooclet=mooclet).all()
+            for version in versions:
+                version_condition = condition.get_data({'version':version}).first() #1 = short, 2 = long
+                ratings = Variable.objects.filter(name='student_rating').first().get_data({'quiz':quiz, 'version':version }).all()
+                rating_avg = ratings.aggregate(Avg('value'))
+                rating_avg = rating_avg['value__avg']
+
+                users = ratings.values('user')
+
+                if quiz == week3q1quiz:
+                    #grade = avg(week3q2quizgrade, week3q3grade)
+                    week3q2q3grade = Value.objects.filter(variable=grade, user__in=users, object_id__in=[week3q2quiz.pk, week3q3quiz.pk]).all()
+                    grade_average = week3q2q3grade.aggregate(Avg('value'))
+                    grade_average = grade_average['value__avg']
+
+                elif quiz == week3q2quiz:
+                    week3grade = Value.objects.filter(variable=grade, user__in=users, object_id=week3q3quiz.pk).all()
+                    grade_average = week3grade.aggregate(Avg('value'))
+                    grade_average = grade_average['value__avg']
+
+
+
+                if answer.correct and version_condition and version_condition.value == 1: #short
+                    if grade_average:
+                        if grade_short_correct == 0:
+                            grade_short_correct = grade_average
+                        else:
+                            grade_short_correct = mean(grade_short_correct, grade_average)
+
+                elif answer.correct and version_condition and version_condition.value == 2: #long
+                    if grade_average:
+                        if grade_link_correct == 0:
+                            grade_link_correct = grade_average
+                        else:
+                            grade_link_correct = mean(grade_link_correct, grade_average)
+
+                elif not answer.correct and version_condition and version_condition.value == 1:
+                    if grade_average:
+                        if grade_short_incorrect == 0:
+                            grade_short_incorrect = grade_average
+                        else:
+                            grade_short_incorrect = mean(ratings_short_incorrect, grade_average)
+
+                elif not answer.correct and version_condition and version_condition.value == 2:
+                    if grade_average:
+                        if grade_link_incorrect == 0:
+                            grade_link_incorrect = grade_average
+                        else:
+                            grade_link_incorrect = mean(grade_link_incorrect, grade_average)
+
+
+    return JsonResponse({
+        'rating_short_correct':ratings_short_correct, 
+        'rating_short_incorrect': ratings_short_incorrect, 
+        'rating_link_correct': rating_link_correct, 
+        'rating_link_incorrect':rating_link_incorrect,
+        'grade_short_correct':grade_short_correct, 
+        'grade_short_incorrect':grade_short_incorrect, 
+        'grade_link_correct':grade_link_correct, 
+        'grade_link_incorrect':grade_link_incorrect, 
+        })
+
+
+
+
+
+
+
