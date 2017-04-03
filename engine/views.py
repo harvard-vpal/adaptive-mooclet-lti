@@ -918,7 +918,7 @@ def get_question_results(request, **kwargs):
 
         user_result.append(user_rating.value)
         user_result.append(user_rating.timestamp)
-        user_grade = grades.objects.filter(user=user).first()
+        user_grade = grades.filter(user=user).first()
         user_result.append(user_grade.value)
         user_result.append(user_grade.timestamp)
 
