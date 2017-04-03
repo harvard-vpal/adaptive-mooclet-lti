@@ -900,7 +900,7 @@ def get_question_results(request, **kwargs):
         user_rating = user_ratings.filter(user=user).first()
         version = versions.get(pk=user_rating.object_id)
 
-        answer = version.mooclet.answer__set.first()
+        answer = version.mooclet.answer_set.first()
 
         answer_chosen = answer.pk
         user_result.append(answer_chosen)
