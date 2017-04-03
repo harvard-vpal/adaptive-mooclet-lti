@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^results$', views.question_results, name='question_results'),
     url(r'^answer/create$', views.answer_create, name='answer_create'),
     url(r'^answer/list$', views.answer_list, name='answer_list'),
+    url(r'^get_question_data$', views.get_question_results, name='get_question_results'),
+    url(r'^calculus_comparison$', views.calculus_comparison, name='calculus_comparison')
 ]
