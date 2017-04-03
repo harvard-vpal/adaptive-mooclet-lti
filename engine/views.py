@@ -921,6 +921,8 @@ def get_question_results(request, **kwargs):
         user_grade = grades.filter(user=user).first()
         user_result.append(user_grade.value)
         user_result.append(user_grade.timestamp)
+        
+        results.append(user_result)
 
 
 
