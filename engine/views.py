@@ -878,7 +878,7 @@ def get_question_results(request, **kwargs):
 
     try:
         calculus_condition = Variable.objects.get(name='calculus_condition')
-    except SomeModel.DoesNotExist:
+    except Variable.DoesNotExist:
         calculus_condition = None
 
     
