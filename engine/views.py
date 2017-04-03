@@ -869,24 +869,69 @@ def get_question_results(request, **kwargs):
     answers = question.answer_set.all()
     mooclets = answers.values_list('mooclet_explanation', flat=True)
     mooclets = Mooclet.objects.filter(id__in=mooclets)
-    versions = [mooclet.version_set.all() for mooclet in mooclets]
+    versions = Version.objects.filter(mooclet__in=mooclets).all()#[mooclet.version_set.all() for mooclet in mooclets]
     values = []
 
     # for variable in Variable.objects.all():
     #     for value in variable.get_data({'quiz':quiz, 'question':question, 'answer':answer, 'mooclet':mooclet}):
     #         values.append(value)
 
+    try:
+        calculus_condition = Variable.objects.get(name='calculus_condition')
+    except SomeModel.DoesNotExist:
+        calculus_condition = None
+
+    
+
     Grade = Variable.objects.get(name='quiz_grade')
     grades = Grade.get_data(context={'quiz': quiz})
 
-    users = grades.values('user')
+    users = grades.values_list('user', flat=True)
+    rating = Variable.objects.get(name='student_rating')
+    user_ratings = Value.objects.filter(variable=rating, object_id__in=[version.pk for version in versions], user__in=users).all()
+
+    results = []
+    for user in users:
+        user_result = []
+        user_result.append(user)
+        user_result.append(quiz.pk)
+        user_result.append(quiz.name)
+
+        user_rating = user_ratings.filter(user=user)
+        version = versions.get(pk=user_rating.object_id)
+
+        answer = version.mooclet.answer__set.first()
+
+        answer_chosen = answer.pk
+        user_result.append(answer_chosen)
+        answer_chosen_value = answer.text
+        user_result.append(answer_chosen_value)
+
+        if calculus_condition:
+            condition = calculus_condition.get_data({'version':version}).first()
+            user_result.append(condition)
+        else:
+            user_result.append('')
+
+        user_result.append(version.pk)
+        user_result.append(version)
+
+        user_result.append(user_rating.value)
+        user_result.append(user_rating.timestamp)
+        user_grade = grades.objects.filter(user=user).first()
+        user_result.append(user_grade.value)
+        user_result.append(user_grade.timestamp)
+
+
+
 
 
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+    response['Content-Disposition'] = 'attachment; filename="results.csv"'
 
+    #TODO: add 'canvas_lti_user_id'
     headers = (
-        'user_id', 'canvas_lti_user_id', 'quiz_id', 'quiz_name', 'answer_chosen', 
+        'user_id', 'quiz_id', 'quiz_name', 'answer_chosen', 
         'answer_chosen_value', 'condition', 'mooclet_version_id', 'mooclet_version_text', 
         'user_rating', 'user_rating_time', 'user_grade', 'user_grade_time'
         )
@@ -894,8 +939,8 @@ def get_question_results(request, **kwargs):
     writer = csv.writer(response)
 
     writer.writerow(headers)
-    for grade in grades:
-        writer.writerow([grade.user.pk, grade.value])
+    for result in results:
+        writer.writerow(result)
 
     return response
 
