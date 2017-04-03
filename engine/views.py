@@ -886,7 +886,7 @@ def get_question_results(request, **kwargs):
     response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
 
     headers = (
-        'user_id', 'canvas_lit_user_id', 'quiz_id', 'quiz_name', 'answer_chosen', 
+        'user_id', 'canvas_lti_user_id', 'quiz_id', 'quiz_name', 'answer_chosen', 
         'answer_chosen_value', 'condition', 'mooclet_version_id', 'mooclet_version_text', 
         'user_rating', 'user_rating_time', 'user_grade', 'user_grade_time'
         )
