@@ -898,26 +898,53 @@ def get_question_results(request, **kwargs):
         user_result.append(quiz.name)
 
         user_rating = user_ratings.filter(user=user).first()
-        version = versions.get(pk=user_rating.object_id)
+        if user_rating:
 
-        answer = version.mooclet.answer_set.first()
+            version = versions.get(pk=user_rating.object_id)
 
-        answer_chosen = answer.pk
-        user_result.append(answer_chosen)
-        answer_chosen_value = answer.text
-        user_result.append(answer_chosen_value)
+            answer = version.mooclet.answer_set.first()
 
+            answer_chosen = answer.pk
+            
+            answer_chosen_value = answer.text
+
+            version_pk = version.pk
+            version_text = version
+            user_rating_value = user_rating.value
+            user_rating_time = user_rating.timestamp
+
+        else:
+            version = ''
+
+            answer = ''
+
+            answer_chosen = ''
+            
+            answer_chosen_value = ''
+
+            version_pk = ''
+            version_text = ''
+            user_rating_value = ''
+            user_rating_time = ''
+            
         if calculus_condition:
             condition = calculus_condition.get_data({'version':version}).first()
-            user_result.append(condition)
+            if condition:
+                condition = condition.value
+            
         else:
-            user_result.append('')
+            condition = ''
 
-        user_result.append(version.pk)
-        user_result.append(version)
+        user_result.append(answer_chosen)
+        user_result.append(answer_chosen_value)
 
-        user_result.append(user_rating.value)
-        user_result.append(user_rating.timestamp)
+        user_result.append(condition)
+
+        user_result.append(version_pk)
+        user_result.append(version_text)
+
+        user_result.append(user_rating_value)
+        user_result.append(user_rating_time)
         user_grade = grades.filter(user=user).first()
         user_result.append(user_grade.value)
         user_result.append(user_grade.timestamp)
