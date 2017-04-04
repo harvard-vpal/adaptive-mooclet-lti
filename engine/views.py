@@ -927,7 +927,7 @@ def get_question_results(request, **kwargs):
             user_rating_value = ''
             user_rating_time = ''
             
-        if calculus_condition:
+        if calculus_condition and user_rating:
             condition = calculus_condition.get_data({'version':version}).first()
             if condition:
                 condition = condition.value
