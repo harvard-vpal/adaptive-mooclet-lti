@@ -9,7 +9,17 @@ def display_preview(user, quiz):
     Checks whether to launch the LTI tool in preview mode or quiz mode for a given user and quiz
     Returns True for preview, False for quiz
     '''
-    lti_parameters = LtiParameters.objects.get(user=user, quiz=quiz)
+    #make sure we can show previews outside lms
+    lti_parameters = None
+    try:
+        lti_parameters = LtiParameters.objects.get(user=user, quiz=quiz)
+    except (TypeError, LtiParameters.DoesNotExist):
+        print "Either the user was anonymous or does not have LTIParams (launched outside LMS?)"
+
+
+    # enable showing full instructor 
+    if lti_parameters is None:
+        return True
 
     # LTI User role check
     user_roles = lti_parameters.roles
