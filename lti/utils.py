@@ -59,7 +59,7 @@ def grade_passback(grade, user, quiz):
     outcome_response = outcome.post_replace_result(grade)
 
     # error logging
-    print 'GRADE PASSBACK TRIGGERED: user={}, quiz={}, course={}, grade={}'.format(user.pk, quiz.pk, course.pk, grade)
+    print 'GRADE PASSBACK TRIGGERED: user={}, quiz={}, grade={}'.format(user.pk, quiz.pk, grade)
     print outcome_response
 
     # TODO error detection on bad passback
