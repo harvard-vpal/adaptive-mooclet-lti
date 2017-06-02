@@ -13,14 +13,14 @@ class LtiParameters(models.Model):
     quiz = models.ForeignKey(Quiz)
 
     # LTI params - ADD THESE BELOW TOO
-    lis_outcome_service_url = models.CharField(max_length=200,default='')
-    lis_result_sourcedid = models.CharField(max_length=100,default='')
-    oauth_consumer_key = models.CharField(max_length=100,default='')
-    lis_person_sourcedid = models.CharField(max_length=100,default='') # HUID if launching tool from canvas
-    custom_canvas_user_id = models.CharField(max_length=100,default='')
-    custom_canvas_course_id = models.CharField(max_length=100,default='')
-    roles = models.CharField(max_length=200,default='')
-    context_id = models.CharField(max_length=200,default='')
+    lis_outcome_service_url = models.CharField(max_length=1024,default='')
+    lis_result_sourcedid = models.CharField(max_length=1024,default='')
+    oauth_consumer_key = models.CharField(max_length=1024,default='')
+    lis_person_sourcedid = models.CharField(max_length=1024,default='') # HUID if launching tool from canvas
+    custom_canvas_user_id = models.CharField(max_length=1024,default='')
+    custom_canvas_course_id = models.CharField(max_length=1024,default='')
+    roles = models.CharField(max_length=1024,default='')
+    context_id = models.CharField(max_length=1024,default='')
 
     # used to enable iteration through parameter names to make saving these easier
     parameter_names = [
