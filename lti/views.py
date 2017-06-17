@@ -100,11 +100,20 @@ def launch(request,quiz_id):
         # instructor-like role: launch the quiz management view
         #return redirect('engine:quiz_detail', quiz_id=quiz_id)
         #generic instructor_launch function
-        return redirect('engine:launch_quiz_manager', quiz_id=quiz_id)
+        url = reverse('engine:launch_quiz_manager', kwargs={'quiz_id':quiz_id})
+        url += '?utm_source=%s' % request.session.session_key
+        response = HttpResponseRedirect(url)
+        #response['Location'] += '?utm_source=%s' % request.session.session_key
+        return response
 
     else:
         # student role; launch the quiz
-        return redirect('engine:launch_quiz', quiz_id=quiz.id)
+        url = reverse('engine:launch_quiz', kwargs={'quiz_id':quiz_id})
+        url += '?utm_source=%s' % request.session.session_key
+        response = HttpResponseRedirect(url)
+        #response['Location'] += '?utm_source=%s' % request.session.session_key
+        return response
+        #return redirect('engine:launch_quiz', quiz_id=quiz.id)
 
 
 @login_required()

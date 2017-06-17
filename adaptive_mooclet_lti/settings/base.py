@@ -80,6 +80,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'adaptive_mooclet_lti.middleware.XFrameOptionsMiddleware',
+    'adaptive_mooclet_lti.middleware.CookielessSessionMiddleware',
 )
 AUTHENTICATION_BACKENDS = (
     'django_auth_lti.backends.LTIAuthBackend',
@@ -156,6 +158,11 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
 
 SECURE_SSL_REDIRECT = True
+
+CSRF_COOKIE_SECURE = True
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
