@@ -219,6 +219,10 @@ QUALTRICS_API_URL = 'https://survey.qualtrics.com/WRAPI/ControlPanel/api.php'
 QUALTRICS_TEMPLATE_NAME = 'MOOClet_template.qsf'
 QSF_ROOT = normpath(join(SITE_ROOT, 'static/qsf'))
 
+#Mooclet Engine api
+MOOCLET_URL_BASE = SECURE_SETTINGS.get('MOOCLET_URL_BASE')
+MOOCLET_API_TOKEN = SECURE_SETTINGS.get('MOOCLET_API_TOKEN')
+
 
 #### DJANGO REST FRAMEWORK SETTINGS ####
 
