@@ -81,7 +81,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     #'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'adaptive_mooclet_lti.middleware.XFrameOptionsMiddleware',
-    'adaptive_mooclet_lti.middleware.CookielessSessionMiddleware',
+    #'adaptive_mooclet_lti.middleware.CookielessSessionMiddleware',
 )
 AUTHENTICATION_BACKENDS = (
     'django_auth_lti.backends.LTIAuthBackend',
