@@ -161,6 +161,8 @@ SECURE_SSL_REDIRECT = True
 
 CSRF_COOKIE_SECURE = True
 
+SESSION_SAVE_EVERY_REQUEST = True
+
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 
