@@ -86,4 +86,50 @@ def thompson_sampling(variables,context):
 	return version_to_show
 
 
+def check_version(variable, user, mooclet):
+	Variable = apps.get_model('engine', 'Variable')
+	Value = apps.get_model('engine', 'Value')
+	Version = apps.get_model('engine', 'Version')
+	Mooclet = apps.get_model('engine', 'Mooclet')
+	version_ids = mooclet.version_set.all().values_list('id', flat=True)
+	#version_content_type = ContentType.objects.get_for_model(Version)
+	return Value.objects.filter(user=user, variable=variable, object_id__in=version_ids).first()
+
+
+def prompt_shortlong_condition(variables, context):
+	user = context['user']
+
+	Variable = apps.get_model('engine', 'Variable')
+	Value = apps.get_model('engine', 'Value')
+	Version = apps.get_model('engine', 'Version')
+	#Mooclet = apps.get_model('engine', 'Mooclet')
+	version_content_type = ContentType.objects.get_for_model(Version)
+	condition_var = Variable.objects.get(name='edxshortlongcondition')
+
+	#use the pk of the mooclet version as the condition value?
+	#or a bunch of if statements?
+	#check if a version has been previously assigned
+	previous_condition_value = check_version(condition_var, user, context['mooclet'])
+
+	if previous_condition_value is not None:
+		mooclet_version = Version.objects.get(pk=previous_condition_value.object_id)
+
+		return mooclet_version
+
+	else:
+		value = 0
+		mooclet_version = choice(context['mooclet'].version_set.all())
+		if mooclet_version.explanation.text == 'shortnoprompt':
+			value = 12
+		elif mooclet_version.explanation.text == 'shortexplanationprompt':
+			value = 32
+		elif mooclet_version.explanation.text == 'longnoprompt':
+			value = 14
+		elif mooclet_version.explanation.text == 'longexplanationprompt':
+			value = 34
+		condition = Value.objects.create(variable=condition_var, user=user, object_id=mooclet_version.pk, value=value)
+		condition.save()
+		return mooclet_version
+
+
 
