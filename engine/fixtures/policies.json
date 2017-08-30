@@ -23,6 +23,15 @@
       "name": "thompson_sampling",
       "variables": [7, 8]
     }
+  },
+
+  {
+    "model": "engine.policy",
+    "pk": 4,
+    "fields": {
+      "name": "prompt_shortlong_condition",
+      "variables": [7, 8]
+    }
   }
 ]  
 

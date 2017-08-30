@@ -3,7 +3,7 @@ from .secure import SECURE_SETTINGS
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS += ('debug_toolbar', 'sslserver')
 
