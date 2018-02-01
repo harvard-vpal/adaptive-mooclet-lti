@@ -1,0 +1,56 @@
+{% extends "engine/base.html" %}
+
+{% load staticfiles %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block title %}
+Quip Manager
+{% endblock title %}
+
+{% block body %}
+
+	<h3>Success!</h3>
+	<p>Your new LTI problem has been created! </p>
+	<p>The problem's launch url is <strong><span class="link"><a href={{launch_url}} id="link">{{launch_url}}</a></span></strong></p>
+	<p><strong>Copy this URL now</strong>, as you will not be able to access this page again.</p>
+	<p>
+		<button type="button" class="btn btn-primary" onClick="copyToClipboard(this, '#link')">Click here to copy the link to your keyboard</button>
+	</p>
+	<div>
+		<div class="alert alert-warning alert-dismissible" role="alert">
+  			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  			<strong>Warning!</strong> Once you leave this page, you will no longer be able to access the url above. Make sure you have copied it!
+		</div>
+		
+		<p>
+			<a href="{% url 'engine:quiz_create_options' %}" class="btn btn-warning">Click here to create a new problem</a>
+		</p>
+		
+
+	</div>
+	
+	</div>
+
+<!-- Modal -->
+<div class="modal fade" id="checkModal" tabindex="-1" role="dialog" aria-labelledby="checkModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="checkModalLabel">Are you sure?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

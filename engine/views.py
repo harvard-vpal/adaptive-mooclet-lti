@@ -23,6 +23,7 @@ def quiz_create_options(request):
     return render(request, 'engine/quiz_create_options.html')
 
 def quiz_create_blank(request):
+    course = None
     if request.session.get('LTI_LAUNCH'):
         course, created = Course.objects.get_or_create(
             context = request.session['LTI_LAUNCH']['context_id'],
@@ -32,13 +33,22 @@ def quiz_create_blank(request):
             course.save()
 
     quiz = Quiz(
-        user=request.user,
+        #user=request.user,
         
     )
     if course:
         quiz.course = course
+    if request.user.is_authenticated():
+        quiz.user = request.user
     quiz.save()
-    return redirect('lti:return_launch_url', quiz_id=quiz.id)
+
+    if request.session.get('LTI_LAUNCH'):
+        return redirect('lti:return_launch_url', quiz_id=quiz.id)
+    else:
+        context = {
+            'launch_url': request.build_absolute_uri(reverse('lti:launch',kwargs={'quiz_id':quiz.id})),
+        }
+        return render(request, 'engine/show_launch_url.html', context)
 
 def quiz_create_url(request):
     if request.method == 'GET':
@@ -46,19 +56,28 @@ def quiz_create_url(request):
         context = {'quiz_url_form':quiz_url_form}
         return render(request, 'engine/quiz_create_url.html',context)
     elif request.method == 'POST':
-        course, created = Course.objects.get_or_create(
-            context = request.session['LTI_LAUNCH']['context_id'],
-            name = request.session['LTI_LAUNCH']['context_title']
-        )
-        if created:
+        course = None
+        if request.session.get('LTI_LAUNCH'):
+            course, created = Course.objects.get_or_create(
+                context = request.session['LTI_LAUNCH']['context_id'],
+                name = request.session['LTI_LAUNCH']['context_title']
+            )
+        if course and created:
             course.save()
         quiz_url_form = QuizUrlForm(request.POST)
         quiz = quiz_url_form.save(commit=False)
         quiz.course = course
-        quiz.user = request.user
+        if request.user.is_authenticated():
+            quiz.user = request.user
         quiz.save()
 
-        return redirect('lti:return_launch_url', quiz_id=quiz.id)
+        if request.session.get('LTI_LAUNCH'):
+            return redirect('lti:return_launch_url', quiz_id=quiz.id)
+        else:
+            context = {
+                'launch_url': request.build_absolute_uri(reverse('lti:launch',kwargs={'quiz_id':quiz.id})),
+            }
+            return render(request, 'engine/show_launch_url.html', context)
 
 
 #### UTILITY VIEWS ####
