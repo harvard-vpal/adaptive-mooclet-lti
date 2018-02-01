@@ -6,8 +6,8 @@ django-ordered-model
 djangorestframework
 django-storages
 boto
-django-bootstrap3
-django-bootstrap-breadcrumbs
+django-bootstrap4
+django-bootstrap-breadcrumbs>=0.8.1
 #django-crispy-forms
 
 #django-cached-authentication-middleware>=0.2.0

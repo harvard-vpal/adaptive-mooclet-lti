@@ -42,7 +42,7 @@ SECRET_KEY = SECURE_SETTINGS.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['adaptive-prod.vpal.io']
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     'storages',
     'rest_framework',
     'ordered_model',
-    'bootstrap3',
+    'bootstrap4',
     'django_bootstrap_breadcrumbs',
     # 'crispy_forms',
 
@@ -189,7 +189,7 @@ AWS_SECRET_ACCESS_KEY = SECURE_SETTINGS.get('AWS_SECRET_ACCESS_KEY', None)
 # CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #### django-bootstrap ####
-BOOTSTRAP3 = {
+BOOTSTRAP4 = {
     'include_jquery':True,
 }
 
