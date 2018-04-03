@@ -106,13 +106,19 @@ def get_explanation_for_student(request):
     
     mooclet_context = {'mooclet': mooclet}
 
-    if 'user_id' in request.GET:
-        user = get_object_or_404(User, id=request.GET['user_id'])
-        mooclet_context['user'] = user
+    if 'user_id' in request.GET and request.GET['user_id']:
+        try:
+            user = get_object_or_404(User, id=request.GET['user_id'])
+            mooclet_context['user'] = user
+        except:
+            pass
 
-    elif 'user' in request.GET:
-        user = get_object_or_404(User, id=request.GET['user'])
-        mooclet_context['user'] = user
+    elif 'user' in request.GET and request.GET['user_id']:
+        try:
+            user = get_object_or_404(User, id=request.GET['user'])
+            mooclet_context['user'] = user
+        except:
+            pass
 
     version = mooclet.get_version(mooclet_context)
     explanation = version.explanation
