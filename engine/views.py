@@ -23,6 +23,7 @@ def quiz_create_options(request):
     return render(request, 'engine/quiz_create_options.html')
 
 def quiz_create_blank(request):
+    course = None
     if request.session.get('LTI_LAUNCH'):
         course, created = Course.objects.get_or_create(
             context = request.session['LTI_LAUNCH']['context_id'],
@@ -31,14 +32,16 @@ def quiz_create_blank(request):
         if created:
             course.save()
 
-    quiz = Quiz(
-        user=request.user,
-        
-    )
+    quiz = Quiz()
+    if request.user.is_authenticated():
+        quiz.user = request.user
     if course:
         quiz.course = course
     quiz.save()
-    return redirect('lti:return_launch_url', quiz_id=quiz.id)
+    if request.session.get('LTI_LAUNCH'):
+        return redirect('lti:return_launch_url', quiz_id=quiz.id)
+    else:
+        return redirect('engine:quiz_detail', quiz_id=quiz.id)
 
 def quiz_create_url(request):
     if request.method == 'GET':
@@ -763,6 +766,10 @@ def version_modify(request, **kwargs):
 
 
 def version_create(request, **kwargs):
+    print "KWARGS"
+    print kwargs
+    print "ANSWER ID"
+    print kwargs['answer_id']
     quiz = get_object_or_404(Answer, pk=kwargs['quiz_id'])
     mooclet = get_object_or_404(Mooclet, pk=kwargs['mooclet_id'])
 
@@ -795,6 +802,7 @@ def explanation_create(request, quiz_id, question_id, answer_id, mooclet_id):
     '''
     create new explanation version
     '''
+    print "EXPLANATION CREATE"
     quiz = get_object_or_404(Quiz,pk=quiz_id)
     question = get_object_or_404(Question,pk=question_id)
     answer = get_object_or_404(Answer,pk=answer_id)
